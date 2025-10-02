@@ -1,0 +1,59 @@
+{
+  "VASadd": [
+    "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+    "Jdi na detail pozadovane sluzby a klikni na objednat",
+    "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+    "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+    "Objednavku odesli do COM",
+    "Proved kontrolu atributu v COM pod designoss",
+    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+    "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+    "Proved kontrolu, jestli se restartovala session/zmenila IP adresa"
+  ],
+  "VASaktivace": [
+    "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+    "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+    "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+    "Upresneni instalacni adresy potvrd pokracovat",
+    "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+    "Preskoc vyber TV tarifu",
+    "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+    "Kontakt pro instalaci vypln dle pozadovanych udaju",
+    "Instalacni otazky vypln dle pozadovanych pokynu",
+    "Vyber balicek Security dle pozadavku",
+    "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+    "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+    "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+    "Zobrazeni kosiku, kontrola pridanych polozek",
+    "Kliknout na odeslat objednavku",
+    "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+    "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+    "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+    "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+    "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+    "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+    "Proved kontrolu notifikaci SMS/Email"
+  ],
+  "VASdelete": [
+    "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+    "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+    "Dokonci naber objednavky a odesli do COM",
+    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+    "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+    "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+    "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+    "Proved kontrolu, jestli se restartovala session/zmenila IP adresa"
+  ],
+  "postpaidVASadd": [
+    "Vytvor si aktivni mobilni tarif Next bez Security a najed na ni ve sluzbach",
+    "Klikni na objednat a dostan se do kosiku",
+    "Vyhledej Next Security s kodem nabidky POT360 a pridej do kosiku",
+    "Zkontroluj pridani spravnych atributu do kosiku a dokonci objednavku",
+    "V COM konzoli zkontroluj rozpad tasku a kladny prubeh objednavky",
+    "Zkontroluj restart session Security - CFS_220-ON_NET_SECURITY_SIM-I-2070329297-A-provider\t2",
+    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+    "V Siebel zkontroluj, ze je objednavka dokoncena a u sluzby je aktivni OnNet Security Addon",
+    "Proved kontrolu notifikaci SMS/Email"
+  ]
+}
