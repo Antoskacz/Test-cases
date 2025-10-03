@@ -46,7 +46,7 @@ def menu():
 
     while True:
         print("\n--- MENU ---")
-        print("1. Zadat novou větu")
+        print("1. Zadat požadavek testu")
         print("2. Zobrazit / Upravit kroky")
         print("3. Exportovat do Excelu")
         print("4. Konec")
