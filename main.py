@@ -94,8 +94,12 @@ def build_test_name(poradi: int, veta: str) -> str:
     kanal = extract_kanal(veta)
     segment = extract_segment(veta)
     service = extract_service(veta)
-    zbytek = normalize_text(veta.lower())
-    return f"({poradi:03d})_{kanal}_{segment}_{service}_{zbytek}"
+
+    # Neupravujeme text věty – zůstává kompletní a nezměněná
+    prefix = f"{poradi:03d}_{kanal}_{segment}_{service}"
+    return f"{prefix}_{veta.strip().capitalize()}"
+
+
 
 
 def detect_action(text: str, kroky_data: dict) -> str | None:
