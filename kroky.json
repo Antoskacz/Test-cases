@@ -1,59 +1,1808 @@
 {
-  "vasadd": [
-    "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
-    "Jdi na detail pozadovane sluzby a klikni na objednat",
-    "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
-    "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
-    "Objednavku odesli do COM",
-    "Proved kontrolu atributu v COM pod designoss",
-    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
-    "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
-    "Proved kontrolu, jestli se restartovala session/zmenila IP adresa"
+  "dokup_vas_fix": [
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a klikni na objednat",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+      "expected": "Balicek Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+      "expected": "Screena se zobrazuje dle pozadavku, funkcni pole pro vyber, text ok, souhlas zaskrtnuty"
+    },
+    {
+      "description": "Objednavku odesli do COM",
+      "expected": "Objednavka se odeslala "
+    },
+    {
+      "description": "Proved kontrolu atributu v COM pod designoss",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut Security pritomny pod sluzbou: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    }
   ],
-  "VASaktivace": [
-    "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
-    "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
-    "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
-    "Upresneni instalacni adresy potvrd pokracovat",
-    "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
-    "Preskoc vyber TV tarifu",
-    "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
-    "Kontakt pro instalaci vypln dle pozadovanych udaju",
-    "Instalacni otazky vypln dle pozadovanych pokynu",
-    "Vyber balicek Security dle pozadavku",
-    "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
-    "Souhlas s pridanim do magenty a na další strance s vybranym HW",
-    "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
-    "Zobrazeni kosiku, kontrola pridanych polozek",
-    "Kliknout na odeslat objednavku",
-    "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
-    "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
-    "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
-    "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
-    "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
-    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
-    "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
-    "Proved kontrolu notifikaci SMS/Email"
+  "aktivace_fix_a_vas": [
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    },
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    },
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    },
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    },
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    },
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    },
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    },
+    {
+      "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
+      "expected": "Prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber, ze zakaznik nemá pripojku a pokracuj na vyhledani podle adresy  ",
+      "expected": "Otevre se vyhledavani dostupnosti podle adresy"
+    },
+    {
+      "description": "Over adresu na webu a zadej RUIAN nebo primo adresu, pokracovat ",
+      "expected": "Adresa je dostupna s pozadovanou technologii, prokliknuti na další stranu uspesne"
+    },
+    {
+      "description": "Upresneni instalacni adresy potvrd pokracovat",
+      "expected": "Propsana adresa, prokliknuti na další stranu"
+    },
+    {
+      "description": "Z dostupne nabidky vyber pozadovany tarif, dej pokracovat a na další strane potvrd aktivacni balicek tehoz tarifu",
+      "expected": "Vybran pozadovany tarif, prokliknuti na další stranu"
+    },
+    {
+      "description": "Preskoc vyber TV tarifu",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Na strance \"jak zvysit pravdepodobnost realizace\" dej pokracovat",
+      "expected": "Zobrazeni další stranky"
+    },
+    {
+      "description": "Kontakt pro instalaci vypln dle pozadovanych udaju",
+      "expected": "Udaje zadany, zobrazeni  další stranky"
+    },
+    {
+      "description": "Instalacni otazky vypln dle pozadovanych pokynu",
+      "expected": "Udaje vybrany, zobrazeni další stranky"
+    },
+    {
+      "description": "Vyber balicek Security dle pozadavku",
+      "expected": "Balicek Security pridan do kosiku"
+    },
+    {
+      "description": "Vyber pozadovany HW, dej pokracovat a na další strane potvrd vybrany HW",
+      "expected": "HW vybran a potvrzen"
+    },
+    {
+      "description": "Souhlas s pridanim do magenty a na další strance s vybranym HW",
+      "expected": "Odsouhlasena magenta a vybrany HW"
+    },
+    {
+      "description": "Nech predzaskrtnuty Wi-fi Manager a pokracuj",
+      "expected": "Wi-fi Manager screena se zobrazi a jde pokracovat do kosiku"
+    },
+    {
+      "description": "Zobrazeni kosiku, kontrola pridanych polozek",
+      "expected": "Všechny polozky souhlasi, kosik se otevrel spravne"
+    },
+    {
+      "description": "Kliknout na odeslat objednavku",
+      "expected": "Prokliknuti na potvrzeni udaju zakaznika"
+    },
+    {
+      "description": "U udaju zakaznika dej pokracovat, vyber fakturacni skupinu a potvrd fakturacni udaje",
+      "expected": "Všechny udaje zadane, prokliknuti na stranku s dopravou"
+    },
+    {
+      "description": "Vyber zpusob doruceni (nech vybrany) a dej pokracovat, u kontroly zakaznika dej pokracovat",
+      "expected": "Zpusob doruceni vybran a zakaznik je OK"
+    },
+    {
+      "description": "U technickeho setreni dej pokracovat az k souhlasum, které potvrd pokracovat",
+      "expected": "Technicke setreni OK, prokliknuti do zaverecneho odeslani objednavky"
+    },
+    {
+      "description": "Vytiskni smlouvy, zkontroluj smlouvy a podepis pozadovanym zpusobem",
+      "expected": "Smlouvy jdou vytisknout, udaje odpovidaji, pokracovat, objednavka odeslana"
+    },
+    {
+      "description": "U DSL odesli email na dokonceni objednavky od CETIN a nasledne vyskladni v SAP",
+      "expected": "CETIN ok"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v Siebel a COM a zkontroluj aktivni atribut v designoss",
+      "expected": "Objednavka je spravne dokoncena, atribut je aktivni: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    }
   ],
-  "VASdelete": [
-    "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
-    "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
-    "Dokonci naber objednavky a odesli do COM",
-    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
-    "Proved kontrolu dokoncene objednavky v COM i v Siebel",
-    "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
-    "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
-    "Proved kontrolu, jestli se restartovala session/zmenila IP adresa"
+  "odebrat_vas_fix": [
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivnim balickem",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    },
+    {
+      "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivni Security",
+      "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
+    },
+    {
+      "description": "Jdi na detail pozadovane sluzby a na balicku Security klikni na deaktivovat",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "Dokonci naber objednavky a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v COM i v Siebel",
+      "expected": "Objednavka se sama uspesne dokoncila"
+    },
+    {
+      "description": "Zkontroluj, ze pozadovany balicek Security byl odebran v designoss v COM",
+      "expected": "Atribut Security dle pozadavku odebran: FWA/CFS 220_provider = 2; DSL/CFS 207_provider = 2; OPTIN/DNS profile = FIXCZNIC…"
+    },
+    {
+      "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
+      "expected": "Objednavka uspesne dokoncena a atribut odebran"
+    },
+    {
+      "description": "Proved kontrolu, jestli se restartovala session/zmenila IP adresa",
+      "expected": "Restart session OK"
+    }
   ],
-  "postpaidVASadd": [
-    "Vytvor si aktivni mobilni tarif Next bez Security a najed na ni ve sluzbach",
-    "Klikni na objednat a dostan se do kosiku",
-    "Vyhledej Next Security s kodem nabidky POT360 a pridej do kosiku",
-    "Zkontroluj pridani spravnych atributu do kosiku a dokonci objednavku",
-    "V COM konzoli zkontroluj rozpad tasku a kladny prubeh objednavky",
-    "Zkontroluj restart session Security - CFS_220-ON_NET_SECURITY_SIM-I-2070329297-A-provider\t2",
-    "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
-    "V Siebel zkontroluj, ze je objednavka dokoncena a u sluzby je aktivni OnNet Security Addon",
-    "Proved kontrolu notifikaci SMS/Email"
+  "dokup_vas_hlas": [
+    {
+      "description": "Vytvor si aktivni mobilni tarif Next bez Security a najed na ni ve sluzbach",
+      "expected": "Sluzba dle pozadavku aktivni"
+    },
+    {
+      "description": "Klikni na objednat a dostan se do kosiku",
+      "expected": "Kosik otevreny"
+    },
+    {
+      "description": "Vyhledej Next Security s kodem nabidky POT360 a pridej do kosiku",
+      "expected": "Next Security se zobrazi a jde pridat do kosiku"
+    },
+    {
+      "description": "Zkontroluj pridani spravnych atributu do kosiku a dokonci objednavku",
+      "expected": "Atributy v kosiku OK, objednavka odeslana"
+    },
+    {
+      "description": "V COM konzoli zkontroluj rozpad tasku a kladny prubeh objednavky",
+      "expected": "Prubeh objednavky OK"
+    },
+    {
+      "description": "Zkontroluj restart session Security - CFS_220-ON_NET_SECURITY_SIM-I-2070329297-A-provider\t2",
+      "expected": "Restart session OK, atribut CFS 220 A"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OSS OK"
+    },
+    {
+      "description": "V Siebel zkontroluj, ze je objednavka dokoncena a u sluzby je aktivni OnNet Security Addon",
+      "expected": "Objednavka dokoncena, Security je aktivni u sluzby"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    }
+  ],
+  "aktivace_hlas": [
+    {
+      "description": "Na konkretnim zakaznikovi přes objednat nebo přes anonymni aktivaci jdi do kosiku",
+      "expected": "Kosik otevreny"
+    },
+    {
+      "description": "V roletce vyber nova aktivace hlas",
+      "expected": "Zobrazeny tarify pro nova aktivace hlas"
+    },
+    {
+      "description": "Vyber pozadovany tarif Next a pridej do kosiku",
+      "expected": "Tarif se zobrazi, jde vybrat a proklikne nas do kosiku"
+    },
+    {
+      "description": "Vyber nahodne telefonni cislo a dej pokracovat",
+      "expected": "Cislo jde zvolit"
+    },
+    {
+      "description": "Vloz vygenerovane ICCID přes Jenkins a dej pokracovat",
+      "expected": "ICCID prijato"
+    },
+    {
+      "description": "Zvol aktivaci Next Security zaskrtnutim a dej pokracovat",
+      "expected": "Security Next se zobrazi a jde zvolit"
+    },
+    {
+      "description": "V kosiku zkontroluj pridany tarif a Security Next a pokracuj k odeslani objednavky",
+      "expected": "Security Next pridana, tarif pridany"
+    },
+    {
+      "description": "V COM konzoli zkontroluj rozpad tasku a kladny prubeh objednavky",
+      "expected": "Fulfilment plan OK"
+    },
+    {
+      "description": "V COM _manageVAS zkontroluj atribut Security - CFS_220-ON_NET_SECURITY_SIM-I-2070316183-A-provider\t2",
+      "expected": "Atribut je pritomny na pozadovanem miste"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OSS OK"
+    },
+    {
+      "description": "Zkontroluj, ze byla objednavka dokoncena v COM i v Siebel a sluzba je aktivni s aktivni Security",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    }
+  ],
+  "odebrat_vas_hlas": [
+    {
+      "description": "Vytvor si aktivni mobilni tarif Next s aktivni Next Security a najed na ni ve sluzbach",
+      "expected": "Sluzba aktivni dle pozadavku"
+    },
+    {
+      "description": "V detailu sluzby klikni na OnNet Security Addon a dej deaktivovat a proklikni se tim do kosiku",
+      "expected": "Prokliknuti do kosiku s odebranim balicku"
+    },
+    {
+      "description": "V kosiku zkontroluj Next Security odebrano a odesli objednavku",
+      "expected": "Next Security odebrano, objednavka odeslana"
+    },
+    {
+      "description": "V COM konzoli zkontroluj rozpad tasku a kladny prubeh objednavky",
+      "expected": "Kladny prubeh objednavky"
+    },
+    {
+      "description": "Zkontroluj restart session Security - CFS_220-ON_NET_SECURITY_SIM-I-2070329297-D-provider\t2",
+      "expected": "Restart session probehl, atribut CFS 220 D "
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "V Siebel zkontroluj, ze je objednavka dokoncena a u sluzby není aktivni OnNet Security Addon",
+      "expected": "Objednavka dokoncena, Security je odebrana"
+    },
+    {
+      "description": "Proved kontrolu notifikaci SMS/Email",
+      "expected": "SMS/Email odpovida sablone"
+    }
+  ],
+  "terminace_hlas": [
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a aktivni Next Security na nem",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Pres detail sluzby vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky Mobil/TV vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Vyber ukonceni cele sluzby nebo prevod na twist",
+      "expected": "Vybrana jedna z moznosti"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Security",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji samo-dokonceni a zkontroluj odebrani Next Security v orderitems VAS0003",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OSS OK"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci dokoncena v Siebel",
+      "expected": "Sluzba neaktivni a objednavka dokoncena"
+    }
+  ],
+  "terminace_fix": [
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    },
+    {
+      "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
+      "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
+    },
+    {
+      "description": "Vytvor terminacni SR, naplanuj termin a zkontroluj propsani terminu ukonceni do ucastnicke smlouvy\n\nOBLAST: Rizeni smluv a objednavek, KATEGORIE: Ukonceni smlouvy, PODKATEGORIE: Ucastnicka smlouva zadost, KROK: ..., Komunikacni kanal: Interne\nvyber sluzbu MSISDN, TYP UKONCENI - ukonceni, DATUM VYPOVEDI - dnesni, KROK - vyreseno - retence, STATUS - vyreseny",
+      "expected": "Vytvoreno SR dle zadani\npripadne viz detailni navod:\nhttps://vpconfluence.cz.tmo/display/UKB/Terminace+PIV"
+    },
+    {
+      "description": "Po kontrole ucastnicke smlouvy se vrat do SR a z terminacniho SR proved proklik na vytvorit objednavku a z roletky FIX vyber ukonceni smlouvy - souhlas s provazanim SR s objednavkou",
+      "expected": "US v poradku, objednavka vytvorena"
+    },
+    {
+      "description": "Dostanes se do kosiku, kde uvidis odebirane offeringy Tarif a Rental",
+      "expected": "Kontrola OK"
+    },
+    {
+      "description": "Odesli objednavku do COM a zkontroluj jeji dokonceni",
+      "expected": "Objednavka dokoncena v COM\npozn. objednavka projde automaticky pres tasky OSS. Zustane cekat na tasku Return HW"
+    },
+    {
+      "description": "Zaloz objednavku na vraceni HW přes objednat",
+      "expected": "Objednavka zalozena, prokliknuti do kosiku"
+    },
+    {
+      "description": "Vyber terminovanou technologii a zadej IMEI zapsane v 1. kroku",
+      "expected": "IMEI zadano, vraceni zarizeni propsano do kosiku"
+    },
+    {
+      "description": "Objednavku na vraceni HW dokonci a odesli do COM",
+      "expected": "Objednavka odeslana"
+    },
+    {
+      "description": "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+      "expected": "OT zpracovano bez chyb"
+    },
+    {
+      "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
+      "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
+    }
+  ],
+  "bulk": [
+    {
+      "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+      "expected": "Otevre se prehled hromadnych objednavek"
+    },
+        {
+      "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+      "expected": "Vypsan typ, nazev a zalozena sablona"
+    },
+        {
+      "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+      "expected": "Polozka byla pridana"
+    },
+        {
+      "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+      "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+    },
+        {
+      "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+      "expected": "Otevre se formular objednavky"
+    },
+        {
+      "description": "Napis typ a nazev objednavky a pokracuj",
+      "expected": "Otevre se objednavkovy formular"
+    },
+            {
+      "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+      "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+    },
+            {
+      "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+      "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+    },
+            {
+      "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+      "expected": "Objednavka je completed a kladne dokoncena"
+    },
+            {
+      "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+      "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+    }
   ]
 }

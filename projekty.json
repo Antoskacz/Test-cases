@@ -1,0 +1,748 @@
+{
+  "CCCTR-948 - RDK/WFM Tinkering": {
+    "next_id": 2,
+    "subject": "2025",
+    "scenarios": [
+      {
+        "order_no": 1,
+        "test_name": "(001)_B2C_dsl_aktivace_vas_aktivuj wfm na dsl b2c rental shop",
+        "akce": "aktivace_vas",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "3-Low",
+        "complexity": "2-Huge",
+        "kroky": [
+          "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
+          "Jdi na detail pozadovane sluzby a klikni na objednat",
+          "V katalogu vyhledej pozadovany balicek Security a pridej do kosiku",
+          "Proved kontrolu screeny, textu, souhlasu, funkcnost ",
+          "Objednavku odesli do COM",
+          "Proved kontrolu atributu v COM pod designoss",
+          "Zaloz OT na kontrolu sluzby na OSS PE se zadanymi udaji z COM",
+          "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
+          "Proved kontrolu, jestli se restartovala session/zmenila IP adresa"
+        ]
+      }
+    ]
+  },
+  "CCCTR-1214 - BB Security balicek": {
+    "next_id": 16,
+    "scenarios": [
+      {
+        "order_no": 2,
+        "test_name": "(001)_B2C_fwa bi_bulk_aktivuj security pomoci bulk objednavky_shop_b2c_fwa bi",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 3,
+        "test_name": "(003)_B2C_fwa bi_bulk_deaktivuj security pomoci bulk u fwa bi pres shop b2c zak.",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 4,
+        "test_name": "(004)_B2C_fwa bisi_bulk_aktivuj security na fwa bisi pomoci bulk pres shop b2c zak.",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 5,
+        "test_name": "(005)_B2C_fwa bisi_bulk_deaktivuj pomoci bulk objednavky security u fwa bisi na shop u b2c zak.",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 6,
+        "test_name": "(006)_B2C_fiber_bulk_aktivuj security na b2c fiber pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 7,
+        "test_name": "(007)_B2C_fiber_bulk_deaktivuj security na b2c fiber pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 8,
+        "test_name": "(008)_B2B_fiber_bulk_aktivuj security na b2b business fiber pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2B",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 9,
+        "test_name": "(009)_B2B_fiber_bulk_deaktivuj security na b2b business fiberu pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2B",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 10,
+        "test_name": "(010)_B2C_dsl_bulk_aktivuj security na b2c dsl pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 11,
+        "test_name": "(011)_B2C_dsl_bulk_deaktivuj security na b2c dsl pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 12,
+        "test_name": "(012)_B2B_dsl_bulk_aktivuj security na b2b business dsl pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2B",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 13,
+        "test_name": "(013)_B2B_dsl_bulk_deaktivuj security na b2b business dsl pomoci bulk pres shop",
+        "akce": "bulk",
+        "segment": "B2B",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 14,
+        "test_name": "(014)_B2C_HLAS_BULK_aktivuj security na hlasovy tarif next pomoci bulk na b2c pres shop",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      },
+      {
+        "order_no": 15,
+        "test_name": "(015)_B2C_HLAS_BULK_deaktivuj security na hlasovem tarifu next pomoci bulk pres shop na b2c",
+        "akce": "bulk",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "1-Giant",
+        "kroky": [
+          {
+            "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
+            "expected": "Otevre se prehled hromadnych objednavek"
+          },
+          {
+            "description": "V zalozce sablony objednavek vytvor novou sablonu dle pozadavku",
+            "expected": "Vypsan typ, nazev a zalozena sablona"
+          },
+          {
+            "description": "Pred ulozenim sablony pridej polozku na pozadovany PO... typ pozadovane akce (nikdy nemichat vic polozek dohromady, muze vznikat duplikace)",
+            "expected": "Polozka byla pridana"
+          },
+          {
+            "description": "Sablonu nyni uloz a aktivuj, opis si jeji cislo",
+            "expected": "Otevre se prehled sablon s nami vytvorenou novou sablonou"
+          },
+          {
+            "description": "Prejdi na hromadne objednavky a klikni na nova hromadna objednavka",
+            "expected": "Otevre se formular objednavky"
+          },
+          {
+            "description": "Napis typ a nazev objednavky a pokracuj",
+            "expected": "Otevre se objednavkovy formular"
+          },
+          {
+            "description": "Stahni soubor .xlxs a vypln pozadovane sloupce - 1. sloupec zkopirovane cislo sablony, cislo sluzby, notifikace",
+            "expected": "Soubor jde stahnout, je vyplneny ulozeny a znovu nahrany"
+          },
+          {
+            "description": "Po par vterinach klikni na aktualizovat stav a odeslat hromadnou objednavku",
+            "expected": "Propsal se nahrany soubor a objednavka sla odeslat"
+          },
+          {
+            "description": "V COM/bulk orders zkontroluj prubeh obejdnavky",
+            "expected": "Objednavka je completed a kladne dokoncena"
+          },
+          {
+            "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
+            "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
+          }
+        ]
+      }
+    ],
+    "subject": "UAT2\\Antoso"
+  }
+}
