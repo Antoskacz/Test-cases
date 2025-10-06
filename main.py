@@ -269,8 +269,11 @@ def smaz_scenar():
             potvrdit = input("Opravdu smazat? (ano/ne): ").strip().lower()
             if potvrdit == "ano":
                 sc.pop(idx)
+                # 🧩 Přepočet pořadí po smazání
+                for i, t in enumerate(sc, start=1):
+                    t["order_no"] = i
                 uloz_projekty()
-                safe_print("✅ Scénář smazán.")
+                safe_print("✅ Scénář smazán a pořadí přepočítáno.")
 
 
 # --- Export s přečíslováním ---
@@ -281,8 +284,10 @@ def exportuj_excel():
     subject = projekty_data[AKTUALNI_PROJEKT].get("subject", "UAT2\\Antosova\\")
     rows = []
 
-    scenarios = sorted(projekty_data[AKTUALNI_PROJEKT]["scenarios"], key=lambda x: x["order_no"])
+    # Přepočítáme pořadí podle skutečného pořadí v seznamu (ne order_no)
+    scenarios = projekty_data[AKTUALNI_PROJEKT]["scenarios"]
     for new_order, tc in enumerate(scenarios, start=1):
+
         veta = tc.get("veta", tc["test_name"])  # Fallback pro starší data
         new_test_name = build_test_name(new_order, veta)
         for i, krok in enumerate(tc["kroky"], start=1):
