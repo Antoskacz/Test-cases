@@ -314,16 +314,22 @@ def exportuj_excel():
     df.to_excel(output_path, index=False)
     safe_print(f"✅ Exportováno do: {output_path}")
 
-    # 🔹 Automatický commit & push na GitHub
+    # 🔹 Automatický commit & push na GitHub s rebase ochranou
     try:
         subprocess.run(["git", "add", str(output_path)], check=True)
         subprocess.run(["git", "commit", "-m", f"Auto export {AKTUALNI_PROJEKT}"], check=True)
+
+        # 🧩 Nejprve zkus pull s rebase, aby se vyřešily kolize
+        subprocess.run(["git", "pull", "--rebase"], check=True)
         subprocess.run(["git", "push"], check=True)
+
         safe_print("✅ Soubor úspěšně nahrán do GitHub repozitáře.")
     except subprocess.CalledProcessError as e:
         safe_print(f"⚠️ Git operace selhala: {e}")
+        safe_print("ℹ️ Zkus ručně spustit v terminálu: git pull --rebase && git push")
     except Exception as e:
         safe_print(f"⚠️ Nepodařilo se nahrát soubor: {e}")
+
 
 
 # --- Menu ---
