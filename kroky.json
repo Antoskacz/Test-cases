@@ -1804,5 +1804,23 @@
       "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
       "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
     }
+  ],
+ "overeni_dostupnosti": [
+    {
+      "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+      "expected": "Otevre se kosik"
+    },
+        {
+      "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+      "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+    },
+        {
+      "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+      "expected": "Prtsc vytvoreny, ulozeny"
+    },
+        {
+      "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+      "expected": "Vojta potvrdi OK"
+    }
   ]
 }

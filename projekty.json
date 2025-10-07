@@ -744,5 +744,263 @@
       }
     ],
     "subject": "UAT2\\Antosova\\2025\\Converged Connectivity\\NonRelease\\CCCTR-1214 - BB Security balicek"
+  },
+  "CCCTR-1388 - Zmena SAC": {
+    "next_id": 10,
+    "subject": "UAT2\\Antosova\\2025\\Converged Connectivity\\NonRelease\\CCCTR-1388 - Zmena SAC",
+    "scenarios": [
+      {
+        "order_no": 1,
+        "test_name": "001_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 25892479 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s RUIAN 25892479 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 2,
+        "test_name": "002_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 8364516 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 8364516 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 3,
+        "test_name": "003_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 4306287 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 4306287 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 4,
+        "test_name": "004_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 3309436 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 3309436 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 5,
+        "test_name": "005_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 13839934 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 13839934 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 6,
+        "test_name": "006_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 12551864 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 12551864 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 7,
+        "test_name": "007_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 74234994 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 74234994 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 8,
+        "test_name": "008_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 10376402 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 10376402 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      },
+      {
+        "order_no": 9,
+        "test_name": "009_SHOP_B2C_FWA_Proved overeni dostupnosti u fwa s ruian 3046427 na b2c pres shop",
+        "akce": "overeni_dostupnosti",
+        "segment": "B2C",
+        "kanal": "SHOP",
+        "priority": "2-Medium",
+        "complexity": "3-Big",
+        "veta": "proved overeni dostupnosti u fwa s ruian 3046427 na b2c pres shop",
+        "kroky": [
+          {
+            "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
+            "expected": "Otevre se kosik"
+          },
+          {
+            "description": "Pri overeni dostupnosti zadej RUIAN/adresu a proklikni se na dostupne fixni sluzby",
+            "expected": "RUIAN/adresa byla prijata, objevi se strana s dostupnymi technologiemi"
+          },
+          {
+            "description": "Objednavku nech v tomto stavu aktivni a udelej prtsc dostupnych technologii s rychlostmi",
+            "expected": "Prtsc vytvoreny, ulozeny"
+          },
+          {
+            "description": "Material odesli na Vojta Suk, ktery provede kontrolu na backendu",
+            "expected": "Vojta potvrdi OK"
+          }
+        ]
+      }
+    ]
   }
 }
