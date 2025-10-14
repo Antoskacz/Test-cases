@@ -106,6 +106,7 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     return tc
 
 # ---------- Export do Excelu ----------
+# ---------- Export do Excelu ----------
 def export_to_excel(project_name, projects_data):
     """Exportuje test casy daného projektu do Excelu a provede git push"""
     project_data = projects_data[project_name]
@@ -151,8 +152,15 @@ def export_to_excel(project_name, projects_data):
     try:
         subprocess.run(["git", "add", str(output_path)], check=True)
         subprocess.run(["git", "commit", "-m", f"Auto export {project_name}"], check=True)
-        subprocess.run(["git", "pull", "--rebase"], check=True)
+        
+        # Nejprve zkusíme pull s rebase, ale pokud selže, pokračujeme
+        try:
+            subprocess.run(["git", "pull", "--rebase"], check=True)
+        except subprocess.CalledProcessError:
+            print("⚠️ Git pull --rebase selhal, pokračujeme bez něj")
+            
         subprocess.run(["git", "push"], check=True)
+        print("✅ Export a git push úspěšný")
     except Exception as e:
         print("⚠️ Git operace selhala:", e)
 

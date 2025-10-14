@@ -57,7 +57,8 @@ def make_df(projects, project_name):
             "Segment": tc.get("segment"),
             "Channel": tc.get("kanal"),
             "Priority": tc.get("priority"),
-            "Complexity": tc.get("complexity")
+            "Complexity": tc.get("complexity"),
+            "Kroky": len(tc.get("kroky", []))
         })
     return pd.DataFrame(rows).sort_values(by="Order", ascending=True)
 
@@ -83,33 +84,16 @@ if st.sidebar.button("✅ Načíst / vytvořit projekt"):
     else:
         st.sidebar.warning("Vyber existující projekt nebo zadej název nového.")
 
-st.sidebar.markdown("---")
-st.sidebar.subheader("✏️ Úprava projektu")
-
-if selected_project != "— vyber —":
-    with st.sidebar.form("edit_project"):
-        new_name = st.text_input("Přejmenovat projekt", value=selected_project)
-        new_subject = st.text_input("Subject (HPQC)", value=projects[selected_project].get("subject", "UAT2\\Antosova\\"))
-        if st.form_submit_button("💾 Uložit změny"):
-            if new_name != selected_project:
-                projects[new_name] = projects.pop(selected_project)
-                selected_project = new_name
-            projects[selected_project]["subject"] = new_subject or "UAT2\\Antosova\\"
-            save_json(PROJECTS_PATH, projects)
-            st.sidebar.success("Projekt uložen.")
-            st.rerun()
-
-    if st.sidebar.button("🗑️ Smazat projekt", type="secondary"):
-        projects.pop(selected_project, None)
-        save_json(PROJECTS_PATH, projects)
-        st.sidebar.success("Projekt smazán.")
-        st.rerun()
-
 # ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
 
 if selected_project == "— vyber —":
     st.info("Vyber nebo vytvoř projekt v levém panelu.")
+    st.stop()
+
+# Kontrola, zda projekt existuje v datech
+if selected_project not in projects:
+    st.error(f"Projekt '{selected_project}' nebyl nalezen v datech. Vyber jiný projekt.")
     st.stop()
 
 cols = st.columns([0.5, 0.25, 0.25])
@@ -125,7 +109,7 @@ df = make_df(projects, selected_project)
 if df.empty:
     st.info("Zatím žádné scénáře.")
 else:
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width='stretch', hide_index=True)
 
     # tlačítko pro přečíslování
     if st.button("🔢 Přečíslovat scénáře od 001"):
@@ -172,6 +156,10 @@ with st.form("add_scenario"):
         elif not akce:
             st.error("Vyber akci (kroky.json).")
         else:
+            # Debug info
+            pocet_kroku = len(steps_data.get(akce, []))
+            st.info(f"🔍 Načítám {pocet_kroku} kroků pro akci: {akce}")
+            
             tc = generate_testcase(
                 project=selected_project,
                 veta=veta.strip(),
@@ -216,7 +204,7 @@ else:
                     scenario["priority"] = priority
                     scenario["complexity"] = complexity
                     # DŮLEŽITÉ: Použij deepcopy při přiřazování kroků
-                    scenario["kroky"] = copy.deepcopy(get_steps().get(akce, []))
+                    scenario["kroky"] = copy.deepcopy(steps_data.get(akce, []))
                     # přegenerování test name
                     scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip().replace(" ", "_")
                     # uložení změn
@@ -247,6 +235,18 @@ else:
             save_json(PROJECTS_PATH, projects)
             st.success("Scénář smazán a pořadí přepočítáno.")
             st.rerun()
+
+st.markdown("---")
+
+# ---------- Debug info ----------
+with st.expander("🔍 Debug informace"):
+    st.subheader("Stav kroků v kroky.json")
+    steps_data = get_steps()
+    for akce in steps_data.keys():
+        kroky = steps_data[akce]
+        st.write(f"**{akce}**: {len(kroky)} kroků")
+        if len(kroky) > 0:
+            st.write(f"První krok: {kroky[0]['description'][:80]}...")
 
 st.markdown("---")
 
