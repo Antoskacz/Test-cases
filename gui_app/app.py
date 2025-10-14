@@ -240,26 +240,26 @@ st.markdown("---")
 
 
 # ---------- Informace o krocích ----------
+# ---------- Informace o krocích ----------
 with st.expander("📊 Přehled kroků podle akcí"):
-    st.subheader("Dostupné akce a počet kroků")
+    st.subheader("Kroky dostupné v systému")
     steps_data = get_steps()
     
-    for akce in sorted(steps_data.keys()):
+    # Vytvoříme pěkný přehled s kolonkama
+    cols = st.columns(2)
+    for idx, akce in enumerate(sorted(steps_data.keys())):
         kroky = steps_data[akce]
         pocet_kroku = len(kroky)
         
-        # Různé ikony podle počtu kroků
-        if pocet_kroku <= 5:
-            ikona = "🟢"
-        elif pocet_kroku <= 15:
-            ikona = "🟡"
-        else:
-            ikona = "🔴"
-            
-        st.write(f"{ikona} **{akce}** ({pocet_kroku} kroků)")
+        with cols[idx % 2]:
+            st.metric(
+                label=akce,
+                value=f"{pocet_kroku} kroků",
+                help=f"Klikni pro zobrazení detailů akce {akce}"
+            )
     
     st.markdown("---")
-    st.caption("💡 Kroky se automaticky přiřazují k scénářům podle vybrané akce")
+    st.caption("💡 Tyto kroky se automaticky přiřazují k scénářům podle vybrané akce")
 
 
 
