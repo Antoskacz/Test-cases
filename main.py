@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import time
 import unicodedata
+import copy
 
 # --- Cesty ---
 BASE_DIR = Path(__file__).resolve().parent
@@ -100,8 +101,6 @@ def build_test_name(poradi: int, veta: str) -> str:
     return f"{prefix}_{veta.strip().capitalize()}"
 
 
-
-
 def detect_action(text: str, kroky_data: dict) -> str | None:
     t = text.lower()
     for akce in kroky_data.keys():
@@ -118,6 +117,9 @@ def generuj_testcase(veta, kroky_data, akce, priority, complexity):
     segment = extract_segment(veta)
     kanal = extract_kanal(veta)
 
+    # DŮLEŽITÉ: Použij deepcopy pro kroky
+    kroky_pro_akci = copy.deepcopy(kroky_data.get(akce, []))
+
     tc = {
         "order_no": poradi,
         "test_name": test_name,
@@ -127,12 +129,39 @@ def generuj_testcase(veta, kroky_data, akce, priority, complexity):
         "priority": priority,
         "complexity": complexity,
         "veta": veta,
-        "kroky": kroky_data.get(akce, []),
+        "kroky": kroky_pro_akci,  # Tady používáme hlubokou kopii
     }
 
     projekty_data[AKTUALNI_PROJEKT]["scenarios"].append(tc)
     uloz_projekty()
     return tc
+
+
+def debug_kroky():
+    """Funkce pro ladění přiřazování kroků"""
+    kroky_data = nacti_kroky()
+    
+    print("\n=== DEBUG KROKY ===")
+    for akce in kroky_data.keys():
+        kroky = kroky_data[akce]
+        print(f"Akce: {akce}")
+        print(f"  Počet kroků: {len(kroky)}")
+        if kroky:
+            print(f"  První krok: {kroky[0]['description'][:50]}...")
+        print(f"  ID objektu: {id(kroky)}")
+        print()
+    
+    # Test deepcopy
+    if kroky_data:
+        test_akce = list(kroky_data.keys())[0]
+        original = kroky_data[test_akce]
+        kopie = copy.deepcopy(kroky_data[test_akce])
+        
+        print(f"Test deepcopy pro '{test_akce}':")
+        print(f"  Original ID: {id(original)}")
+        print(f"  Kopie ID: {id(kopie)}")
+        print(f"  Jsou stejné objekty? {original is kopie}")
+        print(f"  Jsou stejné data? {original == kopie}")
 
 
 # --- Správa projektů ---
@@ -294,6 +323,10 @@ def exportuj_excel():
 
         veta = tc.get("veta", tc["test_name"])  # Fallback pro starší data
         new_test_name = build_test_name(new_order, veta)
+        
+        # Debug info
+        safe_print(f"Scénář {new_order}: Akce='{tc['akce']}', Počet kroků={len(tc['kroky'])}")
+        
         for i, krok in enumerate(tc["kroky"], start=1):
             desc = krok.get("description", "")
             expected = krok.get("expected", "TODO: doplnit očekávání")
@@ -340,7 +373,6 @@ def exportuj_excel():
         safe_print(f"⚠️ Nepodařilo se nahrát soubor: {e}")
 
 
-
 # --- Menu ---
 def menu():
     kroky_data = nacti_kroky()
@@ -354,7 +386,8 @@ def menu():
         safe_print("6. Smazat scénář")
         safe_print("7. Smazat projekt")
         safe_print("8. Exportovat do Excelu")
-        safe_print("9. Konec")
+        safe_print("9. Debug kroky")
+        safe_print("10. Konec")
         volba = input("Zvol možnost: ").strip()
 
         if volba == "1":
@@ -386,6 +419,8 @@ def menu():
         elif volba == "8":
             exportuj_excel()
         elif volba == "9":
+            debug_kroky()
+        elif volba == "10":
             safe_print("👋 Ukončuji program.")
             break
         else:
@@ -395,5 +430,9 @@ def menu():
 if __name__ == "__main__":
     safe_print("✅ Program spuštěn, připraven k práci...")
     projekty_data = nacti_projekty()
+    
+    # Spust debug
+    debug_kroky()
+    
     vyber_projekt()
     menu()

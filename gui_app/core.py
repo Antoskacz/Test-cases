@@ -1,140 +1,160 @@
 import json
 import pandas as pd
-from pathlib import Path
+import copy
 import subprocess
+from pathlib import Path
 
+# ---------- Cesty ----------
 BASE_DIR = Path(__file__).resolve().parent.parent
-EXPORTS_DIR = BASE_DIR / "exports"
-PROJECTS_PATH = BASE_DIR / "projekty.json"
+PROJECTS_PATH = BASE_DIR / "projects.json"
 KROKY_PATH = BASE_DIR / "kroky.json"
+EXPORT_DIR = BASE_DIR / "exports"
+EXPORT_DIR.mkdir(exist_ok=True)
 
-SYSTEM_APPLICATION = "Siebel_CZ"
-TYPE = "Manual"
-TEST_PHASE = "4-User Acceptance"
-TEST_TEST_PHASE = "4-User Acceptance"
-PRIORITY_MAP = {"1": "1-High", "2": "2-Medium", "3": "3-Low"}
-COMPLEXITY_MAP = {"1": "1-Giant", "2": "2-Huge", "3": "3-Big", "4": "4-Medium", "5": "5-Low"}
+# ---------- Statické mapy ----------
+PRIORITY_MAP = {
+    "1": "1-High",
+    "2": "2-Medium",
+    "3": "3-Low"
+}
 
+COMPLEXITY_MAP = {
+    "1": "1-Giant",
+    "2": "2-Huge",
+    "3": "3-Big",
+    "4": "4-Medium",
+    "5": "5-Low"
+}
 
-def load_json(path):
+# ---------- Funkce práce se soubory ----------
+def load_json(path: Path):
     if not path.exists():
         return {}
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
-def save_json(path, data):
+def save_json(path: Path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+# ---------- Nová funkce načítání kroků ----------
+def get_steps():
+    """Vrací novou kopii dat z kroky.json (každé volání načte čerstvá data)"""
+    if not KROKY_PATH.exists():
+        return {}
+    with open(KROKY_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return copy.deepcopy(data)  # hluboká kopie celé struktury
 
-def extract_kanal(veta):
-    t = veta.lower()
-    if "shop" in t:
-        return "SHOP"
-    if "il" in t:
-        return "IL"
-    return "UNKNOWN"
+# ---------- Generování názvu test casu ----------
+def parse_veta(veta: str):
+    """Z věty vytáhne klíčové údaje: segment, kanál, technologii"""
+    veta_low = veta.lower()
+    segment = "B2C" if "b2c" in veta_low else "B2B" if "b2b" in veta_low else "NA"
+    kanal = "SHOP" if "shop" in veta_low else "IL" if "il" in veta_low else "NA"
 
+    technologie_map = {
+        "dsl": "DSL",
+        "fwa bi": "FWA_BI",
+        "fwa bisi": "FWA_BISI",
+        "fiber": "FIBER",
+        "cable": "CABLE",
+        "hlas": "HLAS",
+        "hlasovy": "HLAS"
+    }
+    technologie = "NA"
+    for k, v in technologie_map.items():
+        if k in veta_low:
+            technologie = v
+            break
+    return segment, kanal, technologie
 
-def extract_segment(veta):
-    t = veta.lower()
-    if "b2c" in t:
-        return "B2C"
-    if "b2b" in t:
-        return "B2B"
-    return "UNKNOWN"
-
-
-def extract_service(veta):
-    t = veta.lower()
-    if "hlas" in t or "voice" in t:
-        return "HLAS"
-    if "fwa" in t and "bisi" in t:
-        return "FWA_BISI"
-    if "fwa" in t and "bi" in t:
-        return "FWA_BI"
-    for key in ["dsl", "fiber", "cable"]:
-        if key in t:
-            return key.upper()
-    if "fwa" in t:
-        return "FWA"
-    return "UNKNOWN"
-
-
-def build_test_name(poradi: int, veta: str) -> str:
-    kanal = extract_kanal(veta)
-    segment = extract_segment(veta)
-    service = extract_service(veta)
-    return f"{poradi:03d}_{kanal}_{segment}_{service}_{veta.strip().capitalize()}"
-
-
+# ---------- Generování test casu ----------
 def generate_testcase(project, veta, akce, priority, complexity, kroky_data, projects_data):
-    if project not in projects_data:
-        projects_data[project] = {"next_id": 1, "subject": "UAT2\\Antosova\\", "scenarios": []}
+    """Vytvoří nový test case a uloží ho do projektu"""
+    project_data = projects_data[project]
+    order_no = project_data["next_id"]
+    nove_cislo = f"{order_no:03d}"
 
-    pid = projects_data[project]["next_id"]
-    projects_data[project]["next_id"] += 1
+    segment, kanal, technologie = parse_veta(veta)
+    test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
 
-    test_name = build_test_name(pid, veta)
-    kanal = extract_kanal(veta)
-    segment = extract_segment(veta)
+    # --- přesné přiřazení kroků podle akce z roletky ---
+    if akce in kroky_data:
+        kroky = copy.deepcopy(kroky_data[akce])
+        print(f"✅ Načteny kroky pro akci: {akce} ({len(kroky)} kroků)")
+    else:
+        print(f"⚠️ Akce '{akce}' nebyla nalezena v kroky.json. Používám prázdný seznam.")
+        kroky = []
+
 
     tc = {
-        "order_no": pid,
+        "order_no": order_no,
         "test_name": test_name,
         "akce": akce,
-        "kanal": kanal,
         "segment": segment,
+        "kanal": kanal,
         "priority": priority,
         "complexity": complexity,
         "veta": veta,
-        "kroky": kroky_data.get(akce, []).copy(),
+        "kroky": kroky
     }
 
-    projects_data[project]["scenarios"].append(tc)
+    project_data["scenarios"].append(tc)
+    project_data["next_id"] += 1
     save_json(PROJECTS_PATH, projects_data)
     return tc
 
-
-def export_to_excel(project, projects_data):
-    EXPORTS_DIR.mkdir(exist_ok=True)
-    output_path = EXPORTS_DIR / f"testcases_{project.replace(' ', '_')}.xlsx"
-
-    scenarios = sorted(projects_data[project]["scenarios"], key=lambda x: x["order_no"])
-    subject = projects_data[project].get("subject", "UAT2\\Antosova\\")
-
+# ---------- Export do Excelu ----------
+def export_to_excel(project_name, projects_data):
+    """Exportuje test casy daného projektu do Excelu a provede git push"""
+    project_data = projects_data[project_name]
     rows = []
-    for new_order, tc in enumerate(scenarios, start=1):
-        new_test_name = build_test_name(new_order, tc.get("veta", tc["test_name"]))
-        for i, krok in enumerate(tc["kroky"], start=1):
+
+    for tc in project_data["scenarios"]:
+        # Debug info
+        print(f"Export scénáře: Akce='{tc['akce']}', Počet kroků={len(tc.get('kroky', []))}")
+        
+        for i, krok in enumerate(tc.get("kroky", []), start=1):
+            desc = ""
+            exp = ""
+
+            if isinstance(krok, dict):
+                desc = krok.get("description", "")
+                exp = krok.get("expected", "")
+            elif isinstance(krok, str):
+                desc = krok
+                exp = ""
+
             rows.append({
-                "Project": project,
-                "System/Application": SYSTEM_APPLICATION,
-                "Subject": subject,
-                "Description": f"Segment: {tc['segment']}\nKanal: {tc['kanal']}\nAkce: {tc['akce']}",
-                "Type": TYPE,
-                "Test Phase": TEST_PHASE,
-                "Test: Test Phase": TEST_TEST_PHASE,
+                "Project": project_name,
+                "Subject": project_data.get("subject", "UAT2\\Antosova\\"),
+                "System/Application": "Siebel_CZ",
+                "Description": f"Segment: {tc['segment']}\nKanál: {tc['kanal']}\nAkce: {tc['akce']}",
+                "Type": "Manual",
+                "Test Phase": "4-User Acceptance",
+                "Test: Test Phase": "4-User Acceptance",
                 "Test Priority": tc["priority"],
                 "Test Complexity": tc["complexity"],
-                "Test Name": new_test_name,
-                "Step Name (Design Steps)": str(i),
-                "Description (Design Steps)": krok.get("description", ""),
-                "Expected (Design Steps)": krok.get("expected", "TODO: doplnit očekávání")
+                "Test Name": tc["test_name"],
+                "Step #": i,
+                "Step Name (Design Steps)": f"{tc['test_name']}_STEP{i}",
+                "Description (Design Steps)": desc,
+                "Expected (Design Steps)": exp
             })
 
     df = pd.DataFrame(rows)
+    output_path = EXPORT_DIR / f"testcases_{project_name.replace(' ', '_')}.xlsx"
     df.to_excel(output_path, index=False)
 
-    # Git push
+    # Git operace (bez pádu při chybě)
     try:
         subprocess.run(["git", "add", str(output_path)], check=True)
-        subprocess.run(["git", "commit", "-m", f"Auto export {project}"], check=False)
-        subprocess.run(["git", "pull", "--rebase"], check=False)
+        subprocess.run(["git", "commit", "-m", f"Auto export {project_name}"], check=True)
+        subprocess.run(["git", "pull", "--rebase"], check=True)
         subprocess.run(["git", "push"], check=True)
-        print(f"✅ Exportováno a nahráno: {output_path}")
     except Exception as e:
-        print(f"⚠️ Git push selhal: {e}")
+        print("⚠️ Git operace selhala:", e)
 
+    print(f"✅ Exportováno do: {output_path}")
     return output_path
