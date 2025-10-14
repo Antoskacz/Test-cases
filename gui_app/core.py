@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 # ---------- Cesty ----------
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 PROJECTS_PATH = BASE_DIR / "projects.json"
 KROKY_PATH = BASE_DIR / "kroky.json"
 EXPORT_DIR = BASE_DIR / "exports"
@@ -14,39 +14,60 @@ EXPORT_DIR.mkdir(exist_ok=True)
 # ---------- Statické mapy ----------
 PRIORITY_MAP = {
     "1": "1-High",
-    "2": "2-Medium",
+    "2": "2-Medium", 
     "3": "3-Low"
 }
 
 COMPLEXITY_MAP = {
     "1": "1-Giant",
-    "2": "2-Huge",
+    "2": "2-Huge", 
     "3": "3-Big",
     "4": "4-Medium",
     "5": "5-Low"
 }
 
+# ---------- Automatická komplexita ----------
+def get_automatic_complexity(pocet_kroku):
+    """Automaticky určí komplexitu podle počtu kroků"""
+    if pocet_kroku <= 5:
+        return "5-Low"
+    elif pocet_kroku <= 10:
+        return "4-Medium" 
+    elif pocet_kroku <= 15:
+        return "3-Big"
+    elif pocet_kroku <= 20:
+        return "2-Huge"
+    else:
+        return "1-Giant"
+
 # ---------- Funkce práce se soubory ----------
 def load_json(path: Path):
+    """Načte JSON soubor, vrátí prázdný dict pokud neexistuje"""
     if not path.exists():
         return {}
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Chyba při načítání {path}: {e}")
+        return {}
 
 def save_json(path: Path, data):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    """Uloží data do JSON souboru"""
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"Chyba při ukládání {path}: {e}")
+        return False
 
-# ---------- Nová funkce načítání kroků ----------
+# ---------- Načítání kroků ----------
 def get_steps():
-    """Vrací novou kopii dat z kroky.json (každé volání načte čerstvá data)"""
-    if not KROKY_PATH.exists():
-        return {}
-    with open(KROKY_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return copy.deepcopy(data)  # hluboká kopie celé struktury
+    """Vrací novou kopii dat z kroky.json"""
+    return load_json(KROKY_PATH)
 
-# ---------- Generování názvu test casu ----------
+# ---------- Parsování věty ----------
 def parse_veta(veta: str):
     """Z věty vytáhne klíčové údaje: segment, kanál, technologii"""
     veta_low = veta.lower()
@@ -55,7 +76,7 @@ def parse_veta(veta: str):
 
     technologie_map = {
         "dsl": "DSL",
-        "fwa bi": "FWA_BI",
+        "fwa bi": "FWA_BI", 
         "fwa bisi": "FWA_BISI",
         "fiber": "FIBER",
         "cable": "CABLE",
@@ -72,6 +93,9 @@ def parse_veta(veta: str):
 # ---------- Generování test casu ----------
 def generate_testcase(project, veta, akce, priority, complexity, kroky_data, projects_data):
     """Vytvoří nový test case a uloží ho do projektu"""
+    if project not in projects_data:
+        projects_data[project] = {"next_id": 1, "subject": "UAT2\\Antosova\\", "scenarios": []}
+    
     project_data = projects_data[project]
     order_no = project_data["next_id"]
     nove_cislo = f"{order_no:03d}"
@@ -79,21 +103,18 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     segment, kanal, technologie = parse_veta(veta)
     test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
 
-    # --- přesné přiřazení kroků podle akce z roletky ---
+    # Načtení kroků podle akce
     if akce in kroky_data:
         kroky = copy.deepcopy(kroky_data[akce])
-        print(f"✅ Načteny kroky pro akci: {akce} ({len(kroky)} kroků)")
     else:
-        print(f"⚠️ Akce '{akce}' nebyla nalezena v kroky.json. Používám prázdný seznam.")
         kroky = []
-
 
     tc = {
         "order_no": order_no,
         "test_name": test_name,
         "akce": akce,
         "segment": segment,
-        "kanal": kanal,
+        "kanal": kanal, 
         "priority": priority,
         "complexity": complexity,
         "veta": veta,
@@ -105,55 +126,16 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     save_json(PROJECTS_PATH, projects_data)
     return tc
 
-
-def oprav_duplicitni_kroky():
-    """Opraví duplicitní kroky v kroky.json"""
-    kroky_data = get_steps()
-    opraveno = False
-    
-    for akce, kroky in kroky_data.items():
-        puvodni_pocet = len(kroky)
-        
-        # Odstranění duplicitních kroků
-        jedinecne_kroky = []
-        videne_popisy = set()
-        
-        for krok in kroky:
-            popis = krok.get('description', '')
-            # Pokud jsme tento popis ještě neviděli, přidáme krok
-            if popis not in videne_popisy:
-                jedinecne_kroky.append(krok)
-                videne_popisy.add(popis)
-        
-        nove_kroky = jedinecne_kroky
-        novy_pocet = len(nove_kroky)
-        
-        if puvodni_pocet != novy_pocet:
-            kroky_data[akce] = nove_kroky
-            opraveno = True
-            print(f"🔧 Opravena akce '{akce}': {puvodni_pocet} → {novy_pocet} kroků")
-    
-    if opraveno:
-        # Ulož opravená data
-        with open(KROKY_PATH, 'w', encoding='utf-8') as f:
-            json.dump(kroky_data, f, ensure_ascii=False, indent=2)
-        print("✅ Kroky.json byl opraven!")
-    else:
-        print("✅ Žádné duplicity nebyly nalezeny.")
-    
-    return kroky_data
-
-# ---------- Export do Excelu ----------
 # ---------- Export do Excelu ----------
 def export_to_excel(project_name, projects_data):
-    """Exportuje test casy daného projektu do Excelu a provede git push"""
+    """Exportuje test casy daného projektu do Excelu"""
+    if project_name not in projects_data:
+        raise ValueError(f"Projekt {project_name} neexistuje")
+        
     project_data = projects_data[project_name]
     rows = []
 
     for tc in project_data["scenarios"]:
-        # Debug info
-        print(f"Export scénáře: Akce='{tc['akce']}', Počet kroků={len(tc.get('kroky', []))}")
-        
         for i, krok in enumerate(tc.get("kroky", []), start=1):
             desc = ""
             exp = ""
@@ -171,7 +153,7 @@ def export_to_excel(project_name, projects_data):
                 "System/Application": "Siebel_CZ",
                 "Description": f"Segment: {tc['segment']}\nKanál: {tc['kanal']}\nAkce: {tc['akce']}",
                 "Type": "Manual",
-                "Test Phase": "4-User Acceptance",
+                "Test Phase": "4-User Acceptance", 
                 "Test: Test Phase": "4-User Acceptance",
                 "Test Priority": tc["priority"],
                 "Test Complexity": tc["complexity"],
@@ -181,22 +163,18 @@ def export_to_excel(project_name, projects_data):
                 "Expected (Design Steps)": exp
             })
 
+    if not rows:
+        raise ValueError("Žádné scénáře k exportu")
+
     df = pd.DataFrame(rows)
     output_path = EXPORT_DIR / f"testcases_{project_name.replace(' ', '_')}.xlsx"
     df.to_excel(output_path, index=False)
 
-    # Git operace (bez pádu při chybě)
+    # Git operace (volitelné)
     try:
-        subprocess.run(["git", "add", str(output_path)], check=True)
-        subprocess.run(["git", "commit", "-m", f"Auto export {project_name}"], check=True)
-        
-        # Nejprve zkusíme pull s rebase, ale pokud selže, pokračujeme
-        try:
-            subprocess.run(["git", "pull", "--rebase"], check=True)
-        except subprocess.CalledProcessError:
-            print("⚠️ Git pull --rebase selhal, pokračujeme bez něj")
-            
-        subprocess.run(["git", "push"], check=True)
+        subprocess.run(["git", "add", str(output_path)], check=True, capture_output=True)
+        subprocess.run(["git", "commit", "-m", f"Auto export {project_name}"], check=True, capture_output=True)
+        subprocess.run(["git", "push"], check=True, capture_output=True)
         print("✅ Export a git push úspěšný")
     except Exception as e:
         print("⚠️ Git operace selhala:", e)

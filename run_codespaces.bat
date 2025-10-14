@@ -1,3 +1,0 @@
-@echo off
-echo Starting in GitHub Codespaces...
-streamlit run gui_app/app.py
