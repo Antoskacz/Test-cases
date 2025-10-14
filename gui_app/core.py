@@ -176,8 +176,7 @@ def export_to_excel(project_name, projects_data):
                 "Test Priority": tc["priority"],
                 "Test Complexity": tc["complexity"],
                 "Test Name": tc["test_name"],
-                "Step #": i,
-                "Step Name (Design Steps)": f"{tc['test_name']}_STEP{i}",
+                "Step Name (Design Steps)": str(i),
                 "Description (Design Steps)": desc,
                 "Expected (Design Steps)": exp
             })

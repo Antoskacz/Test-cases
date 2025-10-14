@@ -238,17 +238,30 @@ else:
 
 st.markdown("---")
 
-# ---------- Debug info ----------
-with st.expander("🔍 Debug informace"):
-    st.subheader("Stav kroků v kroky.json")
-    steps_data = get_steps()
-    for akce in steps_data.keys():
-        kroky = steps_data[akce]
-        st.write(f"**{akce}**: {len(kroky)} kroků")
-        if len(kroky) > 0:
-            st.write(f"První krok: {kroky[0]['description'][:80]}...")
 
-st.markdown("---")
+# ---------- Informace o krocích ----------
+with st.expander("📊 Přehled kroků podle akcí"):
+    st.subheader("Dostupné akce a počet kroků")
+    steps_data = get_steps()
+    
+    for akce in sorted(steps_data.keys()):
+        kroky = steps_data[akce]
+        pocet_kroku = len(kroky)
+        
+        # Různé ikony podle počtu kroků
+        if pocet_kroku <= 5:
+            ikona = "🟢"
+        elif pocet_kroku <= 15:
+            ikona = "🟡"
+        else:
+            ikona = "🔴"
+            
+        st.write(f"{ikona} **{akce}** ({pocet_kroku} kroků)")
+    
+    st.markdown("---")
+    st.caption("💡 Kroky se automaticky přiřazují k scénářům podle vybrané akce")
+
+
 
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")
