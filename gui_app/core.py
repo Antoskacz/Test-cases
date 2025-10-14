@@ -26,6 +26,20 @@ COMPLEXITY_MAP = {
     "5": "5-Low"
 }
 
+# ---------- Automatická komplexita ----------
+def get_automatic_complexity(pocet_kroku):
+    """Automaticky určí komplexitu podle počtu kroků"""
+    if pocet_kroku <= 5:
+        return "1-Giant"
+    elif pocet_kroku <= 10:
+        return "2-Huge" 
+    elif pocet_kroku <= 15:
+        return "3-Big"
+    elif pocet_kroku <= 20:
+        return "4-Medium"
+    else:
+        return "5-Low"
+
 # ---------- Funkce práce se soubory ----------
 def load_json(path: Path):
     if not path.exists():
@@ -105,45 +119,6 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     save_json(PROJECTS_PATH, projects_data)
     return tc
 
-
-def oprav_duplicitni_kroky():
-    """Opraví duplicitní kroky v kroky.json"""
-    kroky_data = get_steps()
-    opraveno = False
-    
-    for akce, kroky in kroky_data.items():
-        puvodni_pocet = len(kroky)
-        
-        # Odstranění duplicitních kroků
-        jedinecne_kroky = []
-        videne_popisy = set()
-        
-        for krok in kroky:
-            popis = krok.get('description', '')
-            # Pokud jsme tento popis ještě neviděli, přidáme krok
-            if popis not in videne_popisy:
-                jedinecne_kroky.append(krok)
-                videne_popisy.add(popis)
-        
-        nove_kroky = jedinecne_kroky
-        novy_pocet = len(nove_kroky)
-        
-        if puvodni_pocet != novy_pocet:
-            kroky_data[akce] = nove_kroky
-            opraveno = True
-            print(f"🔧 Opravena akce '{akce}': {puvodni_pocet} → {novy_pocet} kroků")
-    
-    if opraveno:
-        # Ulož opravená data
-        with open(KROKY_PATH, 'w', encoding='utf-8') as f:
-            json.dump(kroky_data, f, ensure_ascii=False, indent=2)
-        print("✅ Kroky.json byl opraven!")
-    else:
-        print("✅ Žádné duplicity nebyly nalezeny.")
-    
-    return kroky_data
-
-# ---------- Export do Excelu ----------
 # ---------- Export do Excelu ----------
 def export_to_excel(project_name, projects_data):
     """Exportuje test casy daného projektu do Excelu a provede git push"""
