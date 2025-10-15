@@ -15,7 +15,7 @@ def check_password():
     """Vrátí True pokud je uživatel přihlášen."""
     
     # Nastav heslo přímo v kódu (pro teď)
-    CORRECT_PASSWORD = "TestCase2024!"
+    CORRECT_PASSWORD = "testcase13"
     
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
