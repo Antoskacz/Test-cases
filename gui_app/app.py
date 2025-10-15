@@ -39,9 +39,6 @@ def check_password():
 if not check_password():
     st.stop()
 
-# 🚀 POKRAČUJEME S NORMÁLNÍ APLIKACÍ...
-st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
-
 
 
 # ---------- Konfigurace vzhledu ----------
