@@ -9,7 +9,6 @@ from core import (
     PRIORITY_MAP, COMPLEXITY_MAP
 )
 
-
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
 
@@ -82,7 +81,6 @@ st.sidebar.title("📁 Projekt")
 projects = get_projects()
 project_names = list(projects.keys())
 
-# Bezpečný výběr projektu
 selected_project = st.sidebar.selectbox(
     "Vyber projekt",
     options=["— vyber —"] + project_names,
@@ -157,75 +155,39 @@ st.subheader("➕ Přidat nový scénář")
 steps_data = get_steps()
 akce_list = list(steps_data.keys())
 
-# Inicializace session state pro aktuální akci
-if 'current_akce' not in st.session_state:
-    st.session_state.current_akce = akce_list[0] if akce_list else ""
-
 with st.form("add_scenario"):
     veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …")
+    akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
     
-    # Selectbox pro akci
-    selected_akce = st.selectbox(
-        "Akce (z kroky.json)", 
-        options=akce_list,
-        index=akce_list.index(st.session_state.current_akce) if st.session_state.current_akce in akce_list else 0,
-        key="akce_select"
-    )
-    
-    # Aktualizace session state při změně
-    if selected_akce != st.session_state.current_akce:
-        st.session_state.current_akce = selected_akce
-    
-    # Zobrazení informací o vybrané akci
-    if st.session_state.current_akce:
-        pocet_kroku = len(steps_data.get(st.session_state.current_akce, []))
-        auto_complexity = get_automatic_complexity(pocet_kroku)
-        
-        # Hlavní informace s lupou
-        st.info(f"🔍 **Akce {st.session_state.current_akce}** má **{pocet_kroku} kroků** → automatická komplexita: **{auto_complexity}**")
-        
-        # Rozbalovací náhled kroků
-        with st.expander(f"👀 Náhled {pocet_kroku} kroků pro akci: {st.session_state.current_akce}"):
-            kroky = steps_data.get(st.session_state.current_akce, [])
-            for i, krok in enumerate(kroky, 1):
-                if isinstance(krok, dict):
-                    desc = krok.get('description', '')
-                    exp = krok.get('expected', '')
-                    st.write(f"**{i}. {desc}**")
-                    if exp:
-                        st.write(f"   *Očekávání: {exp}*")
-                else:
-                    st.write(f"{i}. {krok}")
-                if i < len(kroky):
-                    st.divider()
-    else:
-        auto_complexity = "4-Medium"
-        pocet_kroku = 0
-        st.warning("⚠️ Vyberte akci pro zobrazení detailů")
+    # Automatická komplexita
+    pocet_kroku = len(steps_data.get(akce, []))
+    auto_complexity = get_automatic_complexity(pocet_kroku)
     
     colp, colc = st.columns(2)
     with colp:
         priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1)
     with colc:
-        # Komplexita - automaticky nastavená podle akce
-        complexity_index = list(COMPLEXITY_MAP.values()).index(auto_complexity) if st.session_state.current_akce and auto_complexity in COMPLEXITY_MAP.values() else 3
+        # Zobrazíme automatickou komplexitu, ale umožníme změnu
         complexity = st.selectbox(
             "Komplexita", 
             options=list(COMPLEXITY_MAP.values()), 
-            index=complexity_index,
-            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků" if st.session_state.current_akce else "Vyberte akci pro automatické nastavení"
+            index=list(COMPLEXITY_MAP.values()).index(auto_complexity),
+            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
         )
+    
+    # Zobrazíme info o automatickém nastavení
+    st.info(f"🔍 Akce **{akce}** má **{pocet_kroku} kroků** → automatická komplexita: **{auto_complexity}**")
 
     if st.form_submit_button("➕ Přidat scénář"):
         if not veta.strip():
             st.error("Věta nesmí být prázdná.")
-        elif not st.session_state.current_akce:
+        elif not akce:
             st.error("Vyber akci (kroky.json).")
         else:
             tc = generate_testcase(
                 project=selected_project,
                 veta=veta.strip(),
-                akce=st.session_state.current_akce,
+                akce=akce,
                 priority=priority,
                 complexity=complexity,
                 kroky_data=steps_data,
