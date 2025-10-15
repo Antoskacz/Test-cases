@@ -8,41 +8,6 @@ from core import (
     generate_testcase, export_to_excel,
     PRIORITY_MAP, COMPLEXITY_MAP
 )
-import streamlit as st
-
-# 🔐 JEDNODUŠŠÍ AUTENTIZACE - přidat na ÚPLNÝ ZAČÁTEK
-def check_password():
-    """Vrátí True pokud je uživatel přihlášen."""
-    
-    # Nastav heslo přímo v kódu (pro teď)
-    CORRECT_PASSWORD = "testcase13"
-    
-    if "authenticated" not in st.session_state:
-        st.session_state.authenticated = False
-
-    if st.session_state.authenticated:
-        return True
-
-    # Přihlašovací obrazovka
-    st.title("🔒 TestCase Generator")
-    st.markdown("---")
-    
-    password = st.text_input("Zadejte heslo pro přístup:", type="password")
-    
-    if st.button("Přihlásit"):
-        if password == CORRECT_PASSWORD:
-            st.session_state.authenticated = True
-            st.rerun()
-        else:
-            st.error("❌ Nesprávné heslo")
-    
-    st.stop()
-    return False
-
-# SPUŠTĚNÍ KONTROLY HESLA
-if not check_password():
-    st.stop()
-
 
 
 # ---------- Konfigurace vzhledu ----------
