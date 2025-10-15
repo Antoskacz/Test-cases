@@ -9,28 +9,32 @@ from core import (
     PRIORITY_MAP, COMPLEXITY_MAP
 )
 import streamlit as st
-import hmac
 
-# 🔐 AUTENTIZACE - přidat na ÚPLNÝ ZAČÁTEK
+# 🔐 JEDNODUŠŠÍ AUTENTIZACE - přidat na ÚPLNÝ ZAČÁTEK
 def check_password():
     """Vrátí True pokud je uživatel přihlášen."""
-    def password_entered():
-        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]
-        else:
-            st.session_state["password_correct"] = False
+    
+    # Nastav heslo přímo v kódu (pro teď)
+    CORRECT_PASSWORD = "TestCase2024!"
+    
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
 
-    if st.session_state.get("password_correct", False):
+    if st.session_state.authenticated:
         return True
 
     # Přihlašovací obrazovka
     st.title("🔒 TestCase Generator")
     st.markdown("---")
-    st.text_input("Zadejte heslo pro přístup:", type="password", on_change=password_entered, key="password")
     
-    if "password_correct" in st.session_state:
-        st.error("❌ Nesprávné heslo")
+    password = st.text_input("Zadejte heslo pro přístup:", type="password")
+    
+    if st.button("Přihlásit"):
+        if password == CORRECT_PASSWORD:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ Nesprávné heslo")
     
     st.stop()
     return False
