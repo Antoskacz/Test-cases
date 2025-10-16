@@ -1,6 +1,6 @@
 {
   "Dokup VAS - FIX": {
-    "description": "Dokoupení balíčku k existující fixní službě",
+    "description": "Dokoupení balíčku k existující fixní službě.",
     "steps": [
     {
       "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
@@ -32,7 +32,9 @@
     }
     ]
   },
-  "Aktivace + VAS - FIX": [
+  "Aktivace + VAS - FIX": {
+    "description": "Aktivace fixní služby zároveň s aktivací požadovaného balíčku.",
+    "steps": [
     {
       "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",
       "expected": "Prokliknuti do kosiku"
@@ -113,8 +115,11 @@
       "description": "Proved kontrolu notifikaci SMS/Email",
       "expected": "SMS/Email odpovida sablone"
     }
-  ],
-  "Odebrat VAS - FIX": [
+  ]
+},
+  "Odebrat VAS - FIX": {
+    "description": "Odebrání balíčku od fixní služby.",
+    "steps": [
     {
       "description": "Priprav si zakaznika s pozadovanou sluzbou a aktivnim balickem",
       "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
@@ -139,8 +144,11 @@
       "description": "Proved kontrolu dokoncene objednavky v siebelu a neaktivniho atributu pod sluzbou",
       "expected": "Objednavka uspesne dokoncena a atribut odebran"
     }
-  ],
-  "Dokup VAS - HLAS": [
+  ]
+},
+  "Dokup VAS - HLAS": {
+    "description": "Dokoupení balíčku k existující hlasové službě.",
+    "steps": [
     {
       "description": "Vytvor si aktivni mobilni tarif Next bez Security a najed na ni ve sluzbach",
       "expected": "Sluzba dle pozadavku aktivni"
@@ -169,8 +177,11 @@
       "description": "Proved kontrolu notifikaci SMS/Email",
       "expected": "SMS/Email odpovida sablone"
     }
-  ],
-  "Aktivace - HLAS": [
+  ]
+},
+  "Aktivace - HLAS": {
+    "description": "Aktivace hlasové služby.",
+    "steps": [
     {
       "description": "Na konkretnim zakaznikovi přes objednat nebo přes anonymni aktivaci jdi do kosiku",
       "expected": "Kosik otevreny"
@@ -211,8 +222,11 @@
       "description": "Proved kontrolu notifikaci SMS/Email",
       "expected": "SMS/Email odpovida sablone"
     }
-  ],
-  "Odebrani VAS - HLAS": [
+  ]
+},
+  "Odebrani VAS - HLAS": {
+    "description": "Odebrání balíčku od existující hlasové služby.",
+    "steps": [
     {
       "description": "Vytvor si aktivni mobilni tarif Next s aktivnim balickem a najed na nej ve sluzbach",
       "expected": "Sluzba aktivni dle pozadavku"
@@ -237,8 +251,11 @@
       "description": "Proved kontrolu notifikaci SMS/Email",
       "expected": "SMS/Email odpovida sablone"
     }
-  ],
-  "Terminace - HLAS": [
+  ]
+},
+  "Terminace - HLAS": {
+    "description": "Ukončení hlasové služby.",
+    "steps": [
     {
       "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
       "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
@@ -267,8 +284,11 @@
       "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci dokoncena v Siebel",
       "expected": "Sluzba neaktivni a objednavka dokoncena"
     }
-  ],
-  "Terminace - FIX": [
+  ]
+},
+  "Terminace - FIX": {
+    "description": "Ukončení fixní služby.",
+    "steps": [
     {
       "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku a zapis si IMEI zarizeni",
       "expected": "Sluzba aktivni, aktivacni objednavka dokoncena"
@@ -309,8 +329,11 @@
       "description": "Zkontroluj, ze sluzba byla deaktivovana, objednavka na terminaci i vraceni HW jsou dokoncene",
       "expected": "Obe objednavky dokonceny, sluzba je neaktivni"
     }
-  ],
-  "BULK": [
+  ]
+},
+  "BULK": {
+    "description": "Bulková/hromadná objednávka na požadovanou akci.",
+    "steps": [
     {
       "description": "V Siebel jdi na objednavky mimo zakaznika, hromadne objednavky",
       "expected": "Otevre se prehled hromadnych objednavek"
@@ -351,8 +374,11 @@
       "description": "V Siebel zkontroluj dokoncenou objednavku a provedene akce na sluzbe",
       "expected": "Objednavka je dokoncena a pozadovana akce se vydarila"
     }
-  ],
- "Overeni dostupnosti - FIX": [
+  ]
+},
+ "Overeni dostupnosti - FIX": {
+    "description": "Ověření dostupnosti pomocí aktivace fixní služby přes roletku a ukončení po zobrazení dostupných technologií.",
+    "steps": [
     {
       "description": "V Sibele jdi na konkretniho zakaznika a pres roletky zaloz objednavku na aktivaci pevneho internetu",
       "expected": "Otevre se kosik"
@@ -370,4 +396,5 @@
       "expected": "Vojta potvrdi OK"
     }
   ]
+}
 }

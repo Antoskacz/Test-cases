@@ -64,14 +64,13 @@ def parse_veta(veta: str):
         "fwa outdoor": "FWA_BISI",
         "fiber": "FIBER",
         "optin": "FIBER",
-        "opticka": "FIBER",
+        "optika": "FIBER",
+        "opticky internet": "FIBER",
         "cable": "CABLE",
-        "kabelova": "CABLE",
         "hlas": "HLAS",
-        "hlasovy": "HLAS",
+        "hlasovy tarif": "HLAS",
         "mobil": "HLAS", 
-        "next tarif": "HLAS",
-        "tarif": "HLAS"
+        "next tarif": "HLAS"
     }
     
     technologie = "NA"
