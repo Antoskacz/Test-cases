@@ -320,8 +320,6 @@ with st.form("add_scenario"):
             help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
         )
     
-    # Zobrazíme info o automatickém nastavení
-    st.info(f"🔍 Akce **{akce}** má **{pocet_kroku} kroků** → automatická komplexita: **{auto_complexity}**")
 
     if st.form_submit_button("➕ Přidat scénář"):
         if not veta.strip():
