@@ -4,16 +4,6 @@ from pathlib import Path
 import copy
 from core import (
     load_json, save_json,
-    PROJECTS_PATH, KROKY_PATH,
-    generate_testcase, export_to_excel,
-    PRIORITY_MAP, COMPLEXITY_MAP
-)
-import streamlit as st
-import pandas as pd
-from pathlib import Path
-import copy
-from core import (
-    load_json, save_json,
     get_user_projects_path, get_user_kroky_path,
     generate_testcase, export_to_excel,
     PRIORITY_MAP, COMPLEXITY_MAP, parse_veta
