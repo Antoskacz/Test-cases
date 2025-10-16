@@ -146,36 +146,34 @@ if selected_project != "— vyber —" and selected_project in projects:
     st.sidebar.markdown("---")
     st.sidebar.subheader("⚙️ Správa projektu")
     
-    # Upravit název projektu
-    with st.sidebar.expander("✏️ Upravit název projektu", key="edit_name_expander"):
-        new_name = st.text_input("Nový název projektu", value=selected_project, key="new_name_input")
-        if st.button("Uložit nový název", key="save_name_btn"):
-            if new_name.strip() and new_name != selected_project:
-                projects[new_name] = projects.pop(selected_project)
-                selected_project = new_name
-                save_json(get_user_projects_path(username), projects)
-                st.success("✅ Název projektu změněn")
-                st.rerun()
-    
-    # Upravit subject
-    with st.sidebar.expander("📝 Upravit Subject", key="edit_subject_expander"):
-        current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
-        new_subject = st.text_input("Nový Subject", value=current_subject, key="new_subject_input")
-        if st.button("Uložit Subject", key="save_subject_btn"):
-            if new_subject.strip():
-                projects[selected_project]["subject"] = new_subject.strip()
-                save_json(get_user_projects_path(username), projects)
-                st.success("✅ Subject změněn")
-                st.rerun()
-    
-    # Smazat projekt
-    with st.sidebar.expander("🗑️ Smazat projekt", key="delete_project_expander"):
-        st.warning(f"Chceš smazat projekt '{selected_project}'?")
-        if st.button("ANO, smazat projekt", key="confirm_delete_btn"):
-            projects.pop(selected_project)
+    # Jednodušší verze bez expanderů
+    st.sidebar.write("**Upravit název projektu:**")
+    new_name = st.sidebar.text_input("Nový název", value=selected_project, key="new_name_input")
+    if st.sidebar.button("Uložit název", key="save_name_btn"):
+        if new_name.strip() and new_name != selected_project:
+            projects[new_name] = projects.pop(selected_project)
+            selected_project = new_name
             save_json(get_user_projects_path(username), projects)
-            st.success(f"✅ Projekt '{selected_project}' smazán")
+            st.sidebar.success("✅ Název změněn")
             st.rerun()
+    
+    st.sidebar.write("**Upravit Subject:**")
+    current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
+    new_subject = st.sidebar.text_input("Nový Subject", value=current_subject, key="new_subject_input")
+    if st.sidebar.button("Uložit Subject", key="save_subject_btn"):
+        if new_subject.strip():
+            projects[selected_project]["subject"] = new_subject.strip()
+            save_json(get_user_projects_path(username), projects)
+            st.sidebar.success("✅ Subject změněn")
+            st.rerun()
+    
+    st.sidebar.markdown("---")
+    st.sidebar.warning(f"Smazat projekt '{selected_project}'?")
+    if st.sidebar.button("🗑️ Smazat projekt", key="delete_project_btn"):
+        projects.pop(selected_project)
+        save_json(get_user_projects_path(username), projects)
+        st.sidebar.success(f"✅ Projekt smazán")
+        st.rerun()
 
 # ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
