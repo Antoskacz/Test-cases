@@ -42,26 +42,63 @@ button[kind="secondary"] { background: #292929; color: #CCC !important; border: 
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 # ---------- UŽIVATELSKÁ AUTENTIZACE ----------
+# ---------- UŽIVATELSKÁ AUTENTIZACE ----------
 def get_username():
     """Získá nebo nastaví uživatelské jméno"""
     if "username" not in st.session_state:
         st.session_state.username = ""
     
-    if not st.session_state.username:
-        st.title("🔐 TestCase Generator")
-        st.markdown("---")
-        username = st.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak")
-        
-        if st.button("Pokračovat"):
-            if username.strip():
-                st.session_state.username = username.strip()
-                st.rerun()
-            else:
-                st.error("Zadejte uživatelské jméno")
-        
-        st.stop()
-    
     return st.session_state.username
+
+# ---------- Sidebar ----------
+st.sidebar.title("👤 Uživatel")
+
+# Výběr uživatele v sidebaru
+if not st.session_state.username:
+    username = st.sidebar.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak")
+    
+    if st.sidebar.button("Pokračovat"):
+        if username.strip():
+            st.session_state.username = username.strip()
+            st.rerun()
+        else:
+            st.sidebar.error("Zadejte uživatelské jméno")
+    
+    st.sidebar.info("💡 Každý uživatel má své vlastní projekty a scénáře")
+    st.stop()
+else:
+    # Uživatel je přihlášen - zobrazíme informace
+    st.sidebar.write(f"**Přihlášen:** {st.session_state.username}")
+    
+    # Možnost změnit uživatele
+    if st.sidebar.button("🚪 Změnit uživatele"):
+        st.session_state.username = ""
+        st.rerun()
+
+st.sidebar.markdown("---")
+st.sidebar.title("📁 Projekt")
+
+# Získání uživatelského jména
+username = get_username()
+
+# Načtení projektů pro daného uživatele
+projects = get_projects(username)
+project_names = list(projects.keys())
+
+selected_project = st.sidebar.selectbox(
+    "Vyber projekt",
+    options=["— vyber —"] + project_names,
+    index=0
+)
+new_project_name = st.sidebar.text_input("Název nového projektu", placeholder="Např. CCCTR-XXXX – Název")
+
+if st.sidebar.button("✅ Vytvořit projekt"):
+    if new_project_name.strip():
+        projects = ensure_project(username, projects, new_project_name.strip())
+        selected_project = new_project_name.strip()
+        st.rerun()
+    else:
+        st.sidebar.warning("Zadej název projektu")
 
 # ---------- Pomocné funkce ----------
 def get_projects(username: str):
