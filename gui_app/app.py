@@ -35,6 +35,53 @@ button[kind="secondary"] { background: #292929; color: #CCC !important; border: 
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
+# ---------- POMOCNÉ FUNKCE ----------
+def get_projects(username: str):
+    projects_path = get_user_projects_path(username)
+    return load_json(projects_path)
+
+def get_steps(username: str):
+    kroky_path = get_user_kroky_path(username)
+    return load_json(kroky_path)
+
+def ensure_project(username: str, projects: dict, name: str, subject=None):
+    if name not in projects:
+        projects[name] = {"next_id": 1, "subject": subject or "UAT2\\Antosova\\", "scenarios": []}
+        projects_path = get_user_projects_path(username)
+        save_json(projects_path, projects)
+    return projects
+
+def make_df(projects, project_name):
+    sc = projects.get(project_name, {}).get("scenarios", [])
+    if not sc:
+        return pd.DataFrame()
+    rows = []
+    for tc in sc:
+        rows.append({
+            "Order": tc.get("order_no"),
+            "Test Name": tc.get("test_name"),
+            "Action": tc.get("akce"),
+            "Segment": tc.get("segment"),
+            "Channel": tc.get("kanal"),
+            "Priority": tc.get("priority"),
+            "Complexity": tc.get("complexity"),
+            "Kroky": len(tc.get("kroky", []))
+        })
+    return pd.DataFrame(rows).sort_values(by="Order", ascending=True)
+
+def get_automatic_complexity(pocet_kroku):
+    """Automaticky určí komplexitu podle počtu kroků"""
+    if pocet_kroku <= 5:
+        return "5-Low"
+    elif pocet_kroku <= 10:
+        return "4-Medium"
+    elif pocet_kroku <= 15:
+        return "3-Big"
+    elif pocet_kroku <= 20:
+        return "2-Huge"
+    else:
+        return "1-Giant"
+
 # ---------- UŽIVATELSKÁ AUTENTIZACE ----------
 def get_username():
     """Získá nebo nastaví uživatelské jméno"""
@@ -130,55 +177,6 @@ if selected_project != "— vyber —" and selected_project in projects:
             st.success(f"✅ Projekt '{selected_project}' smazán")
             st.rerun()
 
-# ---------- Pomocné funkce ----------
-def get_projects(username: str):
-    projects_path = get_user_projects_path(username)
-    return load_json(projects_path)
-
-def get_steps(username: str):
-    kroky_path = get_user_kroky_path(username)
-    return load_json(kroky_path)
-
-def ensure_project(username: str, projects: dict, name: str, subject=None):
-    if name not in projects:
-        projects[name] = {"next_id": 1, "subject": subject or "UAT2\\Antosova\\", "scenarios": []}
-        projects_path = get_user_projects_path(username)
-        save_json(projects_path, projects)
-    return projects
-
-def make_df(projects, project_name):
-    sc = projects.get(project_name, {}).get("scenarios", [])
-    if not sc:
-        return pd.DataFrame()
-    rows = []
-    for tc in sc:
-        rows.append({
-            "Order": tc.get("order_no"),
-            "Test Name": tc.get("test_name"),
-            "Action": tc.get("akce"),
-            "Segment": tc.get("segment"),
-            "Channel": tc.get("kanal"),
-            "Priority": tc.get("priority"),
-            "Complexity": tc.get("complexity"),
-            "Kroky": len(tc.get("kroky", []))
-        })
-    return pd.DataFrame(rows).sort_values(by="Order", ascending=True)
-
-# ---------- Automatická komplexita ----------
-def get_automatic_complexity(pocet_kroku):
-    """Automaticky určí komplexitu podle počtu kroků"""
-    if pocet_kroku <= 5:
-        return "5-Low"
-    elif pocet_kroku <= 10:
-        return "4-Medium"
-    elif pocet_kroku <= 15:
-        return "3-Big"
-    elif pocet_kroku <= 20:
-        return "2-Huge"
-    else:
-        return "1-Giant"
-
-
 # ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
 
@@ -227,7 +225,7 @@ if scenarios:
         )
         
         # Tlačítko pro přečíslování
-        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
+        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True, key="renumber_btn"):
             scen = projects[selected_project]["scenarios"]
             for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
                 nove_cislo = f"{i:03d}"
@@ -349,8 +347,8 @@ steps_data = get_steps(username)
 akce_list = list(steps_data.keys())
 
 with st.form("add_scenario"):
-    veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …")
-    akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
+    veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …", key="veta_input")
+    akce = st.selectbox("Akce (z kroky.json)", options=akce_list, key="akce_select")
     
     # Automatická komplexita
     pocet_kroku = len(steps_data.get(akce, []))
@@ -358,20 +356,21 @@ with st.form("add_scenario"):
     
     colp, colc = st.columns(2)
     with colp:
-        priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1)
+        priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1, key="priority_select")
     with colc:
         # Zobrazíme automatickou komplexitu, ale umožníme změnu
         complexity = st.selectbox(
             "Komplexita", 
             options=list(COMPLEXITY_MAP.values()), 
             index=list(COMPLEXITY_MAP.values()).index(auto_complexity),
-            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
+            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků",
+            key="complexity_select"
         )
     
     # Zobrazíme info o automatickém nastavení
     st.info(f"🔍 Akce **{akce}** má **{pocet_kroku} kroků** → automatická komplexita: **{auto_complexity}**")
 
-    if st.form_submit_button("➕ Přidat scénář"):
+    if st.form_submit_button("➕ Přidat scénář", key="add_scenario_btn"):
         if not veta.strip():
             st.error("Věta nesmí být prázdná.")
         elif not akce:
@@ -400,7 +399,8 @@ else:
     selected_row = st.selectbox(
         "Vyber scénář k úpravě:",
         options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
-        index=0
+        index=0,
+        key="edit_scenario_select"
     )
 
     if selected_row != "— žádný —":
@@ -411,11 +411,11 @@ else:
 
         if scenario:
             with st.form("edit_scenario"):
-                veta = st.text_area("Věta", value=scenario["veta"], height=100)
-                akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0)
-                priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]))
-                complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]))
-                if st.form_submit_button("💾 Uložit změny"):
+                veta = st.text_area("Věta", value=scenario["veta"], height=100, key="edit_veta_input")
+                akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0, key="edit_akce_select")
+                priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]), key="edit_priority_select")
+                complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]), key="edit_complexity_select")
+                if st.form_submit_button("💾 Uložit změny", key="save_edit_btn"):
                     # přepsání hodnot scénáře
                     scenario["veta"] = veta.strip()
                     scenario["akce"] = akce
@@ -442,11 +442,11 @@ else:
         "Vyber scénář ke smazání:",
         options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
         index=0,
-        key="delete_selector"  # Přidáme key aby se nepletl s předchozím selectboxem
+        key="delete_scenario_select"
     )
     if to_delete != "— žádný —":
         idx = int(to_delete.split(" - ")[0])
-        if st.button("🗑️ Potvrdit smazání scénáře"):
+        if st.button("🗑️ Potvrdit smazání scénáře", key="confirm_delete_scenario_btn"):
             scen = [t for t in projects[selected_project]["scenarios"] if t.get("order_no") != idx]
             for i, t in enumerate(scen, start=1):
                 t["order_no"] = i
@@ -506,13 +506,14 @@ st.markdown("---")
 
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")
-if st.button("💾 Exportovat a nahrát na GitHub"):
+if st.button("💾 Exportovat a nahrát na GitHub", key="export_btn"):
     try:
         out = export_to_excel(username, selected_project, projects)
         rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
         st.success(f"✅ Export hotový: `{rel}`")
         st.download_button("⬇️ Stáhnout Excel", data=Path(out).read_bytes(),
                            file_name=Path(out).name,
-                           mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                           mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                           key="download_btn")
     except Exception as e:
         st.error(f"Export selhal: {e}")
