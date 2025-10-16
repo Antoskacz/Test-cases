@@ -45,9 +45,9 @@ st.sidebar.title("👤 Uživatel")
 
 # Výběr uživatele v sidebaru
 if not st.session_state.username:
-    username = st.sidebar.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak")
+    username = st.sidebar.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak", key="username_input")
     
-    if st.sidebar.button("Pokračovat"):
+    if st.sidebar.button("Pokračovat", key="continue_btn"):
         if username.strip():
             st.session_state.username = username.strip()
             st.rerun()
@@ -56,14 +56,16 @@ if not st.session_state.username:
     
     st.sidebar.info("💡 Každý uživatel má své vlastní projekty a scénáře")
     st.stop()
-else:
-    # Uživatel je přihlášen - zobrazíme informace
-    st.sidebar.write(f"**Přihlášen:** {st.session_state.username}")
-    
-    # Možnost změnit uživatele
-    if st.sidebar.button("🚪 Změnit uživatele"):
-        st.session_state.username = ""
-        st.rerun()
+
+# ---------- HLAVNÍ APLIKACE (až po přihlášení) ----------
+
+# Uživatel je přihlášen - zobrazíme informace
+st.sidebar.write(f"**Přihlášen:** {st.session_state.username}")
+
+# Možnost změnit uživatele
+if st.sidebar.button("🚪 Změnit uživatele", key="change_user_btn"):
+    st.session_state.username = ""
+    st.rerun()
 
 st.sidebar.markdown("---")
 st.sidebar.title("📁 Projekt")
@@ -71,7 +73,62 @@ st.sidebar.title("📁 Projekt")
 # Získání uživatelského jména
 username = get_username()
 
+# Načtení projektů pro daného uživatele
+projects = get_projects(username)
+project_names = list(projects.keys())
 
+selected_project = st.sidebar.selectbox(
+    "Vyber projekt",
+    options=["— vyber —"] + project_names,
+    index=0,
+    key="project_select"
+)
+
+new_project_name = st.sidebar.text_input("Název nového projektu", placeholder="Např. CCCTR-XXXX – Název", key="new_project_input")
+
+if st.sidebar.button("✅ Vytvořit projekt", key="create_project_btn"):
+    if new_project_name.strip():
+        projects = ensure_project(username, projects, new_project_name.strip())
+        selected_project = new_project_name.strip()
+        st.rerun()
+    else:
+        st.sidebar.warning("Zadej název projektu")
+
+# NOVÉ: Tlačítka pro správu projektu (pokud je projekt vybrán)
+if selected_project != "— vyber —" and selected_project in projects:
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("⚙️ Správa projektu")
+    
+    # Upravit název projektu
+    with st.sidebar.expander("✏️ Upravit název projektu", key="edit_name_expander"):
+        new_name = st.text_input("Nový název projektu", value=selected_project, key="new_name_input")
+        if st.button("Uložit nový název", key="save_name_btn"):
+            if new_name.strip() and new_name != selected_project:
+                projects[new_name] = projects.pop(selected_project)
+                selected_project = new_name
+                save_json(get_user_projects_path(username), projects)
+                st.success("✅ Název projektu změněn")
+                st.rerun()
+    
+    # Upravit subject
+    with st.sidebar.expander("📝 Upravit Subject", key="edit_subject_expander"):
+        current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
+        new_subject = st.text_input("Nový Subject", value=current_subject, key="new_subject_input")
+        if st.button("Uložit Subject", key="save_subject_btn"):
+            if new_subject.strip():
+                projects[selected_project]["subject"] = new_subject.strip()
+                save_json(get_user_projects_path(username), projects)
+                st.success("✅ Subject změněn")
+                st.rerun()
+    
+    # Smazat projekt
+    with st.sidebar.expander("🗑️ Smazat projekt", key="delete_project_expander"):
+        st.warning(f"Chceš smazat projekt '{selected_project}'?")
+        if st.button("ANO, smazat projekt", key="confirm_delete_btn"):
+            projects.pop(selected_project)
+            save_json(get_user_projects_path(username), projects)
+            st.success(f"✅ Projekt '{selected_project}' smazán")
+            st.rerun()
 
 # ---------- Pomocné funkce ----------
 def get_projects(username: str):
@@ -121,91 +178,6 @@ def get_automatic_complexity(pocet_kroku):
     else:
         return "1-Giant"
 
-# ---------- Sidebar ----------
-st.sidebar.title("👤 Uživatel")
-
-# Výběr uživatele v sidebaru
-if not st.session_state.username:
-    username = st.sidebar.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak")
-    
-    if st.sidebar.button("Pokračovat"):
-        if username.strip():
-            st.session_state.username = username.strip()
-            st.rerun()
-        else:
-            st.sidebar.error("Zadejte uživatelské jméno")
-    
-    st.sidebar.info("💡 Každý uživatel má své vlastní projekty a scénáře")
-    st.stop()
-else:
-    # Uživatel je přihlášen - zobrazíme informace
-    st.sidebar.write(f"**Přihlášen:** {st.session_state.username}")
-    
-    # Možnost změnit uživatele
-    if st.sidebar.button("🚪 Změnit uživatele"):
-        st.session_state.username = ""
-        st.rerun()
-
-st.sidebar.markdown("---")
-st.sidebar.title("📁 Projekt")
-
-# Získání uživatelského jména
-username = get_username()
-
-# Načtení projektů pro daného uživatele
-projects = get_projects(username)
-project_names = list(projects.keys())
-
-selected_project = st.sidebar.selectbox(
-    "Vyber projekt",
-    options=["— vyber —"] + project_names,
-    index=0
-)
-new_project_name = st.sidebar.text_input("Název nového projektu", placeholder="Např. CCCTR-XXXX – Název")
-
-if st.sidebar.button("✅ Vytvořit projekt"):
-    if new_project_name.strip():
-        projects = ensure_project(username, projects, new_project_name.strip())
-        selected_project = new_project_name.strip()
-        st.rerun()
-    else:
-        st.sidebar.warning("Zadej název projektu")
-
-# NOVÉ: Tlačítka pro správu projektu (pokud je projekt vybrán)
-if selected_project != "— vyber —" and selected_project in projects:
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("⚙️ Správa projektu")
-    
-    # Upravit název projektu
-    with st.sidebar.expander("✏️ Upravit název projektu"):
-        new_name = st.text_input("Nový název projektu", value=selected_project)
-        if st.button("Uložit nový název"):
-            if new_name.strip() and new_name != selected_project:
-                projects[new_name] = projects.pop(selected_project)
-                selected_project = new_name
-                save_json(get_user_projects_path(username), projects)
-                st.success("✅ Název projektu změněn")
-                st.rerun()
-    
-    # Upravit subject
-    with st.sidebar.expander("📝 Upravit Subject"):
-        current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
-        new_subject = st.text_input("Nový Subject", value=current_subject)
-        if st.button("Uložit Subject"):
-            if new_subject.strip():
-                projects[selected_project]["subject"] = new_subject.strip()
-                save_json(get_user_projects_path(username), projects)
-                st.success("✅ Subject změněn")
-                st.rerun()
-    
-    # Smazat projekt
-    with st.sidebar.expander("🗑️ Smazat projekt"):
-        st.warning(f"Chceš smazat projekt '{selected_project}'?")
-        if st.button("ANO, smazat projekt"):
-            projects.pop(selected_project)
-            save_json(get_user_projects_path(username), projects)
-            st.success(f"✅ Projekt '{selected_project}' smazán")
-            st.rerun()
 
 # ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
