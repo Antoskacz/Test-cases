@@ -288,34 +288,37 @@ with st.expander("📊 Přehled kroků podle akcí"):
         popis_akce = steps_data[akce].get("description", "Bez popisu") if isinstance(steps_data[akce], dict) else "Bez popisu"
         
         with cols[idx % 2]:
-            # Název akce VELKÝMI písmeny
-            st.markdown(f"**{akce.upper()}**")
-            # Počet kroků malými písmeny
-            st.markdown(f"<small>{pocet_kroku} kroků</small>", unsafe_allow_html=True)
-            
-            # Tooltip s popisem akce
-            with st.popover("ℹ️ Popis akce"):
-                st.write(f"**{akce}**")
-                st.write(popis_akce)
-            
-            # Náhled všech kroků
-            with st.popover("👀 Náhled kroků"):
-                if pocet_kroku > 0:
-                    for i, krok in enumerate(kroky, 1):
-                        if isinstance(krok, dict):
-                            desc = krok.get('description', '')
-                            exp = krok.get('expected', '')
-                            st.write(f"**{i}. {desc}**")
-                            if exp:
-                                st.write(f"   *{exp}*")
-                        else:
-                            st.write(f"{i}. {krok}")
-                        if i < len(kroky):
-                            st.divider()
-                else:
-                    st.write("Žádné kroky")
-            
-            st.markdown("---")
+            # Kontejner pro každou akci
+            with st.container():
+                # Název akce VELKÝMI písmeny
+                st.markdown(f"**{akce.upper()}**")
+                
+                # Počet kroků v závorce pod názvem
+                st.markdown(f"*({pocet_kroku} kroků)*")
+                
+                # Popis akce - přímo viditelný pod počtem kroků
+                st.caption(f"📝 {popis_akce}")
+                
+                # Náhled všech kroků v popoveru
+                with st.popover("👀 Náhled kroků", help=f"Zobrazí všech {pocet_kroku} kroků pro akci {akce}"):
+                    if pocet_kroku > 0:
+                        st.write(f"**Kroky pro {akce}:**")
+                        for i, krok in enumerate(kroky, 1):
+                            if isinstance(krok, dict):
+                                desc = krok.get('description', '')
+                                exp = krok.get('expected', '')
+                                st.write(f"**{i}. {desc}**")
+                                if exp:
+                                    st.write(f"   *Očekávání: {exp}*")
+                            else:
+                                st.write(f"{i}. {krok}")
+                            if i < len(kroky):
+                                st.divider()
+                    else:
+                        st.write("Žádné kroky")
+                
+                # Oddělovač mezi akcemi
+                st.markdown("---")
 
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")
