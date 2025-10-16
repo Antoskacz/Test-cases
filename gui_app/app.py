@@ -346,7 +346,7 @@ st.markdown("---")
 
 # ---------- Úprava scénáře ----------
 st.subheader("✏️ Úprava scénáře")
-if df.empty:
+if not scenarios:  # Místo df.empty použijeme scenarios
     st.info("Zatím žádné scénáře pro úpravu.")
 else:
     selected_row = st.selectbox(
@@ -367,27 +367,16 @@ else:
                 akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0)
                 priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]))
                 complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]))
-                
                 if st.form_submit_button("💾 Uložit změny"):
                     # přepsání hodnot scénáře
                     scenario["veta"] = veta.strip()
                     scenario["akce"] = akce
                     scenario["priority"] = priority
                     scenario["complexity"] = complexity
-                    
                     # DŮLEŽITÉ: Použij deepcopy při přiřazování kroků
                     scenario["kroky"] = copy.deepcopy(steps_data.get(akce, []))
-                    
-                    # PŘEGENEROVÁNÍ názvu test case s novými údaji
-                    from core import parse_veta
-                    segment, kanal, technologie = parse_veta(veta.strip())
-                    nove_cislo = f"{scenario['order_no']:03d}"
-                    scenario["test_name"] = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
-                    
-                    # přepsání segmentu a kanálu
-                    scenario["segment"] = segment
-                    scenario["kanal"] = kanal
-                    
+                    # přegenerování test name
+                    scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip().replace(" ", "_")
                     # uložení změn
                     projects[selected_project]["scenarios"][scenario_index] = scenario
                     save_json(PROJECTS_PATH, projects)
@@ -398,13 +387,14 @@ st.markdown("---")
 
 # ---------- Smazání scénáře ----------
 st.subheader("🗑️ Smazání scénáře")
-if df.empty:
+if not scenarios:  # Místo df.empty použijeme scenarios
     st.info("Zatím žádné scénáře pro smazání.")
 else:
     to_delete = st.selectbox(
         "Vyber scénář ke smazání:",
         options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
-        index=0
+        index=0,
+        key="delete_selector"  # Přidáme key aby se nepletl s předchozím selectboxem
     )
     if to_delete != "— žádný —":
         idx = int(to_delete.split(" - ")[0])
@@ -416,8 +406,6 @@ else:
             save_json(PROJECTS_PATH, projects)
             st.success("Scénář smazán a pořadí přepočítáno.")
             st.rerun()
-
-st.markdown("---")
 
 
 # ---------- Informace o krocích ----------
