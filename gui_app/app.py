@@ -12,6 +12,10 @@ from core import (
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
 
+# ---------- INICIALIZACE SESSION STATE ----------
+if 'username' not in st.session_state:
+    st.session_state.username = ""
+
 CUSTOM_CSS = """
 <style>
 body { background-color: #121212; color: #EAEAEA; }
@@ -34,10 +38,40 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 # ---------- UŽIVATELSKÁ AUTENTIZACE ----------
 def get_username():
     """Získá nebo nastaví uživatelské jméno"""
-    if "username" not in st.session_state:
-        st.session_state.username = ""
-    
     return st.session_state.username
+
+# ---------- Sidebar ----------
+st.sidebar.title("👤 Uživatel")
+
+# Výběr uživatele v sidebaru
+if not st.session_state.username:
+    username = st.sidebar.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak")
+    
+    if st.sidebar.button("Pokračovat"):
+        if username.strip():
+            st.session_state.username = username.strip()
+            st.rerun()
+        else:
+            st.sidebar.error("Zadejte uživatelské jméno")
+    
+    st.sidebar.info("💡 Každý uživatel má své vlastní projekty a scénáře")
+    st.stop()
+else:
+    # Uživatel je přihlášen - zobrazíme informace
+    st.sidebar.write(f"**Přihlášen:** {st.session_state.username}")
+    
+    # Možnost změnit uživatele
+    if st.sidebar.button("🚪 Změnit uživatele"):
+        st.session_state.username = ""
+        st.rerun()
+
+st.sidebar.markdown("---")
+st.sidebar.title("📁 Projekt")
+
+# Získání uživatelského jména
+username = get_username()
+
+
 
 # ---------- Pomocné funkce ----------
 def get_projects(username: str):
