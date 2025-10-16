@@ -84,21 +84,33 @@ def parse_veta(veta: str):
 # ---------- Generování test casu ----------
 def generate_testcase(project, veta, akce, priority, complexity, kroky_data, projects_data):
     """Vytvoří nový test case a uloží ho do projektu"""
+    if project not in projects_data:
+        projects_data[project] = {"next_id": 1, "subject": "UAT2\\Antosova\\", "scenarios": []}
+    
     project_data = projects_data[project]
-    order_no = project_data["next_id"]
+    
+    # AUTOMATICKÉ ČÍSLOVÁNÍ - najdeme nejvyšší existující order_no
+    if project_data["scenarios"]:
+        # Najdeme maximum z existujících scénářů
+        max_order = max([scenario["order_no"] for scenario in project_data["scenarios"]])
+        order_no = max_order + 1
+    else:
+        # První scénář v projektu
+        order_no = 1
+    
+    # Aktualizujeme next_id pro případnou budoucí kompatibilitu
+    project_data["next_id"] = order_no + 1
+    
     nove_cislo = f"{order_no:03d}"
 
     segment, kanal, technologie = parse_veta(veta)
     test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
 
-    # --- přesné přiřazení kroků podle akce z roletky ---
+    # Načtení kroků podle akce
     if akce in kroky_data:
         kroky = copy.deepcopy(kroky_data[akce])
-        print(f"✅ Načteny kroky pro akci: {akce} ({len(kroky)} kroků)")
     else:
-        print(f"⚠️ Akce '{akce}' nebyla nalezena v kroky.json. Používám prázdný seznam.")
         kroky = []
-
 
     tc = {
         "order_no": order_no,
@@ -113,7 +125,6 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     }
 
     project_data["scenarios"].append(tc)
-    project_data["next_id"] += 1
     save_json(PROJECTS_PATH, projects_data)
     return tc
 
