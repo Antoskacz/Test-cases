@@ -224,10 +224,10 @@ for scenario in scenarios:
     # Detekce technologie z názvu test case
     if "FIBER" in test_name:
         technologie = "FIBER"
-    elif "FWA_BI" in test_name:
-        technologie = "FWA BI"
     elif "FWA_BISI" in test_name:
         technologie = "FWA BISI" 
+    elif "FWA_BI" in test_name:
+        technologie = "FWA BI"
     elif "CABLE" in test_name:
         technologie = "CABLE"
     elif "HLAS" in test_name:
