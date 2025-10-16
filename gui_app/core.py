@@ -6,23 +6,36 @@ from pathlib import Path
 
 # ---------- Cesty ----------
 BASE_DIR = Path(__file__).resolve().parent.parent
-USERS_DIR = BASE_DIR / "users"  # Nová složka pro uživatele
+USERS_DIR = BASE_DIR / "users"
 USERS_DIR.mkdir(exist_ok=True)
 
+# ---------- Statické mapy ----------
+PRIORITY_MAP = {
+    "1": "1-High",
+    "2": "2-Medium", 
+    "3": "3-Low"
+}
+
+COMPLEXITY_MAP = {
+    "1": "1-Giant",
+    "2": "2-Huge",
+    "3": "3-Big",
+    "4": "4-Medium",
+    "5": "5-Low"
+}
+
+# ---------- Uživatelské cesty ----------
 def get_user_projects_path(username: str) -> Path:
-    """Vrátí cestu k projects.json pro daného uživatele"""
     user_dir = USERS_DIR / username
     user_dir.mkdir(exist_ok=True)
     return user_dir / "projects.json"
 
 def get_user_kroky_path(username: str) -> Path:
-    """Vrátí cestu k kroky.json pro daného uživatele"""
     user_dir = USERS_DIR / username
     user_dir.mkdir(exist_ok=True)
     return user_dir / "kroky.json"
 
 def get_user_export_dir(username: str) -> Path:
-    """Vrátí cestu k export složce pro daného uživatele"""
     user_export_dir = USERS_DIR / username / "exports"
     user_export_dir.mkdir(exist_ok=True)
     return user_export_dir
@@ -40,19 +53,53 @@ def save_json(path: Path, data):
 
 # ---------- Načítání kroků ----------
 def get_steps(username: str):
-    """Vrací kroky pro daného uživatele"""
     kroky_path = get_user_kroky_path(username)
     return load_json(kroky_path)
 
+# ---------- Parsování věty ----------
+def parse_veta(veta: str):
+    veta_low = veta.lower()
+    segment = "B2C" if "b2c" in veta_low else "B2B" if "b2b" in veta_low else "NA"
+    kanal = "SHOP" if "shop" in veta_low else "IL" if "il" in veta_low else "NA"
+
+    technologie_map = {
+        "dsl": "DSL",
+        "vdsl": "DSL",
+        "adsl": "DSL",
+        "fwa bi": "FWA_BI",
+        "fwa indoor": "FWA_BI", 
+        "fwa bisi": "FWA_BISI",
+        "fwa outdoor": "FWA_BISI",
+        "fiber": "FIBER",
+        "optin": "FIBER",
+        "opticka": "FIBER",
+        "ftth": "FIBER",
+        "cable": "CABLE",
+        "kabelova": "CABLE",
+        "hlas": "HLAS",
+        "hlasovy": "HLAS",
+        "mobil": "HLAS", 
+        "next tarif": "HLAS",
+        "tarif": "HLAS",
+        "voice": "HLAS"
+    }
+    
+    technologie = "NA"
+    for k, v in sorted(technologie_map.items(), key=lambda x: len(x[0]), reverse=True):
+        if k in veta_low:
+            technologie = v
+            break
+            
+    return segment, kanal, technologie
+
 # ---------- Generování test casu ----------
 def generate_testcase(username: str, project: str, veta: str, akce: str, priority: str, complexity: str, kroky_data: dict, projects_data: dict):
-    """Vytvoří nový test case pro daného uživatele"""
     if project not in projects_data:
         projects_data[project] = {"next_id": 1, "subject": "UAT2\\Antosova\\", "scenarios": []}
     
     project_data = projects_data[project]
     
-    # AUTOMATICKÉ ČÍSLOVÁNÍ
+    # Automatické číslování
     if project_data["scenarios"]:
         max_order = max([scenario["order_no"] for scenario in project_data["scenarios"]])
         order_no = max_order + 1
@@ -93,7 +140,6 @@ def generate_testcase(username: str, project: str, veta: str, akce: str, priorit
 
 # ---------- Export do Excelu ----------
 def export_to_excel(username: str, project_name: str, projects_data: dict):
-    """Exportuje test casy daného projektu pro daného uživatele"""
     if project_name not in projects_data:
         raise ValueError(f"Projekt {project_name} neexistuje")
         
