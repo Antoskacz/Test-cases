@@ -140,8 +140,18 @@ if selected_project != "— vyber —" and selected_project in projects:
 st.sidebar.markdown("---")
 st.sidebar.subheader("🛠️ Správa akcí a kroků")
 
+# Funkce pro načtení kroků bez uživatele
+def get_global_steps():
+    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
+    return load_json(kroky_path)
+
+def save_global_steps(data):
+    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
+    kroky_path.parent.mkdir(exist_ok=True)
+    save_json(kroky_path, data)
+
 # Načtení kroků pro správu
-steps_data_manage = get_steps(username)
+steps_data_manage = get_global_steps()
 akce_list_manage = list(steps_data_manage.keys())
 
 # Výběr režimu správy
@@ -193,12 +203,12 @@ if management_mode == "➕ Přidat novou akci":
             if not nova_akce_nazev or not nova_akce_popis or not st.session_state.new_steps:
                 st.error("Vyplňte všechny povinné pole (*) a přidejte alespoň jeden krok")
             else:
-                kroky_data = get_steps(username)
+                kroky_data = get_global_steps()
                 kroky_data[nova_akce_nazev] = {
                     "description": nova_akce_popis,
                     "steps": st.session_state.new_steps.copy()
                 }
-                save_json(get_user_kroky_path(username), kroky_data)
+                save_global_steps(kroky_data)
                 st.success(f"✅ Akce '{nova_akce_nazev}' byla přidána!")
                 # Reset session state
                 st.session_state.new_steps = []
@@ -262,12 +272,12 @@ elif management_mode == "✏️ Upravit akci" and akce_list_manage:
                     st.rerun()
             
             if st.button("💾 Uložit změny", key="save_edit_btn"):
-                kroky_data = get_steps(username)
+                kroky_data = get_global_steps()
                 kroky_data[akce_k_editaci] = {
                     "description": new_desc,
                     "steps": st.session_state.edited_steps.copy()
                 }
-                save_json(get_user_kroky_path(username), kroky_data)
+                save_global_steps(kroky_data)
                 st.success(f"✅ Akce '{akce_k_editaci}' byla upravena!")
                 st.rerun()
 
@@ -282,10 +292,10 @@ elif management_mode == "🗑️ Smazat akci" and akce_list_manage:
             st.write(f"Počet kroků: {len(current_data.get('steps', []))}")
             
             if st.button("🗑️ Potvrdit smazání", key="confirm_delete_action"):
-                kroky_data = get_steps(username)
+                kroky_data = get_global_steps()
                 if akce_k_smazani in kroky_data:
                     del kroky_data[akce_k_smazani]
-                    save_json(get_user_kroky_path(username), kroky_data)
+                    save_global_steps(kroky_data)
                     st.success(f"✅ Akce '{akce_k_smazani}' byla smazána!")
                     st.rerun()
 
