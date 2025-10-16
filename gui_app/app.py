@@ -256,16 +256,20 @@ with col_b2c:
     with st.expander("👥 B2C", expanded=True):
         if "B2C" in segment_data and segment_data["B2C"]:
             for kanal in segment_data["B2C"]:
-                st.write(f"**{kanal}**")
+                # KANÁL - větší a tučně
+                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                
                 for technologie in segment_data["B2C"][kanal]:
-                    # Technologie tučně
-                    st.write(f"**{technologie}**")
+                    # TECHNOLOGIE - tučně
+                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
+                    
                     # Akce odsazené vedle technologie
                     for akce in segment_data["B2C"][kanal][technologie]:
                         st.write(f"  • {akce}")
+                
                 # Oddělovač mezi kanály
                 if kanal != list(segment_data["B2C"].keys())[-1]:
-                    st.write("")
+                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
         else:
             st.write("Žádné B2C scénáře")
 
@@ -273,16 +277,20 @@ with col_b2b:
     with st.expander("🏢 B2B", expanded=True):
         if "B2B" in segment_data and segment_data["B2B"]:
             for kanal in segment_data["B2B"]:
-                st.write(f"**{kanal}**")
+                # KANÁL - větší a tučně
+                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                
                 for technologie in segment_data["B2B"][kanal]:
-                    # Technologie tučně
-                    st.write(f"**{technologie}**")
+                    # TECHNOLOGIE - tučně
+                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
+                    
                     # Akce odsazené vedle technologie
                     for akce in segment_data["B2B"][kanal][technologie]:
                         st.write(f"  • {akce}")
+                
                 # Oddělovač mezi kanály
                 if kanal != list(segment_data["B2B"].keys())[-1]:
-                    st.write("")
+                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
         else:
             st.write("Žádné B2B scénáře")
 
