@@ -53,28 +53,34 @@ def parse_veta(veta: str):
     segment = "B2C" if "b2c" in veta_low else "B2B" if "b2b" in veta_low else "NA"
     kanal = "SHOP" if "shop" in veta_low else "IL" if "il" in veta_low else "NA"
 
-    # ROZŠÍŘENÉ MAPOVÁNÍ TECHNOLOGIÍ
+    # ROZŠÍŘENÉ A OPRAVENÉ MAPOVÁNÍ TECHNOLOGIÍ
     technologie_map = {
         "dsl": "DSL",
         "vdsl": "DSL",
         "adsl": "DSL",
         "fwa bi": "FWA_BI",
         "fwa indoor": "FWA_BI", 
-        "fwa bisi": "FWA_BISI",
+        "fwa bisi": "FWA_BISI",  # DŮLEŽITÉ: FWA BISI je jiná technologie!
         "fwa outdoor": "FWA_BISI",
         "fiber": "FIBER",
         "optin": "FIBER",
-        "optika": "FIBER",
         "opticky internet": "FIBER",
+        "optika": "FIBER",
+        "ftth": "FIBER",
         "cable": "CABLE",
         "hlas": "HLAS",
-        "hlasovy tarif": "HLAS",
+        "hlasovy": "HLAS",
         "mobil": "HLAS", 
-        "next tarif": "HLAS"
+        "next tarif": "HLAS",
+        "tarif": "HLAS",
+        "voice": "HLAS"
     }
     
-    technologie = "NA"
-    for k, v in technologie_map.items():
+    technologie = "X"
+    
+    # DŮLEŽITÉ: Nejprve kontrolujeme delší řetězce, pak kratší
+    # Aby se "fwa bisi" nenašlo jako "fwa bi"
+    for k, v in sorted(technologie_map.items(), key=lambda x: len(x[0]), reverse=True):
         if k in veta_low:
             technologie = v
             break
