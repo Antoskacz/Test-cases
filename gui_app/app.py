@@ -104,10 +104,21 @@ if not st.session_state.username:
     st.sidebar.info("💡 Každý uživatel má své vlastní projekty a scénáře")
     st.stop()
 
+
+
 # ---------- HLAVNÍ APLIKACE (až po přihlášení) ----------
 
 # Uživatel je přihlášen - zobrazíme informace
 st.sidebar.write(f"**Přihlášen:** {st.session_state.username}")
+
+# Načtení kroků - PŘED vykreslením formuláře
+steps_data = get_steps(username)
+if not steps_data:
+    st.error("❌ V kroky.json nejsou žádné akce! Zkontrolujte, zda soubor existuje a obsahuje data.")
+    st.stop()
+
+akce_list = list(steps_data.keys())
+
 
 # Možnost změnit uživatele
 if st.sidebar.button("🚪 Změnit uživatele", key="change_user_btn"):
@@ -245,92 +256,82 @@ if scenarios:
 
     st.markdown("---")
 
-    # ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
-    st.subheader("🌳 Analýza scénářů")
-    
-    # Shromáždění dat pro stromovou strukturu
-    segment_data = {"B2C": {}, "B2B": {}}
-    
-    for scenario in scenarios:
-        segment = scenario.get("segment", "NEZNÁMÝ")
-        kanal = scenario.get("kanal", "NEZNÁMÝ")
-        
-        # Detekce technologie z názvu test case
-        test_name = scenario.get("test_name", "")
-        technologie = "DSL"  # výchozí hodnota
+# ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
+st.subheader("🌳 Analýza scénářů")
 
-        # Detekce technologie z názvu test case - OPRAVENÉ
-        if "FIBER" in test_name:
-            technologie = "FIBER"
-        elif "FWA_BISI" in test_name:  # DŮLEŽITÉ: Nejprve BISI, pak BI
-            technologie = "FWA BISI"
-        elif "FWA_BI" in test_name:
-            technologie = "FWA BI" 
-        elif "CABLE" in test_name:
-            technologie = "CABLE"
-        elif "HLAS" in test_name:
-            technologie = "HLAS"
-        elif "DSL" in test_name:
-            technologie = "DSL"
-        
-        akce = scenario.get("akce", "NEZNÁMÁ")
-        
-        if segment not in segment_data:
-            segment_data[segment] = {}
-        
-        if kanal not in segment_data[segment]:
-            segment_data[segment][kanal] = {}
-            
-        if technologie not in segment_data[segment][kanal]:
-            segment_data[segment][kanal][technologie] = []
-            
-        if akce not in segment_data[segment][kanal][technologie]:
-            segment_data[segment][kanal][technologie].append(akce)
+# Shromáždění dat pro stromovou strukturu
+segment_data = {"B2C": {}, "B2B": {}}
+
+for scenario in scenarios:
+    segment = scenario.get("segment", "NEZNÁMÝ")
+    kanal = scenario.get("kanal", "NEZNÁMÝ")
     
-    # VYTVOŘENÍ STROMOVÉ STRUKTURY PODLE TVÉHO NÁVRHU
-    col_b2c, col_b2b = st.columns(2)
+    # Zjednodušená detekce technologie z názvu test case
+    test_name = scenario.get("test_name", "").upper()
+    technologie = "DSL"  # výchozí hodnota
+
+    # Jednodušší detekce
+    if "FIBER" in test_name or "OPTIC" in test_name:
+        technologie = "FIBER"
+    elif "FWA_BISI" in test_name:
+        technologie = "FWA BISI"
+    elif "FWA_BI" in test_name:
+        technologie = "FWA BI"
+    elif "CABLE" in test_name:
+        technologie = "CABLE"
+    elif "HLAS" in test_name or "VOICE" in test_name or "MOBIL" in test_name:
+        technologie = "HLAS"
+    # DSL zůstává jako výchozí
     
-    with col_b2c:
-        with st.expander("👥 B2C", expanded=True):
-            if "B2C" in segment_data and segment_data["B2C"]:
-                for kanal in segment_data["B2C"]:
-                    # KANÁL - větší a tučně
-                    st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
-                    
-                    for technologie in segment_data["B2C"][kanal]:
-                        # TECHNOLOGIE - tučně
-                        st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
-                        
-                        # Akce odsazené vedle technologie
-                        for akce in segment_data["B2C"][kanal][technologie]:
-                            st.write(f"  • {akce}")
-                    
-                    # Oddělovač mezi kanály
-                    if kanal != list(segment_data["B2C"].keys())[-1]:
-                        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
-            else:
-                st.write("Žádné B2C scénáře")
+    akce = scenario.get("akce", "NEZNÁMÁ")
     
-    with col_b2b:
-        with st.expander("🏢 B2B", expanded=True):
-            if "B2B" in segment_data and segment_data["B2B"]:
-                for kanal in segment_data["B2B"]:
-                    # KANÁL - větší a tučně
-                    st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+    if segment not in segment_data:
+        segment_data[segment] = {}
+    
+    if kanal not in segment_data[segment]:
+        segment_data[segment][kanal] = {}
+        
+    if technologie not in segment_data[segment][kanal]:
+        segment_data[segment][kanal][technologie] = set()  # Použijeme set pro unikátní akce
+        
+    segment_data[segment][kanal][technologie].add(akce)
+
+# VYTVOŘENÍ STROMOVÉ STRUKTURY
+col_b2c, col_b2b = st.columns(2)
+
+with col_b2c:
+    with st.expander("👥 B2C", expanded=True):
+        if "B2C" in segment_data and segment_data["B2C"]:
+            for kanal in segment_data["B2C"]:
+                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                
+                for technologie in segment_data["B2C"][kanal]:
+                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
                     
-                    for technologie in segment_data["B2B"][kanal]:
-                        # TECHNOLOGIE - tučně
-                        st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
-                        
-                        # Akce odsazené vedle technologie
-                        for akce in segment_data["B2B"][kanal][technologie]:
-                            st.write(f"  • {akce}")
+                    for akce in sorted(segment_data["B2C"][kanal][technologie]):
+                        st.write(f"  • {akce}")
+                
+                if kanal != list(segment_data["B2C"].keys())[-1]:
+                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+        else:
+            st.write("Žádné B2C scénáře")
+
+with col_b2b:
+    with st.expander("🏢 B2B", expanded=True):
+        if "B2B" in segment_data and segment_data["B2B"]:
+            for kanal in segment_data["B2B"]:
+                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                
+                for technologie in segment_data["B2B"][kanal]:
+                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
                     
-                    # Oddělovač mezi kanály
-                    if kanal != list(segment_data["B2B"].keys())[-1]:
-                        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
-            else:
-                st.write("Žádné B2B scénáře")
+                    for akce in sorted(segment_data["B2B"][kanal][technologie]):
+                        st.write(f"  • {akce}")
+                
+                if kanal != list(segment_data["B2B"].keys())[-1]:
+                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+        else:
+            st.write("Žádné B2B scénáře")
 
 else:
     # Když nejsou žádné scénáře
@@ -338,19 +339,14 @@ else:
 
 st.markdown("---")
 
+
 # ---------- Přidání scénáře ----------
 st.subheader("➕ Přidat nový scénář")
-steps_data = get_steps(username)
-akce_list = list(steps_data.keys())
 
-with st.form("add_scenario"):
+with st.form("add_scenario", clear_on_submit=True):
     veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …", key="veta_input")
     
     # Zobraz seznam akcí
-    if not akce_list:
-        st.error("❌ V kroky.json nejsou žádné akce!")
-        st.stop()
-    
     akce = st.selectbox("Akce (z kroky.json)", options=akce_list, key="akce_select")
     
     # Automatická komplexita - OPRAVENÉ
@@ -378,7 +374,9 @@ with st.form("add_scenario"):
     # Zobrazíme info o automatickém nastavení
     st.info(f"🔍 Akce **{akce}** má **{pocet_kroku} kroků** → automatická komplexita: **{auto_complexity}**")
 
-    if st.form_submit_button("➕ Přidat scénář", key="add_scenario_btn"):
+    # POVINNÝ SUBMIT BUTTON - OPRAVA ZDE
+    submitted = st.form_submit_button("➕ Přidat scénář")
+    if submitted:
         if not veta.strip():
             st.error("Věta nesmí být prázdná.")
         elif not akce:
@@ -423,7 +421,10 @@ else:
                 akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0, key="edit_akce_select")
                 priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]), key="edit_priority_select")
                 complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]), key="edit_complexity_select")
-                if st.form_submit_button("💾 Uložit změny", key="save_edit_btn"):
+                
+                # POVINNÝ SUBMIT BUTTON
+                submitted_edit = st.form_submit_button("💾 Uložit změny")
+                if submitted_edit:
                     # přepsání hodnot scénáře
                     scenario["veta"] = veta.strip()
                     scenario["akce"] = akce
