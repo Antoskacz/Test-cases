@@ -135,139 +135,85 @@ if selected_project != "— vyber —" and selected_project in projects:
             st.success(f"✅ Projekt '{selected_project}' smazán")
             st.rerun()
 
-# ---------- Hlavní část ----------
-# ---------- Hlavní část ----------
-st.title("🧪 TestCase Builder – GUI")
 
-if selected_project == "— vyber —":
-    st.info("Vyber nebo vytvoř projekt v levém panelu.")
-    st.stop()
+# ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
+st.subheader("🌳 Analýza scénářů")
 
-# Kontrola, zda projekt existuje v datech
-if selected_project not in projects:
-    st.error(f"Projekt '{selected_project}' nebyl nalezen v datech. Vyber jiný projekt.")
-    st.stop()
+# Shromáždění dat pro stromovou strukturu
+segment_data = {"B2C": {}, "B2B": {}}
 
-# NOVÁ HLAVIČKA
-st.subheader("📊 Přehled projektu")
-
-# Základní informace pod sebou
-st.write(f"**Aktivní projekt:** {selected_project}")
-st.write(f"**Subject:** {projects[selected_project].get('subject', 'UAT2\\\\Antosova\\\\')}")
-st.write(f"**Počet scénářů:** {len(projects[selected_project].get('scenarios', []))}")
-
-st.markdown("---")
-
-# SEZNAM SCÉNÁŘŮ A PŘEČÍSLOVÁNÍ
-scenarios = projects[selected_project].get("scenarios", [])
-
-if scenarios:
-    st.subheader("📋 Seznam scénářů")
+for scenario in scenarios:
+    segment = scenario.get("segment", "NEZNÁMÝ")
+    kanal = scenario.get("kanal", "NEZNÁMÝ")
     
-    # Tabulka scénářů
-    df = make_df(projects, selected_project)
-    if not df.empty:
-        st.dataframe(
-            df,
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "Order": st.column_config.NumberColumn("Číslo", width="small"),
-                "Test Name": st.column_config.TextColumn("Název testu", width="large"),
-                "Action": st.column_config.TextColumn("Akce", width="medium"),
-                "Segment": st.column_config.TextColumn("Segment", width="small"),
-                "Channel": st.column_config.TextColumn("Kanál", width="small"),
-                "Priority": st.column_config.TextColumn("Priorita", width="small"),
-                "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
-                "Kroky": st.column_config.NumberColumn("Kroků", width="small")
-            }
-        )
+    # SPRÁVNÁ DETEKCE TECHNOLOGIE z názvu test case
+    test_name = scenario.get("test_name", "")
+    technologie = "DSL"  # výchozí hodnota
+    
+    # Detekce technologie z názvu test case
+    if "FIBER" in test_name:
+        technologie = "FIBER"
+    elif "FWA_BI" in test_name:
+        technologie = "FWA BI"
+    elif "FWA_BISI" in test_name:
+        technologie = "FWA BISI" 
+    elif "CABLE" in test_name:
+        technologie = "CABLE"
+    elif "HLAS" in test_name:
+        technologie = "HLAS"
+    elif "DSL" in test_name:
+        technologie = "DSL"
+    
+    akce = scenario.get("akce", "NEZNÁMÁ")
+    
+    if segment not in segment_data:
+        segment_data[segment] = {}
+    
+    if kanal not in segment_data[segment]:
+        segment_data[segment][kanal] = {}
         
-        # Tlačítko pro přečíslování
-        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
-            scen = projects[selected_project]["scenarios"]
-            for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
-                nove_cislo = f"{i:03d}"
-                t["order_no"] = i
-                
-                # Přegenerování názvu s novým číslem
-                if "_" in t["test_name"]:
-                    parts = t["test_name"].split("_", 1)
-                    if parts[0].isdigit() and len(parts[0]) <= 3:
-                        t["test_name"] = f"{nove_cislo}_{parts[1]}"
-                    else:
-                        t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-                else:
-                    t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-            
-            projects[selected_project]["scenarios"] = scen
-            save_json(PROJECTS_PATH, projects)
-            st.success("✅ Scénáře a názvy byly přečíslovány.")
-            st.rerun()
-
-    st.markdown("---")
-
-    # ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
-    st.subheader("🌳 Analýza scénářů")
-    
-    # Shromáždění dat pro stromovou strukturu
-    segment_data = {"B2C": {}, "B2B": {}}
-    
-    for scenario in scenarios:
-        segment = scenario.get("segment", "NEZNÁMÝ")
-        kanal = scenario.get("kanal", "NEZNÁMÝ")
-        technologie = "DSL"  # Můžeme přidat detekci technologií později
-        akce = scenario.get("akce", "NEZNÁMÁ")
+    if technologie not in segment_data[segment][kanal]:
+        segment_data[segment][kanal][technologie] = []
         
-        if segment not in segment_data:
-            segment_data[segment] = {}
-        
-        if kanal not in segment_data[segment]:
-            segment_data[segment][kanal] = {}
-            
-        if technologie not in segment_data[segment][kanal]:
-            segment_data[segment][kanal][technologie] = []
-            
-        if akce not in segment_data[segment][kanal][technologie]:
-            segment_data[segment][kanal][technologie].append(akce)
-    
-    # VYTVOŘENÍ STROMOVÉ STRUKTURY
-    col_b2c, col_b2b = st.columns(2)
-    
-    with col_b2c:
-        with st.expander("👥 B2C", expanded=True):
-            if "B2C" in segment_data and segment_data["B2C"]:
-                for kanal in segment_data["B2C"]:
-                    st.write(f"**{kanal}**")
-                    for technologie in segment_data["B2C"][kanal]:
-                        st.write(f"  └─ **{technologie}**")
-                        for akce in segment_data["B2C"][kanal][technologie]:
-                            st.write(f"    └─ {akce}")
-                    if kanal != list(segment_data["B2C"].keys())[-1]:
-                        st.markdown("---")
-            else:
-                st.write("Žádné B2C scénáře")
-    
-    with col_b2b:
-        with st.expander("🏢 B2B", expanded=True):
-            if "B2B" in segment_data and segment_data["B2B"]:
-                for kanal in segment_data["B2B"]:
-                    st.write(f"**{kanal}**")
-                    for technologie in segment_data["B2B"][kanal]:
-                        st.write(f"  └─ **{technologie}**")
-                        for akce in segment_data["B2B"][kanal][technologie]:
-                            st.write(f"    └─ {akce}")
-                    if kanal != list(segment_data["B2B"].keys())[-1]:
-                        st.markdown("---")
-            else:
-                st.write("Žádné B2B scénáře")
+    if akce not in segment_data[segment][kanal][technologie]:
+        segment_data[segment][kanal][technologie].append(akce)
 
-else:
-    # Když nejsou žádné scénáře
-    st.info("📝 Projekt zatím neobsahuje žádné scénáře. Vytvoř první scénář v sekci níže.")
+# VYTVOŘENÍ STROMOVÉ STRUKTURY PODLE TVÉHO NÁVRHU
+col_b2c, col_b2b = st.columns(2)
 
-st.markdown("---")
+with col_b2c:
+    with st.expander("👥 B2C", expanded=True):
+        if "B2C" in segment_data and segment_data["B2C"]:
+            for kanal in segment_data["B2C"]:
+                st.write(f"**{kanal}**")
+                for technologie in segment_data["B2C"][kanal]:
+                    # Technologie tučně
+                    st.write(f"**{technologie}**")
+                    # Akce odsazené vedle technologie
+                    for akce in segment_data["B2C"][kanal][technologie]:
+                        st.write(f"  • {akce}")
+                # Oddělovač mezi kanály
+                if kanal != list(segment_data["B2C"].keys())[-1]:
+                    st.write("")
+        else:
+            st.write("Žádné B2C scénáře")
 
+with col_b2b:
+    with st.expander("🏢 B2B", expanded=True):
+        if "B2B" in segment_data and segment_data["B2B"]:
+            for kanal in segment_data["B2B"]:
+                st.write(f"**{kanal}**")
+                for technologie in segment_data["B2B"][kanal]:
+                    # Technologie tučně
+                    st.write(f"**{technologie}**")
+                    # Akce odsazené vedle technologie
+                    for akce in segment_data["B2B"][kanal][technologie]:
+                        st.write(f"  • {akce}")
+                # Oddělovač mezi kanály
+                if kanal != list(segment_data["B2B"].keys())[-1]:
+                    st.write("")
+        else:
+            st.write("Žádné B2B scénáře")
 
 # ---------- Přidání scénáře ----------
 st.subheader("➕ Přidat nový scénář")
