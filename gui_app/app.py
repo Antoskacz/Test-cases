@@ -76,6 +76,8 @@ def get_automatic_complexity(pocet_kroku):
     else:
         return "1-Giant"
 
+
+
 # ---------- Sidebar ----------
 st.sidebar.title("📁 Projekt")
 projects = get_projects()
@@ -88,15 +90,50 @@ selected_project = st.sidebar.selectbox(
 )
 new_project_name = st.sidebar.text_input("Název nového projektu", placeholder="Např. CCCTR-XXXX – Název")
 
-if st.sidebar.button("✅ Načíst / vytvořit projekt"):
+# ZMĚNA: Pouze "Vytvořit projekt"
+if st.sidebar.button("✅ Vytvořit projekt"):
     if new_project_name.strip():
         projects = ensure_project(projects, new_project_name.strip())
         selected_project = new_project_name.strip()
         st.rerun()
-    elif selected_project != "— vyber —":
-        pass
     else:
-        st.sidebar.warning("Vyber existující projekt nebo zadej název nového.")
+        st.sidebar.warning("Zadej název projektu")
+
+# NOVÉ: Tlačítka pro správu projektu (pokud je projekt vybrán)
+if selected_project != "— vyber —" and selected_project in projects:
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("⚙️ Správa projektu")
+    
+    # Upravit název projektu
+    with st.sidebar.expander("✏️ Upravit název projektu"):
+        new_name = st.text_input("Nový název projektu", value=selected_project)
+        if st.button("Uložit nový název"):
+            if new_name.strip() and new_name != selected_project:
+                projects[new_name] = projects.pop(selected_project)
+                selected_project = new_name
+                save_json(PROJECTS_PATH, projects)
+                st.success("✅ Název projektu změněn")
+                st.rerun()
+    
+    # Upravit subject
+    with st.sidebar.expander("📝 Upravit Subject"):
+        current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
+        new_subject = st.text_input("Nový Subject", value=current_subject)
+        if st.button("Uložit Subject"):
+            if new_subject.strip():
+                projects[selected_project]["subject"] = new_subject.strip()
+                save_json(PROJECTS_PATH, projects)
+                st.success("✅ Subject změněn")
+                st.rerun()
+    
+    # Smazat projekt
+    with st.sidebar.expander("🗑️ Smazat projekt"):
+        st.warning(f"Chceš smazat projekt '{selected_project}'?")
+        if st.button("ANO, smazat projekt"):
+            projects.pop(selected_project)
+            save_json(PROJECTS_PATH, projects)
+            st.success(f"✅ Projekt '{selected_project}' smazán")
+            st.rerun()
 
 # ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
