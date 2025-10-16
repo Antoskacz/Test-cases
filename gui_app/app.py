@@ -136,6 +136,7 @@ if selected_project != "— vyber —" and selected_project in projects:
             st.rerun()
 
 # ---------- Hlavní část ----------
+# ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
 
 if selected_project == "— vyber —":
@@ -147,121 +148,119 @@ if selected_project not in projects:
     st.error(f"Projekt '{selected_project}' nebyl nalezen v datech. Vyber jiný projekt.")
     st.stop()
 
-# NOVÁ HLAVIČKA - STROMOVÁ STRUKTURA
+# NOVÁ HLAVIČKA
 st.subheader("📊 Přehled projektu")
 
-# Základní informace ve sloupcích
-col1, col2, col3 = st.columns([2, 2, 1])
-with col1:
-    st.metric("Aktivní projekt", selected_project)
-with col2:
-    st.metric("Počet scénářů", len(projects[selected_project].get("scenarios", [])))
-with col3:
-    st.metric("Next ID", projects[selected_project].get("next_id", 1))
-
-# Subject pod projektem
+# Základní informace pod sebou
+st.write(f"**Aktivní projekt:** {selected_project}")
 st.write(f"**Subject:** {projects[selected_project].get('subject', 'UAT2\\\\Antosova\\\\')}")
+st.write(f"**Počet scénářů:** {len(projects[selected_project].get('scenarios', []))}")
 
 st.markdown("---")
 
-# ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
+# SEZNAM SCÉNÁŘŮ A PŘEČÍSLOVÁNÍ
 scenarios = projects[selected_project].get("scenarios", [])
 
 if scenarios:
-    # Shromáždění dat pro analýzu
-    segmenty = {}
-    technologie = set()
-    akce = set()
+    st.subheader("📋 Seznam scénářů")
     
-    for scenario in scenarios:
-        seg = scenario.get("segment", "NEZNÁMÝ")
-        tech = scenario.get("kanal", "NEZNÁMÝ") + " - " + scenario.get("akce", "NEZNÁMÁ")
-        act = scenario.get("akce", "NEZNÁMÁ")
+    # Tabulka scénářů
+    df = make_df(projects, selected_project)
+    if not df.empty:
+        st.dataframe(
+            df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Order": st.column_config.NumberColumn("Číslo", width="small"),
+                "Test Name": st.column_config.TextColumn("Název testu", width="large"),
+                "Action": st.column_config.TextColumn("Akce", width="medium"),
+                "Segment": st.column_config.TextColumn("Segment", width="small"),
+                "Channel": st.column_config.TextColumn("Kanál", width="small"),
+                "Priority": st.column_config.TextColumn("Priorita", width="small"),
+                "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
+                "Kroky": st.column_config.NumberColumn("Kroků", width="small")
+            }
+        )
         
-        if seg not in segmenty:
-            segmenty[seg] = {"SHOP": 0, "IL": 0, "celkem": 0}
-        
-        kanal = scenario.get("kanal", "NEZNÁMÝ")
-        if kanal in ["SHOP", "IL"]:
-            segmenty[seg][kanal] += 1
-        segmenty[seg]["celkem"] += 1
-        
-        technologie.add(tech)
-        akce.add(act)
-    
-    # ZOBRAZENÍ STROMOVÉ STRUKTURY
-    col_analysis, col_scenarios = st.columns([1, 2])
-    
-    with col_analysis:
-        st.subheader("🌳 Analýza scénářů")
-        
-        # Segmenty a kanály
-        with st.expander("📈 Segmenty a kanály", expanded=True):
-            for segment, data in segmenty.items():
-                st.write(f"**{segment}** ({data['celkem']} scénářů)")
-                if data['SHOP'] > 0:
-                    st.write(f"  └─ 🏪 SHOP: {data['SHOP']}")
-                if data['IL'] > 0:
-                    st.write(f"  └─ 📞 IL: {data['IL']}")
-                st.write("")
-        
-        # Technologie
-        with st.expander("🔧 Technologie a akce"):
-            st.write("**Všechny technologie:**")
-            for tech in sorted(technologie):
-                st.write(f"• {tech}")
-            
-            st.write("")
-            st.write("**Všechny akce:**")
-            for act in sorted(akce):
-                st.write(f"• {act}")
-    
-    with col_scenarios:
-        st.subheader("📋 Seznam scénářů")
-        
-        # Tabulka scénářů
-        df = make_df(projects, selected_project)
-        if not df.empty:
-            # Styly pro lepší čitelnost
-            st.dataframe(
-                df,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Order": st.column_config.NumberColumn("Číslo", width="small"),
-                    "Test Name": st.column_config.TextColumn("Název testu", width="large"),
-                    "Action": st.column_config.TextColumn("Akce", width="medium"),
-                    "Segment": st.column_config.TextColumn("Segment", width="small"),
-                    "Channel": st.column_config.TextColumn("Kanál", width="small"),
-                    "Priority": st.column_config.TextColumn("Priorita", width="small"),
-                    "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
-                    "Kroky": st.column_config.NumberColumn("Kroků", width="small")
-                }
-            )
-            
-            # Tlačítko pro přečíslování
-            if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
-                scen = projects[selected_project]["scenarios"]
-                for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
-                    nove_cislo = f"{i:03d}"
-                    t["order_no"] = i
-                    
-                    # Přegenerování názvu s novým číslem
-                    if "_" in t["test_name"]:
-                        parts = t["test_name"].split("_", 1)
-                        if parts[0].isdigit() and len(parts[0]) <= 3:
-                            t["test_name"] = f"{nove_cislo}_{parts[1]}"
-                        else:
-                            t["test_name"] = f"{nove_cislo}_{t['test_name']}"
+        # Tlačítko pro přečíslování
+        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
+            scen = projects[selected_project]["scenarios"]
+            for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
+                nove_cislo = f"{i:03d}"
+                t["order_no"] = i
+                
+                # Přegenerování názvu s novým číslem
+                if "_" in t["test_name"]:
+                    parts = t["test_name"].split("_", 1)
+                    if parts[0].isdigit() and len(parts[0]) <= 3:
+                        t["test_name"] = f"{nove_cislo}_{parts[1]}"
                     else:
                         t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-                
-                projects[selected_project]["scenarios"] = scen
-                save_json(PROJECTS_PATH, projects)
-                st.success("✅ Scénáře a názvy byly přečíslovány.")
-                st.rerun()
-        else:
-            st.info("Žádné scénáře k zobrazení.")
+                else:
+                    t["test_name"] = f"{nove_cislo}_{t['test_name']}"
+            
+            projects[selected_project]["scenarios"] = scen
+            save_json(PROJECTS_PATH, projects)
+            st.success("✅ Scénáře a názvy byly přečíslovány.")
+            st.rerun()
+
+    st.markdown("---")
+
+    # ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
+    st.subheader("🌳 Analýza scénářů")
+    
+    # Shromáždění dat pro stromovou strukturu
+    segment_data = {"B2C": {}, "B2B": {}}
+    
+    for scenario in scenarios:
+        segment = scenario.get("segment", "NEZNÁMÝ")
+        kanal = scenario.get("kanal", "NEZNÁMÝ")
+        technologie = "DSL"  # Můžeme přidat detekci technologií později
+        akce = scenario.get("akce", "NEZNÁMÁ")
+        
+        if segment not in segment_data:
+            segment_data[segment] = {}
+        
+        if kanal not in segment_data[segment]:
+            segment_data[segment][kanal] = {}
+            
+        if technologie not in segment_data[segment][kanal]:
+            segment_data[segment][kanal][technologie] = []
+            
+        if akce not in segment_data[segment][kanal][technologie]:
+            segment_data[segment][kanal][technologie].append(akce)
+    
+    # VYTVOŘENÍ STROMOVÉ STRUKTURY
+    col_b2c, col_b2b = st.columns(2)
+    
+    with col_b2c:
+        with st.expander("👥 B2C", expanded=True):
+            if "B2C" in segment_data and segment_data["B2C"]:
+                for kanal in segment_data["B2C"]:
+                    st.write(f"**{kanal}**")
+                    for technologie in segment_data["B2C"][kanal]:
+                        st.write(f"  └─ **{technologie}**")
+                        for akce in segment_data["B2C"][kanal][technologie]:
+                            st.write(f"    └─ {akce}")
+                    if kanal != list(segment_data["B2C"].keys())[-1]:
+                        st.markdown("---")
+            else:
+                st.write("Žádné B2C scénáře")
+    
+    with col_b2b:
+        with st.expander("🏢 B2B", expanded=True):
+            if "B2B" in segment_data and segment_data["B2B"]:
+                for kanal in segment_data["B2B"]:
+                    st.write(f"**{kanal}**")
+                    for technologie in segment_data["B2B"][kanal]:
+                        st.write(f"  └─ **{technologie}**")
+                        for akce in segment_data["B2B"][kanal][technologie]:
+                            st.write(f"    └─ {akce}")
+                    if kanal != list(segment_data["B2B"].keys())[-1]:
+                        st.markdown("---")
+            else:
+                st.write("Žádné B2B scénáře")
 
 else:
     # Když nejsou žádné scénáře
@@ -269,38 +268,6 @@ else:
 
 st.markdown("---")
 
-# ---------- Přehled scénářů ----------
-st.subheader("📋 Scénáře v projektu")
-df = make_df(projects, selected_project)
-if df.empty:
-    st.info("Zatím žádné scénáře.")
-else:
-    st.dataframe(df, width='stretch', hide_index=True)
-
-    # tlačítko pro přečíslování
-    if st.button("🔢 Přečíslovat scénáře od 001"):
-        scen = projects[selected_project]["scenarios"]
-
-        for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
-            nove_cislo = f"{i:03d}"
-            t["order_no"] = i
-
-            # Pokud má název testu prefix jako "001_", nahradíme ho novým číslem
-            if "_" in t["test_name"]:
-                parts = t["test_name"].split("_", 1)
-                if parts[0].isdigit() and len(parts[0]) <= 3:
-                    t["test_name"] = f"{nove_cislo}_{parts[1]}"
-                else:
-                    t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-            else:
-                t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-
-        projects[selected_project]["scenarios"] = scen
-        save_json(PROJECTS_PATH, projects)
-        st.success("✅ Scénáře a názvy byly přečíslovány.")
-        st.rerun()
-
-st.markdown("---")
 
 # ---------- Přidání scénáře ----------
 st.subheader("➕ Přidat nový scénář")
