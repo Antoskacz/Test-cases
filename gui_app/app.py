@@ -146,34 +146,32 @@ if selected_project != "— vyber —" and selected_project in projects:
     st.sidebar.markdown("---")
     st.sidebar.subheader("⚙️ Správa projektu")
     
-    # Použijeme index projektu místo názvu pro klíče
-    project_index = project_names.index(selected_project)
-    
-    with st.sidebar.expander("✏️ Upravit název projektu", key=f"edit_name_{project_index}"):
-        new_name = st.text_input("Nový název projektu", value=selected_project, key=f"new_name_{project_index}")
-        if st.button("Uložit nový název", key=f"save_name_{project_index}"):
+    # Fixní klíče s podmínkou pro zobrazení
+    if st.sidebar.checkbox("✏️ Upravit název projektu", key="show_edit_name"):
+        new_name = st.sidebar.text_input("Nový název projektu", value=selected_project, key="new_name_input")
+        if st.sidebar.button("Uložit nový název", key="save_name_btn"):
             if new_name.strip() and new_name != selected_project:
                 projects[new_name] = projects.pop(selected_project)
                 save_json(get_user_projects_path(username), projects)
-                st.success("✅ Název projektu změněn")
+                st.sidebar.success("✅ Název projektu změněn")
                 st.rerun()
     
-    with st.sidebar.expander("📝 Upravit Subject", key=f"edit_subject_{project_index}"):
+    if st.sidebar.checkbox("📝 Upravit Subject", key="show_edit_subject"):
         current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
-        new_subject = st.text_input("Nový Subject", value=current_subject, key=f"new_subject_{project_index}")
-        if st.button("Uložit Subject", key=f"save_subject_{project_index}"):
+        new_subject = st.sidebar.text_input("Nový Subject", value=current_subject, key="new_subject_input")
+        if st.sidebar.button("Uložit Subject", key="save_subject_btn"):
             if new_subject.strip():
                 projects[selected_project]["subject"] = new_subject.strip()
                 save_json(get_user_projects_path(username), projects)
-                st.success("✅ Subject změněn")
+                st.sidebar.success("✅ Subject změněn")
                 st.rerun()
     
-    with st.sidebar.expander("🗑️ Smazat projekt", key=f"delete_project_{project_index}"):
-        st.warning(f"Chceš smazat projekt '{selected_project}'?")
-        if st.button("ANO, smazat projekt", key=f"confirm_delete_{project_index}"):
+    if st.sidebar.checkbox("🗑️ Smazat projekt", key="show_delete_project"):
+        st.sidebar.warning(f"Chceš smazat projekt '{selected_project}'?")
+        if st.sidebar.button("ANO, smazat projekt", key="confirm_delete_btn"):
             projects.pop(selected_project)
             save_json(get_user_projects_path(username), projects)
-            st.success(f"✅ Projekt '{selected_project}' smazán")
+            st.sidebar.success(f"✅ Projekt '{selected_project}' smazán")
             st.rerun()
 
 # ---------- Hlavní část ----------
