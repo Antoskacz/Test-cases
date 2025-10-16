@@ -146,34 +146,36 @@ if selected_project != "— vyber —" and selected_project in projects:
     st.sidebar.markdown("---")
     st.sidebar.subheader("⚙️ Správa projektu")
     
-    # Jednodušší verze bez expanderů
-    st.sidebar.write("**Upravit název projektu:**")
-    new_name = st.sidebar.text_input("Nový název", value=selected_project, key="new_name_input")
-    if st.sidebar.button("Uložit název", key="save_name_btn"):
-        if new_name.strip() and new_name != selected_project:
-            projects[new_name] = projects.pop(selected_project)
-            selected_project = new_name
-            save_json(get_user_projects_path(username), projects)
-            st.sidebar.success("✅ Název změněn")
-            st.rerun()
+    # Upravit název projektu
+    with st.sidebar.expander("✏️ Upravit název projektu", key="edit_name_expander"):
+        new_name = st.text_input("Nový název projektu", value=selected_project, key="new_name_input")
+        if st.button("Uložit nový název", key="save_name_btn"):
+            if new_name.strip() and new_name != selected_project:
+                projects[new_name] = projects.pop(selected_project)
+                selected_project = new_name
+                save_json(get_user_projects_path(username), projects)
+                st.success("✅ Název projektu změněn")
+                st.rerun()
     
-    st.sidebar.write("**Upravit Subject:**")
-    current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
-    new_subject = st.sidebar.text_input("Nový Subject", value=current_subject, key="new_subject_input")
-    if st.sidebar.button("Uložit Subject", key="save_subject_btn"):
-        if new_subject.strip():
-            projects[selected_project]["subject"] = new_subject.strip()
-            save_json(get_user_projects_path(username), projects)
-            st.sidebar.success("✅ Subject změněn")
-            st.rerun()
+    # Upravit subject
+    with st.sidebar.expander("📝 Upravit Subject", key="edit_subject_expander"):
+        current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
+        new_subject = st.text_input("Nový Subject", value=current_subject, key="new_subject_input")
+        if st.button("Uložit Subject", key="save_subject_btn"):
+            if new_subject.strip():
+                projects[selected_project]["subject"] = new_subject.strip()
+                save_json(get_user_projects_path(username), projects)
+                st.success("✅ Subject změněn")
+                st.rerun()
     
-    st.sidebar.markdown("---")
-    st.sidebar.warning(f"Smazat projekt '{selected_project}'?")
-    if st.sidebar.button("🗑️ Smazat projekt", key="delete_project_btn"):
-        projects.pop(selected_project)
-        save_json(get_user_projects_path(username), projects)
-        st.sidebar.success(f"✅ Projekt smazán")
-        st.rerun()
+    # Smazat projekt
+    with st.sidebar.expander("🗑️ Smazat projekt", key="delete_project_expander"):
+        st.warning(f"Chceš smazat projekt '{selected_project}'?")
+        if st.button("ANO, smazat projekt", key="confirm_delete_btn"):
+            projects.pop(selected_project)
+            save_json(get_user_projects_path(username), projects)
+            st.success(f"✅ Projekt '{selected_project}' smazán")
+            st.rerun()
 
 # ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
@@ -346,10 +348,21 @@ akce_list = list(steps_data.keys())
 
 with st.form("add_scenario"):
     veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …", key="veta_input")
+    
+    # Zobraz seznam akcí
+    if not akce_list:
+        st.error("❌ V kroky.json nejsou žádné akce!")
+        st.stop()
+    
     akce = st.selectbox("Akce (z kroky.json)", options=akce_list, key="akce_select")
     
-    # Automatická komplexita
-    pocet_kroku = len(steps_data.get(akce, []))
+    # Automatická komplexita - OPRAVENÉ
+    vybrane_kroky = steps_data[akce]
+    if isinstance(vybrane_kroky, dict) and "steps" in vybrane_kroky:
+        pocet_kroku = len(vybrane_kroky["steps"])
+    else:
+        pocet_kroku = len(vybrane_kroky)
+    
     auto_complexity = get_automatic_complexity(pocet_kroku)
     
     colp, colc = st.columns(2)
@@ -391,7 +404,7 @@ st.markdown("---")
 
 # ---------- Úprava scénáře ----------
 st.subheader("✏️ Úprava scénáře")
-if not scenarios:  # Místo df.empty použijeme scenarios
+if not scenarios:
     st.info("Zatím žádné scénáře pro úpravu.")
 else:
     selected_row = st.selectbox(
@@ -420,7 +433,11 @@ else:
                     scenario["priority"] = priority
                     scenario["complexity"] = complexity
                     # DŮLEŽITÉ: Použij deepcopy při přiřazování kroků
-                    scenario["kroky"] = copy.deepcopy(steps_data.get(akce, []))
+                    vybrane_kroky = steps_data.get(akce, [])
+                    if isinstance(vybrane_kroky, dict) and "steps" in vybrane_kroky:
+                        scenario["kroky"] = copy.deepcopy(vybrane_kroky["steps"])
+                    else:
+                        scenario["kroky"] = copy.deepcopy(vybrane_kroky)
                     # přegenerování test name
                     scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip().replace(" ", "_")
                     # uložení změn
@@ -433,7 +450,7 @@ st.markdown("---")
 
 # ---------- Smazání scénáře ----------
 st.subheader("🗑️ Smazání scénáře")
-if not scenarios:  # Místo df.empty použijeme scenarios
+if not scenarios:
     st.info("Zatím žádné scénáře pro smazání.")
 else:
     to_delete = st.selectbox(
@@ -463,10 +480,17 @@ with st.expander("📊 Přehled kroků podle akcí"):
     # Vytvoříme pěkný přehled s kolonkama
     cols = st.columns(2)
     for idx, akce in enumerate(sorted(steps_data.keys())):
-        kroky = steps_data[akce].get("steps", []) if isinstance(steps_data[akce], dict) else steps_data[akce]
+        # OPRAVA: Jednodušší načítání kroků
+        kroky = steps_data[akce]
+        if isinstance(kroky, dict) and "steps" in kroky:
+            kroky = kroky["steps"]
         pocet_kroku = len(kroky)
-        popis_akce = steps_data[akce].get("description", "Bez popisu") if isinstance(steps_data[akce], dict) else "Bez popisu"
         
+        # Jednodušší popis
+        popis_akce = "Standardní akce"
+        if isinstance(steps_data[akce], dict) and "description" in steps_data[akce]:
+            popis_akce = steps_data[akce]["description"]
+            
         with cols[idx % 2]:
             # Kontejner pro každou akci
             with st.container():

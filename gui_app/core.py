@@ -113,12 +113,18 @@ def generate_testcase(username: str, project: str, veta: str, akce: str, priorit
     segment, kanal, technologie = parse_veta(veta)
     test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
 
-    # Načtení kroků podle akce
+    # Načtení kroků podle akce - OPRAVENÉ
     if akce in kroky_data:
-        kroky = copy.deepcopy(kroky_data[akce])
+        kroky = kroky_data[akce]
+        # Pokud jsou kroky ve slovníku, vezmi pole "steps"
+        if isinstance(kroky, dict) and "steps" in kroky:
+            kroky = copy.deepcopy(kroky["steps"])
+        else:
+            kroky = copy.deepcopy(kroky)
     else:
         kroky = []
-
+        print(f"⚠️ Akce '{akce}' nebyla nalezena v kroky.json")
+    
     tc = {
         "order_no": order_no,
         "test_name": test_name,
@@ -152,8 +158,8 @@ def export_to_excel(username: str, project_name: str, projects_data: dict):
             exp = ""
 
             if isinstance(krok, dict):
-                desc = krok.get("description", "")
-                exp = krok.get("expected", "")
+                desc = krok.get('description', '')
+                exp = krok.get('expected', '')
             elif isinstance(krok, str):
                 desc = krok
                 exp = ""
