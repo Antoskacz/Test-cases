@@ -8,6 +8,143 @@ from core import (
     generate_testcase, export_to_excel,
     PRIORITY_MAP, COMPLEXITY_MAP
 )
+import streamlit as st
+import pandas as pd
+from pathlib import Path
+import copy
+from core import (
+    load_json, save_json,
+    get_user_projects_path, get_user_kroky_path,
+    generate_testcase, export_to_excel,
+    PRIORITY_MAP, COMPLEXITY_MAP, parse_veta
+)
+
+# ---------- Konfigurace vzhledu ----------
+st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
+
+CUSTOM_CSS = """
+<style>
+body { background-color: #121212; color: #EAEAEA; }
+[data-testid="stAppViewContainer"] { background: linear-gradient(145deg, #181818, #1E1E1E); }
+[data-testid="stSidebar"] { background: linear-gradient(180deg, #1C1C1C, #181818); border-right: 1px solid #333; }
+h1, h2, h3 { color: #F1F1F1; font-weight: 600; }
+div[data-testid="stForm"], div[data-testid="stExpander"] {
+    background-color: #1A1A1A; border-radius: 10px; padding: 1rem; border: 1px solid #333;
+}
+button[kind="primary"] { background: linear-gradient(90deg, #4e54c8, #8f94fb); color: white !important; }
+button[kind="secondary"] { background: #292929; color: #CCC !important; border: 1px solid #555; }
+.stTextInput > div > div > input, textarea, select {
+    background-color: #222; color: #EEE !important; border-radius: 6px; border: 1px solid #444;
+}
+.stDataFrame { background-color: #1C1C1C !important; }
+</style>
+"""
+st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
+# ---------- UŽIVATELSKÁ AUTENTIZACE ----------
+def get_username():
+    """Získá nebo nastaví uživatelské jméno"""
+    if "username" not in st.session_state:
+        st.session_state.username = ""
+    
+    if not st.session_state.username:
+        st.title("🔐 TestCase Generator")
+        st.markdown("---")
+        username = st.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak")
+        
+        if st.button("Pokračovat"):
+            if username.strip():
+                st.session_state.username = username.strip()
+                st.rerun()
+            else:
+                st.error("Zadejte uživatelské jméno")
+        
+        st.stop()
+    
+    return st.session_state.username
+
+# ---------- Pomocné funkce ----------
+def get_projects(username: str):
+    projects_path = get_user_projects_path(username)
+    return load_json(projects_path)
+
+def get_steps(username: str):
+    kroky_path = get_user_kroky_path(username)
+    return load_json(kroky_path)
+
+def ensure_project(username: str, projects: dict, name: str, subject=None):
+    if name not in projects:
+        projects[name] = {"next_id": 1, "subject": subject or "UAT2\\Antosova\\", "scenarios": []}
+        projects_path = get_user_projects_path(username)
+        save_json(projects_path, projects)
+    return projects
+
+def make_df(projects, project_name):
+    sc = projects.get(project_name, {}).get("scenarios", [])
+    if not sc:
+        return pd.DataFrame()
+    rows = []
+    for tc in sc:
+        rows.append({
+            "Order": tc.get("order_no"),
+            "Test Name": tc.get("test_name"),
+            "Action": tc.get("akce"),
+            "Segment": tc.get("segment"),
+            "Channel": tc.get("kanal"),
+            "Priority": tc.get("priority"),
+            "Complexity": tc.get("complexity"),
+            "Kroky": len(tc.get("kroky", []))
+        })
+    return pd.DataFrame(rows).sort_values(by="Order", ascending=True)
+
+# ---------- Automatická komplexita ----------
+def get_automatic_complexity(pocet_kroku):
+    """Automaticky určí komplexitu podle počtu kroků"""
+    if pocet_kroku <= 5:
+        return "5-Low"
+    elif pocet_kroku <= 10:
+        return "4-Medium"
+    elif pocet_kroku <= 15:
+        return "3-Big"
+    elif pocet_kroku <= 20:
+        return "2-Huge"
+    else:
+        return "1-Giant"
+
+# ---------- Získání uživatelského jména ----------
+username = get_username()
+
+# ---------- Sidebar ----------
+st.sidebar.title("👤 Uživatel")
+st.sidebar.write(f"**Přihlášen:** {username}")
+
+if st.sidebar.button("🚪 Odhlásit"):
+    st.session_state.username = ""
+    st.rerun()
+
+st.sidebar.markdown("---")
+st.sidebar.title("📁 Projekt")
+
+# Načtení projektů pro daného uživatele
+projects = get_projects(username)
+project_names = list(projects.keys())
+
+selected_project = st.sidebar.selectbox(
+    "Vyber projekt",
+    options=["— vyber —"] + project_names,
+    index=0
+)
+new_project_name = st.sidebar.text_input("Název nového projektu", placeholder="Např. CCCTR-XXXX – Název")
+
+if st.sidebar.button("✅ Vytvořit projekt"):
+    if new_project_name.strip():
+        projects = ensure_project(username, projects, new_project_name.strip())
+        selected_project = new_project_name.strip()
+        st.rerun()
+    else:
+        st.sidebar.warning("Zadej název projektu")
+
+
 
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
