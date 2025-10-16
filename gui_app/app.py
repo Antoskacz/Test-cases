@@ -198,6 +198,7 @@ with st.form("add_scenario"):
 
 st.markdown("---")
 
+
 # ---------- Úprava scénáře ----------
 st.subheader("✏️ Úprava scénáře")
 if df.empty:
@@ -221,16 +222,27 @@ else:
                 akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0)
                 priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]))
                 complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]))
+                
                 if st.form_submit_button("💾 Uložit změny"):
                     # přepsání hodnot scénáře
                     scenario["veta"] = veta.strip()
                     scenario["akce"] = akce
                     scenario["priority"] = priority
                     scenario["complexity"] = complexity
+                    
                     # DŮLEŽITÉ: Použij deepcopy při přiřazování kroků
                     scenario["kroky"] = copy.deepcopy(steps_data.get(akce, []))
-                    # přegenerování test name
-                    scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip().replace(" ", "_")
+                    
+                    # PŘEGENEROVÁNÍ názvu test case s novými údaji
+                    from core import parse_veta
+                    segment, kanal, technologie = parse_veta(veta.strip())
+                    nove_cislo = f"{scenario['order_no']:03d}"
+                    scenario["test_name"] = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
+                    
+                    # přepsání segmentu a kanálu
+                    scenario["segment"] = segment
+                    scenario["kanal"] = kanal
+                    
                     # uložení změn
                     projects[selected_project]["scenarios"][scenario_index] = scenario
                     save_json(PROJECTS_PATH, projects)
@@ -262,6 +274,7 @@ else:
 
 st.markdown("---")
 
+
 # ---------- Informace o krocích ----------
 with st.expander("📊 Přehled kroků podle akcí"):
     st.subheader("Kroky dostupné v systému")
@@ -270,18 +283,39 @@ with st.expander("📊 Přehled kroků podle akcí"):
     # Vytvoříme pěkný přehled s kolonkama
     cols = st.columns(2)
     for idx, akce in enumerate(sorted(steps_data.keys())):
-        kroky = steps_data[akce]
+        kroky = steps_data[akce].get("steps", []) if isinstance(steps_data[akce], dict) else steps_data[akce]
         pocet_kroku = len(kroky)
+        popis_akce = steps_data[akce].get("description", "Bez popisu") if isinstance(steps_data[akce], dict) else "Bez popisu"
         
         with cols[idx % 2]:
-            st.metric(
-                label=akce,
-                value=f"{pocet_kroku} kroků",
-                help=f"Klikni pro zobrazení detailů akce {akce}"
-            )
-    
-    st.markdown("---")
-    st.caption("💡 Tyto kroky se automaticky přiřazují k scénářům podle vybrané akce")
+            # Název akce VELKÝMI písmeny
+            st.markdown(f"**{akce.upper()}**")
+            # Počet kroků malými písmeny
+            st.markdown(f"<small>{pocet_kroku} kroků</small>", unsafe_allow_html=True)
+            
+            # Tooltip s popisem akce
+            with st.popover("ℹ️ Popis akce"):
+                st.write(f"**{akce}**")
+                st.write(popis_akce)
+            
+            # Náhled všech kroků
+            with st.popover("👀 Náhled kroků"):
+                if pocet_kroku > 0:
+                    for i, krok in enumerate(kroky, 1):
+                        if isinstance(krok, dict):
+                            desc = krok.get('description', '')
+                            exp = krok.get('expected', '')
+                            st.write(f"**{i}. {desc}**")
+                            if exp:
+                                st.write(f"   *{exp}*")
+                        else:
+                            st.write(f"{i}. {krok}")
+                        if i < len(kroky):
+                            st.divider()
+                else:
+                    st.write("Žádné kroky")
+            
+            st.markdown("---")
 
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")

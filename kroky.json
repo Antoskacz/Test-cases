@@ -1,5 +1,7 @@
 {
-  "Dokup VAS - FIX": [
+  "Dokup VAS - FIX": {
+    "description": "Dokoupení balíčku k existující fixní službě",
+    "steps": [
     {
       "description": "Priprav si zakaznika s aktivni sluzbou dle pozadavku",
       "expected": "Sluzba je aktivni, aktivacni objednavka dokoncena, OSS potvrdilo ok"
@@ -28,7 +30,8 @@
       "description": "Proved kontrolu dokoncene objednavky v Siebelu i v COM a aktivniho atributu pod sluzbou",
       "expected": "Objednavka uspesne dokoncena a atribut pritomny pod sluzbou"
     }
-  ],
+    ]
+  },
   "Aktivace + VAS - FIX": [
     {
       "description": "U zakaznika jdi na sluzby a zaloz objednavku na aktivaci pevneho internetu z roletky",

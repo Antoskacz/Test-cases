@@ -53,20 +53,33 @@ def parse_veta(veta: str):
     segment = "B2C" if "b2c" in veta_low else "B2B" if "b2b" in veta_low else "NA"
     kanal = "SHOP" if "shop" in veta_low else "IL" if "il" in veta_low else "NA"
 
+    # ROZŠÍŘENÉ MAPOVÁNÍ TECHNOLOGIÍ
     technologie_map = {
         "dsl": "DSL",
+        "vdsl": "DSL",
+        "adsl": "DSL",
         "fwa bi": "FWA_BI",
+        "fwa indoor": "FWA_BI", 
         "fwa bisi": "FWA_BISI",
+        "fwa outdoor": "FWA_BISI",
         "fiber": "FIBER",
+        "optin": "FIBER",
+        "opticka": "FIBER",
         "cable": "CABLE",
+        "kabelova": "CABLE",
         "hlas": "HLAS",
-        "hlasovy": "HLAS"
+        "hlasovy": "HLAS",
+        "mobil": "HLAS", 
+        "next tarif": "HLAS",
+        "tarif": "HLAS"
     }
+    
     technologie = "NA"
     for k, v in technologie_map.items():
         if k in veta_low:
             technologie = v
             break
+            
     return segment, kanal, technologie
 
 # ---------- Generování test casu ----------
