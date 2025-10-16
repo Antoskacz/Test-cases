@@ -38,24 +38,7 @@ def save_json(path: Path, data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 # ---------- Nová funkce načítání kroků ----------
-def get_steps(username: str):
-    kroky_path = get_user_kroky_path(username)
-    data = load_json(kroky_path)
-    
-    # Pokud soubor neexistuje, vytvoř základní strukturu
-    if not data:
-        data = {
-            "aktivace_dsl": {
-                "description": "Aktivace DSL služby",
-                "steps": [
-                    {"description": "Přihlášení do systému", "expected": "Uživatel je přihlášen"},
-                    {"description": "Otevření formuláře aktivace", "expected": "Formulář je otevřen"}
-                ]
-            }
-        }
-        save_json(kroky_path, data)
-    
-    return data
+def get_steps():
     """Vrací novou kopii dat z kroky.json (každé volání načte čerstvá data)"""
     if not KROKY_PATH.exists():
         return {}
