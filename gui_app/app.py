@@ -4,17 +4,13 @@ from pathlib import Path
 import copy
 from core import (
     load_json, save_json,
-    get_user_projects_path, get_user_kroky_path,
-    generate_testcase, export_to_excel, parse_veta,
+    PROJECTS_PATH, KROKY_PATH,
+    generate_testcase, export_to_excel,
     PRIORITY_MAP, COMPLEXITY_MAP
 )
 
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
-
-# ---------- INICIALIZACE SESSION STATE ----------
-if 'username' not in st.session_state:
-    st.session_state.username = ""
 
 CUSTOM_CSS = """
 <style>
@@ -35,20 +31,17 @@ button[kind="secondary"] { background: #292929; color: #CCC !important; border: 
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
-# ---------- POMOCNÉ FUNKCE ----------
-def get_projects(username: str):
-    projects_path = get_user_projects_path(username)
-    return load_json(projects_path)
+# ---------- Pomocné funkce ----------
+def get_projects():
+    return load_json(PROJECTS_PATH)
 
-def get_steps(username: str):
-    kroky_path = get_user_kroky_path(username)
-    return load_json(kroky_path)
+def get_steps():
+    return load_json(KROKY_PATH)
 
-def ensure_project(username: str, projects: dict, name: str, subject=None):
+def ensure_project(projects, name, subject=None):
     if name not in projects:
         projects[name] = {"next_id": 1, "subject": subject or "UAT2\\Antosova\\", "scenarios": []}
-        projects_path = get_user_projects_path(username)
-        save_json(projects_path, projects)
+        save_json(PROJECTS_PATH, projects)
     return projects
 
 def make_df(projects, project_name):
@@ -69,6 +62,7 @@ def make_df(projects, project_name):
         })
     return pd.DataFrame(rows).sort_values(by="Order", ascending=True)
 
+# ---------- Automatická komplexita ----------
 def get_automatic_complexity(pocet_kroku):
     """Automaticky určí komplexitu podle počtu kroků"""
     if pocet_kroku <= 5:
@@ -82,108 +76,66 @@ def get_automatic_complexity(pocet_kroku):
     else:
         return "1-Giant"
 
-# ---------- UŽIVATELSKÁ AUTENTIZACE ----------
-def get_username():
-    """Získá nebo nastaví uživatelské jméno"""
-    return st.session_state.username
+
 
 # ---------- Sidebar ----------
-st.sidebar.title("👤 Uživatel")
-
-# Výběr uživatele v sidebaru
-if not st.session_state.username:
-    username = st.sidebar.text_input("Zadejte své uživatelské jméno:", placeholder="Např. jana.novak", key="username_input")
-    
-    if st.sidebar.button("Pokračovat", key="continue_btn"):
-        if username.strip():
-            st.session_state.username = username.strip()
-            st.rerun()
-        else:
-            st.sidebar.error("Zadejte uživatelské jméno")
-    
-    st.sidebar.info("💡 Každý uživatel má své vlastní projekty a scénáře")
-    st.stop()
-
-# ---------- HLAVNÍ APLIKACE (až po přihlášení) ----------
-
-# Uživatel je přihlášen - zobrazíme informace
-st.sidebar.write(f"**Přihlášen:** {st.session_state.username}")
-
-# Možnost změnit uživatele
-if st.sidebar.button("🚪 Změnit uživatele", key="change_user_btn"):
-    st.session_state.username = ""
-    st.rerun()
-
-st.sidebar.markdown("---")
 st.sidebar.title("📁 Projekt")
-
-# Získání uživatelského jména
-username = get_username()
-
-# Načtení projektů pro daného uživatele
-projects = get_projects(username)
+projects = get_projects()
 project_names = list(projects.keys())
-
-# Načtení kroků - PŘED vykreslením formuláře
-steps_data = get_steps(username)
-if not steps_data:
-    st.error("❌ V kroky.json nejsou žádné akce! Zkontrolujte, zda soubor existuje a obsahuje data.")
-    st.stop()
-
-akce_list = list(steps_data.keys())
 
 selected_project = st.sidebar.selectbox(
     "Vyber projekt",
     options=["— vyber —"] + project_names,
-    index=0,
-    key="project_select"
+    index=0
 )
+new_project_name = st.sidebar.text_input("Název nového projektu", placeholder="Např. CCCTR-XXXX – Název")
 
-new_project_name = st.sidebar.text_input("Název nového projektu", placeholder="Např. CCCTR-XXXX – Název", key="new_project_input")
-
-if st.sidebar.button("✅ Vytvořit projekt", key="create_project_btn"):
+# ZMĚNA: Pouze "Vytvořit projekt"
+if st.sidebar.button("✅ Vytvořit projekt"):
     if new_project_name.strip():
-        projects = ensure_project(username, projects, new_project_name.strip())
+        projects = ensure_project(projects, new_project_name.strip())
         selected_project = new_project_name.strip()
         st.rerun()
     else:
         st.sidebar.warning("Zadej název projektu")
 
-# SPRÁVA PROJEKTU - POUZE POKUD JE PROJEKT VYBRÁN
+# NOVÉ: Tlačítka pro správu projektu (pokud je projekt vybrán)
 if selected_project != "— vyber —" and selected_project in projects:
     st.sidebar.markdown("---")
     st.sidebar.subheader("⚙️ Správa projektu")
     
-    # Použijeme index projektu místo názvu pro klíče
-    project_index = project_names.index(selected_project)
-    
-    with st.sidebar.expander("✏️ Upravit název projektu", key=f"edit_name_{project_index}"):
-        new_name = st.text_input("Nový název projektu", value=selected_project, key=f"new_name_{project_index}")
-        if st.button("Uložit nový název", key=f"save_name_{project_index}"):
+    # Upravit název projektu
+    with st.sidebar.expander("✏️ Upravit název projektu"):
+        new_name = st.text_input("Nový název projektu", value=selected_project)
+        if st.button("Uložit nový název"):
             if new_name.strip() and new_name != selected_project:
                 projects[new_name] = projects.pop(selected_project)
-                save_json(get_user_projects_path(username), projects)
+                selected_project = new_name
+                save_json(PROJECTS_PATH, projects)
                 st.success("✅ Název projektu změněn")
                 st.rerun()
     
-    with st.sidebar.expander("📝 Upravit Subject", key=f"edit_subject_{project_index}"):
+    # Upravit subject
+    with st.sidebar.expander("📝 Upravit Subject"):
         current_subject = projects[selected_project].get("subject", "UAT2\\Antosova\\")
-        new_subject = st.text_input("Nový Subject", value=current_subject, key=f"new_subject_{project_index}")
-        if st.button("Uložit Subject", key=f"save_subject_{project_index}"):
+        new_subject = st.text_input("Nový Subject", value=current_subject)
+        if st.button("Uložit Subject"):
             if new_subject.strip():
                 projects[selected_project]["subject"] = new_subject.strip()
-                save_json(get_user_projects_path(username), projects)
+                save_json(PROJECTS_PATH, projects)
                 st.success("✅ Subject změněn")
                 st.rerun()
     
-    with st.sidebar.expander("🗑️ Smazat projekt", key=f"delete_project_{project_index}"):
+    # Smazat projekt
+    with st.sidebar.expander("🗑️ Smazat projekt"):
         st.warning(f"Chceš smazat projekt '{selected_project}'?")
-        if st.button("ANO, smazat projekt", key=f"confirm_delete_{project_index}"):
+        if st.button("ANO, smazat projekt"):
             projects.pop(selected_project)
-            save_json(get_user_projects_path(username), projects)
+            save_json(PROJECTS_PATH, projects)
             st.success(f"✅ Projekt '{selected_project}' smazán")
             st.rerun()
 
+# ---------- Hlavní část ----------
 # ---------- Hlavní část ----------
 st.title("🧪 TestCase Builder – GUI")
 
@@ -232,7 +184,7 @@ if scenarios:
         )
         
         # Tlačítko pro přečíslování
-        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True, key="renumber_btn"):
+        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
             scen = projects[selected_project]["scenarios"]
             for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
                 nove_cislo = f"{i:03d}"
@@ -249,147 +201,133 @@ if scenarios:
                     t["test_name"] = f"{nove_cislo}_{t['test_name']}"
             
             projects[selected_project]["scenarios"] = scen
-            save_json(get_user_projects_path(username), projects)
+            save_json(PROJECTS_PATH, projects)
             st.success("✅ Scénáře a názvy byly přečíslovány.")
             st.rerun()
 
     st.markdown("---")
 
     # ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
-    st.subheader("🌳 Analýza scénářů")
-    
-    # Shromáždění dat pro stromovou strukturu
-    segment_data = {"B2C": {}, "B2B": {}}
-    
-    for scenario in scenarios:
-        segment = scenario.get("segment", "NEZNÁMÝ")
-        kanal = scenario.get("kanal", "NEZNÁMÝ")
-        
-        # Zjednodušená detekce technologie z názvu test case
-        test_name = scenario.get("test_name", "").upper()
-        technologie = "DSL"  # výchozí hodnota
+st.subheader("🌳 Analýza scénářů")
 
-        # Jednodušší detekce
-        if "FIBER" in test_name or "OPTIC" in test_name:
-            technologie = "FIBER"
-        elif "FWA_BISI" in test_name:
-            technologie = "FWA BISI"
-        elif "FWA_BI" in test_name:
-            technologie = "FWA BI"
-        elif "CABLE" in test_name:
-            technologie = "CABLE"
-        elif "HLAS" in test_name or "VOICE" in test_name or "MOBIL" in test_name:
-            technologie = "HLAS"
-        # DSL zůstává jako výchozí
-        
-        akce = scenario.get("akce", "NEZNÁMÁ")
-        
-        if segment not in segment_data:
-            segment_data[segment] = {}
-        
-        if kanal not in segment_data[segment]:
-            segment_data[segment][kanal] = {}
-            
-        if technologie not in segment_data[segment][kanal]:
-            segment_data[segment][kanal][technologie] = set()  # Použijeme set pro unikátní akce
-            
-        segment_data[segment][kanal][technologie].add(akce)
+# Shromáždění dat pro stromovou strukturu
+segment_data = {"B2C": {}, "B2B": {}}
 
-    # VYTVOŘENÍ STROMOVÉ STRUKTURY
-    col_b2c, col_b2b = st.columns(2)
+for scenario in scenarios:
+    segment = scenario.get("segment", "NEZNÁMÝ")
+    kanal = scenario.get("kanal", "NEZNÁMÝ")
     
-    with col_b2c:
-        with st.expander("👥 B2C", expanded=True):
-            if "B2C" in segment_data and segment_data["B2C"]:
-                for kanal in segment_data["B2C"]:
-                    # KANÁL - větší a tučně
-                    st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
-                    
-                    for technologie in segment_data["B2C"][kanal]:
-                        # TECHNOLOGIE - tučně
-                        st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
-                        
-                        # Akce odsazené vedle technologie
-                        for akce in sorted(segment_data["B2C"][kanal][technologie]):
-                            st.write(f"  • {akce}")
-                    
-                    # Oddělovač mezi kanály
-                    if kanal != list(segment_data["B2C"].keys())[-1]:
-                        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
-            else:
-                st.write("Žádné B2C scénáře")
+    # SPRÁVNÁ DETEKCE TECHNOLOGIE z názvu test case
+    test_name = scenario.get("test_name", "")
+    technologie = "DSL"  # výchozí hodnota
     
-    with col_b2b:
-        with st.expander("🏢 B2B", expanded=True):
-            if "B2B" in segment_data and segment_data["B2B"]:
-                for kanal in segment_data["B2B"]:
-                    # KANÁL - větší a tučně
-                    st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
-                    
-                    for technologie in segment_data["B2B"][kanal]:
-                        # TECHNOLOGIE - tučně
-                        st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
-                        
-                        # Akce odsazené vedle technologie
-                        for akce in sorted(segment_data["B2B"][kanal][technologie]):
-                            st.write(f"  • {akce}")
-                    
-                    # Oddělovač mezi kanály
-                    if kanal != list(segment_data["B2B"].keys())[-1]:
-                        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
-            else:
-                st.write("Žádné B2B scénáře")
+    # Detekce technologie z názvu test case
+    if "FIBER" in test_name:
+        technologie = "FIBER"
+    elif "FWA_BISI" in test_name:
+        technologie = "FWA BISI" 
+    elif "FWA_BI" in test_name:
+        technologie = "FWA BI"
+    elif "CABLE" in test_name:
+        technologie = "CABLE"
+    elif "HLAS" in test_name:
+        technologie = "HLAS"
+    elif "DSL" in test_name:
+        technologie = "DSL"
+    
+    akce = scenario.get("akce", "NEZNÁMÁ")
+    
+    if segment not in segment_data:
+        segment_data[segment] = {}
+    
+    if kanal not in segment_data[segment]:
+        segment_data[segment][kanal] = {}
+        
+    if technologie not in segment_data[segment][kanal]:
+        segment_data[segment][kanal][technologie] = []
+        
+    if akce not in segment_data[segment][kanal][technologie]:
+        segment_data[segment][kanal][technologie].append(akce)
 
-else:
-    # Když nejsou žádné scénáře
-    st.info("📝 Projekt zatím neobsahuje žádné scénáře. Vytvoř první scénář v sekci níže.")
+# VYTVOŘENÍ STROMOVÉ STRUKTURY PODLE TVÉHO NÁVRHU
+col_b2c, col_b2b = st.columns(2)
 
-st.markdown("---")
+with col_b2c:
+    with st.expander("👥 B2C", expanded=True):
+        if "B2C" in segment_data and segment_data["B2C"]:
+            for kanal in segment_data["B2C"]:
+                # KANÁL - větší a tučně
+                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                
+                for technologie in segment_data["B2C"][kanal]:
+                    # TECHNOLOGIE - tučně
+                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
+                    
+                    # Akce odsazené vedle technologie
+                    for akce in segment_data["B2C"][kanal][technologie]:
+                        st.write(f"  • {akce}")
+                
+                # Oddělovač mezi kanály
+                if kanal != list(segment_data["B2C"].keys())[-1]:
+                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+        else:
+            st.write("Žádné B2C scénáře")
+
+with col_b2b:
+    with st.expander("🏢 B2B", expanded=True):
+        if "B2B" in segment_data and segment_data["B2B"]:
+            for kanal in segment_data["B2B"]:
+                # KANÁL - větší a tučně
+                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                
+                for technologie in segment_data["B2B"][kanal]:
+                    # TECHNOLOGIE - tučně
+                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
+                    
+                    # Akce odsazené vedle technologie
+                    for akce in segment_data["B2B"][kanal][technologie]:
+                        st.write(f"  • {akce}")
+                
+                # Oddělovač mezi kanály
+                if kanal != list(segment_data["B2B"].keys())[-1]:
+                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+        else:
+            st.write("Žádné B2B scénáře")
+
 
 # ---------- Přidání scénáře ----------
 st.subheader("➕ Přidat nový scénář")
+steps_data = get_steps()
+akce_list = list(steps_data.keys())
 
-with st.form("add_scenario", clear_on_submit=True):
-    veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …", key="veta_input")
+with st.form("add_scenario"):
+    veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …")
+    akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
     
-    # Zobraz seznam akcí
-    akce = st.selectbox("Akce (z kroky.json)", options=akce_list, key="akce_select")
-    
-    # Automatická komplexita - OPRAVENÉ
-    vybrane_kroky = steps_data[akce]
-    if isinstance(vybrane_kroky, dict) and "steps" in vybrane_kroky:
-        pocet_kroku = len(vybrane_kroky["steps"])
-    else:
-        pocet_kroku = len(vybrane_kroky)
-    
+    # Automatická komplexita
+    pocet_kroku = len(steps_data.get(akce, []))
     auto_complexity = get_automatic_complexity(pocet_kroku)
     
     colp, colc = st.columns(2)
     with colp:
-        priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1, key="priority_select")
+        priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1)
     with colc:
         # Zobrazíme automatickou komplexitu, ale umožníme změnu
         complexity = st.selectbox(
             "Komplexita", 
             options=list(COMPLEXITY_MAP.values()), 
             index=list(COMPLEXITY_MAP.values()).index(auto_complexity),
-            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků",
-            key="complexity_select"
+            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
         )
     
-    # Zobrazíme info o automatickém nastavení
-    st.info(f"🔍 Akce **{akce}** má **{pocet_kroku} kroků** → automatická komplexita: **{auto_complexity}**")
 
-    # POVINNÝ SUBMIT BUTTON - OPRAVA ZDE
-    submitted = st.form_submit_button("➕ Přidat scénář")
-    if submitted:
+    if st.form_submit_button("➕ Přidat scénář"):
         if not veta.strip():
             st.error("Věta nesmí být prázdná.")
         elif not akce:
             st.error("Vyber akci (kroky.json).")
         else:
             tc = generate_testcase(
-                username=username,
                 project=selected_project,
                 veta=veta.strip(),
                 akce=akce,
@@ -403,16 +341,16 @@ with st.form("add_scenario", clear_on_submit=True):
 
 st.markdown("---")
 
+
 # ---------- Úprava scénáře ----------
 st.subheader("✏️ Úprava scénáře")
-if not scenarios:
+if not scenarios:  # Místo df.empty použijeme scenarios
     st.info("Zatím žádné scénáře pro úpravu.")
 else:
     selected_row = st.selectbox(
         "Vyber scénář k úpravě:",
         options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
-        index=0,
-        key="edit_scenario_select"
+        index=0
     )
 
     if selected_row != "— žádný —":
@@ -423,30 +361,23 @@ else:
 
         if scenario:
             with st.form("edit_scenario"):
-                veta = st.text_area("Věta", value=scenario["veta"], height=100, key="edit_veta_input")
-                akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0, key="edit_akce_select")
-                priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]), key="edit_priority_select")
-                complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]), key="edit_complexity_select")
-                
-                # POVINNÝ SUBMIT BUTTON
-                submitted_edit = st.form_submit_button("💾 Uložit změny")
-                if submitted_edit:
+                veta = st.text_area("Věta", value=scenario["veta"], height=100)
+                akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0)
+                priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]))
+                complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]))
+                if st.form_submit_button("💾 Uložit změny"):
                     # přepsání hodnot scénáře
                     scenario["veta"] = veta.strip()
                     scenario["akce"] = akce
                     scenario["priority"] = priority
                     scenario["complexity"] = complexity
                     # DŮLEŽITÉ: Použij deepcopy při přiřazování kroků
-                    vybrane_kroky = steps_data.get(akce, [])
-                    if isinstance(vybrane_kroky, dict) and "steps" in vybrane_kroky:
-                        scenario["kroky"] = copy.deepcopy(vybrane_kroky["steps"])
-                    else:
-                        scenario["kroky"] = copy.deepcopy(vybrane_kroky)
+                    scenario["kroky"] = copy.deepcopy(steps_data.get(akce, []))
                     # přegenerování test name
                     scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip().replace(" ", "_")
                     # uložení změn
                     projects[selected_project]["scenarios"][scenario_index] = scenario
-                    save_json(get_user_projects_path(username), projects)
+                    save_json(PROJECTS_PATH, projects)
                     st.success("✅ Změny uloženy a propsány do projektu.")
                     st.rerun()
 
@@ -454,47 +385,39 @@ st.markdown("---")
 
 # ---------- Smazání scénáře ----------
 st.subheader("🗑️ Smazání scénáře")
-if not scenarios:
+if not scenarios:  # Místo df.empty použijeme scenarios
     st.info("Zatím žádné scénáře pro smazání.")
 else:
     to_delete = st.selectbox(
         "Vyber scénář ke smazání:",
         options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
         index=0,
-        key="delete_scenario_select"
+        key="delete_selector"  # Přidáme key aby se nepletl s předchozím selectboxem
     )
     if to_delete != "— žádný —":
         idx = int(to_delete.split(" - ")[0])
-        if st.button("🗑️ Potvrdit smazání scénáře", key="confirm_delete_scenario_btn"):
+        if st.button("🗑️ Potvrdit smazání scénáře"):
             scen = [t for t in projects[selected_project]["scenarios"] if t.get("order_no") != idx]
             for i, t in enumerate(scen, start=1):
                 t["order_no"] = i
             projects[selected_project]["scenarios"] = scen
-            save_json(get_user_projects_path(username), projects)
+            save_json(PROJECTS_PATH, projects)
             st.success("Scénář smazán a pořadí přepočítáno.")
             st.rerun()
 
-st.markdown("---")
 
 # ---------- Informace o krocích ----------
 with st.expander("📊 Přehled kroků podle akcí"):
     st.subheader("Kroky dostupné v systému")
-    steps_data = get_steps(username)
+    steps_data = get_steps()
     
     # Vytvoříme pěkný přehled s kolonkama
     cols = st.columns(2)
     for idx, akce in enumerate(sorted(steps_data.keys())):
-        # OPRAVA: Jednodušší načítání kroků
-        kroky = steps_data[akce]
-        if isinstance(kroky, dict) and "steps" in kroky:
-            kroky = kroky["steps"]
+        kroky = steps_data[akce].get("steps", []) if isinstance(steps_data[akce], dict) else steps_data[akce]
         pocet_kroku = len(kroky)
+        popis_akce = steps_data[akce].get("description", "Bez popisu") if isinstance(steps_data[akce], dict) else "Bez popisu"
         
-        # Jednodušší popis
-        popis_akce = "Standardní akce"
-        if isinstance(steps_data[akce], dict) and "description" in steps_data[akce]:
-            popis_akce = steps_data[akce]["description"]
-            
         with cols[idx % 2]:
             # Kontejner pro každou akci
             with st.container():
@@ -528,18 +451,15 @@ with st.expander("📊 Přehled kroků podle akcí"):
                 # Oddělovač mezi akcemi
                 st.markdown("---")
 
-st.markdown("---")
-
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")
-if st.button("💾 Exportovat a nahrát na GitHub", key="export_btn"):
+if st.button("💾 Exportovat a nahrát na GitHub"):
     try:
-        out = export_to_excel(username, selected_project, projects)
+        out = export_to_excel(selected_project, projects)
         rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
         st.success(f"✅ Export hotový: `{rel}`")
         st.download_button("⬇️ Stáhnout Excel", data=Path(out).read_bytes(),
                            file_name=Path(out).name,
-                           mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                           key="download_btn")
+                           mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     except Exception as e:
         st.error(f"Export selhal: {e}")
