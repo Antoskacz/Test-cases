@@ -135,8 +135,79 @@ if selected_project != "— vyber —" and selected_project in projects:
             st.success(f"✅ Projekt '{selected_project}' smazán")
             st.rerun()
 
+# ---------- Hlavní část ----------
+# ---------- Hlavní část ----------
+st.title("🧪 TestCase Builder – GUI")
 
-# ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
+if selected_project == "— vyber —":
+    st.info("Vyber nebo vytvoř projekt v levém panelu.")
+    st.stop()
+
+# Kontrola, zda projekt existuje v datech
+if selected_project not in projects:
+    st.error(f"Projekt '{selected_project}' nebyl nalezen v datech. Vyber jiný projekt.")
+    st.stop()
+
+# NOVÁ HLAVIČKA
+st.subheader("📊 Přehled projektu")
+
+# Základní informace pod sebou
+st.write(f"**Aktivní projekt:** {selected_project}")
+st.write(f"**Subject:** {projects[selected_project].get('subject', 'UAT2\\\\Antosova\\\\')}")
+st.write(f"**Počet scénářů:** {len(projects[selected_project].get('scenarios', []))}")
+
+st.markdown("---")
+
+# SEZNAM SCÉNÁŘŮ A PŘEČÍSLOVÁNÍ
+scenarios = projects[selected_project].get("scenarios", [])
+
+if scenarios:
+    st.subheader("📋 Seznam scénářů")
+    
+    # Tabulka scénářů
+    df = make_df(projects, selected_project)
+    if not df.empty:
+        st.dataframe(
+            df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Order": st.column_config.NumberColumn("Číslo", width="small"),
+                "Test Name": st.column_config.TextColumn("Název testu", width="large"),
+                "Action": st.column_config.TextColumn("Akce", width="medium"),
+                "Segment": st.column_config.TextColumn("Segment", width="small"),
+                "Channel": st.column_config.TextColumn("Kanál", width="small"),
+                "Priority": st.column_config.TextColumn("Priorita", width="small"),
+                "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
+                "Kroky": st.column_config.NumberColumn("Kroků", width="small")
+            }
+        )
+        
+        # Tlačítko pro přečíslování
+        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
+            scen = projects[selected_project]["scenarios"]
+            for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
+                nove_cislo = f"{i:03d}"
+                t["order_no"] = i
+                
+                # Přegenerování názvu s novým číslem
+                if "_" in t["test_name"]:
+                    parts = t["test_name"].split("_", 1)
+                    if parts[0].isdigit() and len(parts[0]) <= 3:
+                        t["test_name"] = f"{nove_cislo}_{parts[1]}"
+                    else:
+                        t["test_name"] = f"{nove_cislo}_{t['test_name']}"
+                else:
+                    t["test_name"] = f"{nove_cislo}_{t['test_name']}"
+            
+            projects[selected_project]["scenarios"] = scen
+            save_json(PROJECTS_PATH, projects)
+            st.success("✅ Scénáře a názvy byly přečíslovány.")
+            st.rerun()
+
+    st.markdown("---")
+
+    # ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
 st.subheader("🌳 Analýza scénářů")
 
 # Shromáždění dat pro stromovou strukturu
@@ -214,6 +285,7 @@ with col_b2b:
                     st.write("")
         else:
             st.write("Žádné B2B scénáře")
+
 
 # ---------- Přidání scénáře ----------
 st.subheader("➕ Přidat nový scénář")
