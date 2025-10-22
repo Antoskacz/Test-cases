@@ -478,28 +478,68 @@
     "description": "Přenesení fixní služby k TMCZ.",
     "steps": [
     {
-      "description": "Na požadovaném zákazníkovi jdi na detail služeb a přes roletky vyber ",
-      "expected": ""
+      "description": "Na požadovaném zákazníkovi jdi na detail služeb a přes roletky vyber Port-in pevného internetu.",
+      "expected": "Prokliknutí do košíku na údaje přenášené služby."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Zadej požadované údaje k přenesení služby - vlož OKU kód, vyber opouštěného poskytovatele, vyber nejbližší datum přenosu.",
+      "expected": "Požadované údaje vyplněny a přijaty."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Údaje k řešení aktuálních balíčků nech předzaškrtnuté, případně zvol jinou možnost při konkrétním požadavku.",
+      "expected": "Pokračování na ověření dostupnosti."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Při ověření dostupnosti zvol adresu/RUIAN požadované technologie z ověřovačů dostupnosti.",
+      "expected": "Zadaná adresa a zobrazení požadované technologie."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Vyber požadovanou rychlost dané technologie a pokračuj dál k odeslání objednávky.",
+      "expected": "Požadovaná rychlost je dostupná a jde pokračovat dál."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Vyplň povinné údaje pro technika a pokračuj k výběru HW.",
+      "expected": "Všechny povinné údaje zadány a přijaty."
+    },
+    {
+      "description": "Vyber požadovaný HW a pokračuj dál.",
+      "expected": "HW zvolen a potvrzen na další stránce."
+    },
+    {
+      "description": "Zvol na další screeně Security dle požadavku.",
+      "expected": "Security vybrána/nevybrána."
+    },
+    {
+      "description": "Na další stránce potvrď HW, případně vyměň za jiný, případně zadej IMEI.",
+      "expected": "HW potvrzený, pokračování na další stránku."
+    },
+    {
+      "description": "Wi-fi managera zvol dle požadavku a pokračuj na další stránku.",
+      "expected": "Wi-fi manager vybrán, zobrazení košíku a kontrola všech atributů."
+    },
+    {
+      "description": "Pokračuj přes vyplnění údajů zákazníka k odeslání objednávky do COM.",
+      "expected": "Proklikání se k závěrečnému odeslání objednávky."
+    },
+    {
+      "description": "Vytiskni a proveď kontrolu všech smluv.",
+      "expected": "Smlouvy v pořádku."
+    },
+    {
+      "description": "Objednávku odešli a zkontroluj správný rozpad tasků v COM.",
+      "expected": "Správný průběh objednávky, pokračování dle tasků - u DSL odeslat mail na cetin a vyskladnit HW v SAP."
+    },
+    {
+      "description": "Při zastavení objednávky u tasku OSS_provisioning odešli OT na OSS přes HPQC ke kontrole a posunutí objednávky.",
+      "expected": "OSS odešle zpět jako OK a objednávka pokračuje k dokončení."
+    },
+    {
+      "description": "Po dokončení objednávky v COM, zkontroluj, že je služba aktivní v Siebel.",
+      "expected": "Služba aktivní v Siebel a objednávka v sbl také dokončená."
+    },
+    {
+      "description": "Dle COM zkontroluj přijaté notifikace a znění zkontroluj přes AMY (aktuální produkční verze notifikací).",
+      "expected": "Notifikace v pořádku."
     }
   ]
 },
