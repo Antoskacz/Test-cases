@@ -473,7 +473,7 @@
       "expected": "SMS/Email odpovida sablone"
     }
   ]
-},/*
+},
 "Portin - FIX" :{
     "description": "Přenesení fixní služby k TMCZ.",
     "steps": [
@@ -500,14 +500,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
   ]
 },
 "Zmena tarifu - FIX" : {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -535,14 +533,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Takeover - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -586,14 +582,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Relokace - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -633,14 +627,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Zamena technologie - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -680,14 +672,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Prolongace - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -719,14 +709,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Dokup HW - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -750,14 +738,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Odebrat HW - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -777,14 +763,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Dokup BYOD HW - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -812,14 +796,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Vymena HW - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -851,14 +833,12 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
 },
 "Vymena HW v ramci poruchy - FIX": {
     "description": "",
     "steps": [
-      "description": "",
-      "expected": ""
     {
       "description": "",
       "expected": ""
@@ -878,7 +858,7 @@
     {
       "description": "",
       "expected": ""
-    },
+    }
     ]
-}*/
+}
 }
