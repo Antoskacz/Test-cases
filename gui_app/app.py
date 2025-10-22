@@ -136,7 +136,7 @@ if selected_project != "— vyber —" and selected_project in projects:
             st.rerun()
 
 
-# ---------- SPRÁVA AKCÍ A KROKŮ V SIDEBARU ----------
+
 # ---------- SPRÁVA AKCÍ A KROKŮ V SIDEBARU ----------
 st.sidebar.markdown("---")
 st.sidebar.subheader("🛠️ Správa akcí a kroků")
@@ -147,13 +147,18 @@ def get_global_steps():
     return load_json(kroky_path)
 
 def save_global_steps(data):
-    kroky_path = Path(__file__).resolve().parent.parent / "data" / "krokky.json"
+    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
     kroky_path.parent.mkdir(exist_ok=True)
     save_json(kroky_path, data)
 
-# Načtení kroků pro správu - PŘIDÁNO NAČTENÍ PŘED KAŽDOU AKCÍ
-def refresh_steps_data():
-    return get_global_steps()
+# Funkce pro aktualizaci všech dat v aplikaci
+def refresh_all_data():
+    """Obnoví všechna data v aplikaci po změně kroků"""
+    st.rerun()
+
+# Načtení kroků pro správu
+steps_data_manage = get_global_steps()
+akce_list_manage = list(steps_data_manage.keys())
 
 # Výběr režimu správy
 management_mode = st.sidebar.selectbox(
@@ -173,14 +178,14 @@ if management_mode == "➕ Přidat novou akci":
         if 'new_steps' not in st.session_state:
             st.session_state.new_steps = []
         
-        # Zobrazení existujících kroků - LEPŠÍ ROZLOŽENÍ
+        # Zobrazení existujících kroků
         for i, krok in enumerate(st.session_state.new_steps):
             st.write(f"**Krok {i+1}:**")
             st.text_input("Description*", value=krok['description'], key=f"step_{i}_desc", disabled=True)
             st.text_input("Expected*", value=krok['expected'], key=f"step_{i}_exp", disabled=True)
             st.markdown("---")
         
-        # Přidání nového kroku - LEPŠÍ ROZLOŽENÍ
+        # Přidání nového kroku
         st.write("**Přidat nový krok:**")
         new_step_desc = st.text_area("Description*", placeholder="Popis kroku - co se má udělat", key="new_step_desc", height=60)
         new_step_expected = st.text_area("Expected*", placeholder="Očekávaný výsledek - co se má stát", key="new_step_expected", height=60)
@@ -206,7 +211,7 @@ if management_mode == "➕ Přidat novou akci":
             if not nova_akce_nazev or not nova_akce_popis or not st.session_state.new_steps:
                 st.error("Vyplňte všechny povinné pole (*) a přidejte alespoň jeden krok")
             else:
-                kroky_data = refresh_steps_data()  # NAČTEME ČERSTVÁ DATA
+                kroky_data = get_global_steps()
                 kroky_data[nova_akce_nazev] = {
                     "description": nova_akce_popis,
                     "steps": st.session_state.new_steps.copy()
@@ -215,13 +220,10 @@ if management_mode == "➕ Přidat novou akci":
                 st.success(f"✅ Akce '{nova_akce_nazev}' byla přidána!")
                 # Reset session state
                 st.session_state.new_steps = []
-                st.rerun()
+                # AKTUALIZACE CELÉ APLIKACE
+                refresh_all_data()
 
 elif management_mode == "✏️ Upravit akci":
-    # PŘENAČTENÍ DAT PŘED ZOBRAZENÍM
-    steps_data_manage = refresh_steps_data()
-    akce_list_manage = list(steps_data_manage.keys())
-    
     if akce_list_manage:
         with st.sidebar.expander("Upravit akci", expanded=True):
             akce_k_editaci = st.selectbox("Vyber akci", options=akce_list_manage, key="edit_action_select")
@@ -237,7 +239,7 @@ elif management_mode == "✏️ Upravit akci":
                 if f'edited_steps_{akce_k_editaci}' not in st.session_state:
                     st.session_state[f'edited_steps_{akce_k_editaci}'] = current_data.get("steps", []).copy()
                 
-                # Zobrazení a editace kroků - LEPŠÍ ROZLOŽENÍ
+                # Zobrazení a editace kroků
                 steps_to_remove = []
                 for i, krok in enumerate(st.session_state[f'edited_steps_{akce_k_editaci}']):
                     st.write(f"**Krok {i+1}:**")
@@ -263,7 +265,7 @@ elif management_mode == "✏️ Upravit akci":
                         st.session_state[f'edited_steps_{akce_k_editaci}'].pop(index)
                         st.rerun()
                 
-                # Přidání nového kroku - LEPŠÍ ROZLOŽENÍ
+                # Přidání nového kroku
                 st.write("**Přidat nový krok:**")
                 new_step_desc_edit = st.text_area("Nový Description", placeholder="Popis kroku", key="new_step_edit_desc", height=60)
                 new_step_expected_edit = st.text_area("Nový Expected", placeholder="Očekávaný výsledek", key="new_step_edit_expected", height=60)
@@ -277,7 +279,7 @@ elif management_mode == "✏️ Upravit akci":
                         st.rerun()
                 
                 if st.button("💾 Uložit změny", key="save_edit_btn", use_container_width=True):
-                    kroky_data = refresh_steps_data()  # NAČTEME ČERSTVÁ DATA
+                    kroky_data = get_global_steps()
                     kroky_data[akce_k_editaci] = {
                         "description": new_desc,
                         "steps": st.session_state[f'edited_steps_{akce_k_editaci}'].copy()
@@ -287,15 +289,12 @@ elif management_mode == "✏️ Upravit akci":
                     # Smazání session state pro tuto akci
                     if f'edited_steps_{akce_k_editaci}' in st.session_state:
                         del st.session_state[f'edited_steps_{akce_k_editaci}']
-                    st.rerun()
+                    # AKTUALIZACE CELÉ APLIKACE
+                    refresh_all_data()
     else:
         st.sidebar.info("Žádné akce k editaci")
 
 elif management_mode == "🗑️ Smazat akci":
-    # PŘENAČTENÍ DAT PŘED ZOBRAZENÍM
-    steps_data_manage = refresh_steps_data()
-    akce_list_manage = list(steps_data_manage.keys())
-    
     if akce_list_manage:
         with st.sidebar.expander("Smazat akci", expanded=True):
             akce_k_smazani = st.selectbox("Vyber akci ke smazání", options=akce_list_manage, key="delete_action_select")
@@ -307,12 +306,13 @@ elif management_mode == "🗑️ Smazat akci":
                 st.write(f"Počet kroků: {len(current_data.get('steps', []))}")
                 
                 if st.button("🗑️ Potvrdit smazání", key="confirm_delete_action", use_container_width=True):
-                    kroky_data = refresh_steps_data()  # NAČTEME ČERSTVÁ DATA
+                    kroky_data = get_global_steps()
                     if akce_k_smazani in kroky_data:
                         del kroky_data[akce_k_smazani]
                         save_global_steps(kroky_data)
                         st.success(f"✅ Akce '{akce_k_smazani}' byla smazána!")
-                        st.rerun()
+                        # AKTUALIZACE CELÉ APLIKACE
+                        refresh_all_data()
     else:
         st.sidebar.info("Žádné akce ke smazání")
 
