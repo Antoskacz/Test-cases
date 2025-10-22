@@ -412,7 +412,7 @@
       "description": "Vyber požadovanou technologii a pokračuj s výběrem konkétní rychlosti.",
       "expected": "Požadovaná rychlost internetu zvolena."
     },
-    {{
+    {
       "description": "Preskoc vyber TV tarifu",
       "expected": "Zobrazeni další stranky"
     },
