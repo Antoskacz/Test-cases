@@ -37,6 +37,69 @@ def save_json(path: Path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+# ---------- Funkce pro správu kroků ----------
+def save_kroky_data(data):
+    """Uloží data do kroky.json a provede git commit + push"""
+    try:
+        # Uložení do souboru
+        save_json(KROKY_PATH, data)
+        
+        # Git operace
+        subprocess.run(["git", "add", str(KROKY_PATH)], check=True)
+        subprocess.run(["git", "commit", "-m", "Auto update kroky.json"], check=True)
+        
+        # Nejprve pull s rebase
+        try:
+            subprocess.run(["git", "pull", "--rebase"], check=True)
+        except subprocess.CalledProcessError:
+            print("⚠️ Git pull --rebase selhal, pokračujeme bez něj")
+            
+        subprocess.run(["git", "push"], check=True)
+        print("✅ Kroky.json uložen a změny nahrány na GitHub")
+        
+    except Exception as e:
+        print(f"⚠️ Git operace selhala: {e}")
+        # I když git selže, soubor se uloží lokálně
+        save_json(KROKY_PATH, data)
+
+def add_new_action(akce_nazev, akce_popis, kroky):
+    """Přidá novou akci do kroky.json"""
+    kroky_data = get_steps()
+    
+    kroky_data[akce_nazev] = {
+        "description": akce_popis,
+        "steps": kroky
+    }
+    
+    save_kroky_data(kroky_data)
+    return True
+
+def update_action(akce_nazev, akce_popis, kroky):
+    """Aktualizuje existující akci v kroky.json"""
+    kroky_data = get_steps()
+    
+    if akce_nazev in kroky_data:
+        kroky_data[akce_nazev] = {
+            "description": akce_popis,
+            "steps": kroky
+        }
+        
+        save_kroky_data(kroky_data)
+        return True
+    else:
+        return False
+
+def delete_action(akce_nazev):
+    """Smaže akci z kroky.json"""
+    kroky_data = get_steps()
+    
+    if akce_nazev in kroky_data:
+        del kroky_data[akce_nazev]
+        save_kroky_data(kroky_data)
+        return True
+    else:
+        return False
+
 # ---------- Nová funkce načítání kroků ----------
 def get_steps():
     """Vrací novou kopii dat z kroky.json - zachovává nový formát"""
