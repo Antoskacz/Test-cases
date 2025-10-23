@@ -9,10 +9,6 @@ from core import (
     PRIORITY_MAP, COMPLEXITY_MAP,
     get_steps_from_action
 )
-from pathlib import Path
-
-# ---------- Cesty ----------
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
@@ -35,6 +31,9 @@ button[kind="secondary"] { background: #292929; color: #CCC !important; border: 
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
+# ---------- Cesty ----------
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ---------- Pomocné funkce ----------
 def get_projects():
@@ -390,73 +389,85 @@ def sprava_akci():
                         del st.session_state[f"edit_kroky_{akce}"]
                     st.rerun()
     
-
-# Synchronizace s GitHub
-st.markdown("---")
-st.subheader("🔄 Synchronizace s GitHub")
-
-st.write(f"**Stav:** {check_github_status()}")
-
-if st.button("🔄 Synchronizovat změny s GitHub", use_container_width=True):
-    try:
-        import subprocess
-        with st.spinner("Synchronizuji s GitHub..."):
-            # Nastavení uživatele pokud není nastaven
-            try:
-                subprocess.run(["git", "config", "user.email", "testcase-builder@example.com"], 
-                             check=True, cwd=BASE_DIR)
-                subprocess.run(["git", "config", "user.name", "TestCase Builder"], 
-                             check=True, cwd=BASE_DIR)
-            except:
-                st.warning("Nelze nastavit Git uživatele, pokračuji...")
-            
-            # Přidání všech změn
-            result_add = subprocess.run(["git", "add", "."], 
-                                      capture_output=True, text=True, cwd=BASE_DIR)
-            if result_add.returncode != 0:
-                st.error(f"Git add selhal: {result_add.stderr}")
-                st.stop()
-            
-            # Kontrola zda jsou nějaké změny k commitování
-            result_status = subprocess.run(["git", "status", "--porcelain"], 
-                                         capture_output=True, text=True, cwd=BASE_DIR)
-            if not result_status.stdout.strip():
-                st.info("Žádné změny k synchronizaci")
-                st.stop()
-            
-            # Commit
-            result_commit = subprocess.run(
-                ["git", "commit", "-m", "Manuální synchronizace: změny v akcích a projektech"], 
-                capture_output=True, text=True, cwd=BASE_DIR
-            )
-            if result_commit.returncode != 0:
-                st.error(f"Git commit selhal: {result_commit.stderr}")
-                st.stop()
-            
-            # Pull s rebase (s lepším error handling)
-            try:
-                result_pull = subprocess.run(["git", "pull", "--rebase", "--autostash"], 
+    # Synchronizace s GitHub - PŘESUNUTO SEM
+    st.markdown("---")
+    st.subheader("🔄 Synchronizace změn s GitHub")
+    
+    st.write(f"**Stav:** {check_github_status()}")
+    
+    if st.button("🔄 Synchronizovat změny akcí s GitHub", use_container_width=True):
+        try:
+            import subprocess
+            with st.spinner("Synchronizuji změny akcí s GitHub..."):
+                # Nastavení uživatele pokud není nastaven
+                try:
+                    subprocess.run(["git", "config", "user.email", "testcase-builder@example.com"], 
+                                 check=True, cwd=BASE_DIR)
+                    subprocess.run(["git", "config", "user.name", "TestCase Builder"], 
+                                 check=True, cwd=BASE_DIR)
+                except:
+                    st.warning("Nelze nastavit Git uživatele, pokračuji...")
+                
+                # Přidání změn v kroky.json
+                result_add = subprocess.run(["git", "add", "kroky.json"], 
+                                          capture_output=True, text=True, cwd=BASE_DIR)
+                if result_add.returncode != 0:
+                    st.error(f"Git add selhal: {result_add.stderr}")
+                    st.stop()
+                
+                # Kontrola zda jsou nějaké změny k commitování
+                result_status = subprocess.run(["git", "status", "--porcelain", "kroky.json"], 
+                                             capture_output=True, text=True, cwd=BASE_DIR)
+                if not result_status.stdout.strip():
+                    st.info("Žádné změny v akcích k synchronizaci")
+                    st.stop()
+                
+                # Commit
+                result_commit = subprocess.run(
+                    ["git", "commit", "-m", "Manuální synchronizace: změny v akcích"], 
+                    capture_output=True, text=True, cwd=BASE_DIR
+                )
+                if result_commit.returncode != 0:
+                    st.error(f"Git commit selhal: {result_commit.stderr}")
+                    # Zkusíme pull před commitem
+                    try:
+                        subprocess.run(["git", "pull", "--rebase", "--autostash"], 
+                                     capture_output=True, text=True, cwd=BASE_DIR)
+                        # Znovu commit
+                        result_commit = subprocess.run(
+                            ["git", "commit", "-m", "Manuální synchronizace: změny v akcích"], 
+                            capture_output=True, text=True, cwd=BASE_DIR
+                        )
+                        if result_commit.returncode != 0:
+                            st.error(f"Git commit selhal i po pull: {result_commit.stderr}")
+                            st.stop()
+                    except:
+                        st.error("Nelze provést synchronizaci")
+                        st.stop()
+                
+                # Pull s rebase
+                try:
+                    result_pull = subprocess.run(["git", "pull", "--rebase", "--autostash"], 
+                                               capture_output=True, text=True, cwd=BASE_DIR)
+                    if result_pull.returncode != 0:
+                        st.warning(f"Git pull selhal: {result_pull.stderr}")
+                except Exception as pull_error:
+                    st.warning(f"Git pull selhal: {pull_error}")
+                
+                # Push
+                result_push = subprocess.run(["git", "push"], 
                                            capture_output=True, text=True, cwd=BASE_DIR)
-                if result_pull.returncode != 0:
-                    st.warning(f"Git pull selhal: {result_pull.stderr}")
-            except Exception as pull_error:
-                st.warning(f"Git pull selhal: {pull_error}")
-            
-            # Push
-            result_push = subprocess.run(["git", "push"], 
-                                       capture_output=True, text=True, cwd=BASE_DIR)
-            if result_push.returncode != 0:
-                st.error(f"Git push selhal: {result_push.stderr}")
-                st.stop()
-            
-            st.success("✅ Všechny změny synchronizovány s GitHub!")
-            refresh_all_data()
-            
-    except Exception as e:
-        st.error(f"❌ Synchronizace selhala: {e}")
-        st.info("Zkontrolujte, zda je složka inicializována jako Git repozitář a máte nastavené přihlašovací údaje.")
-
-
+                if result_push.returncode != 0:
+                    st.warning(f"Git push selhal: {result_push.stderr}")
+                    st.info("Změny byly uloženy lokálně, ale nelze je nahrát na GitHub. Zkontrolujte připojení k internetu a přístupová práva.")
+                else:
+                    st.success("✅ Všechny změny akcí byly synchronizovány s GitHub!")
+                
+                refresh_all_data()
+                
+        except Exception as e:
+            st.error(f"❌ Synchronizace selhala: {e}")
+            st.info("Změny byly uloženy lokálně v kroky.json")
 
 # ---------- Sidebar ----------
 st.sidebar.title("📁 Projekt")
@@ -528,7 +539,6 @@ st.subheader("📊 Přehled projektu")
 st.write(f"**Aktivní projekt:** {selected_project}")
 st.write(f"**Subject:** {projects[selected_project].get('subject', 'UAT2\\\\Antosova\\\\')}")
 st.write(f"**Počet scénářů:** {len(projects[selected_project].get('scenarios', []))}")
-st.write(f"**GitHub stav:** {check_github_status()}")
 
 st.markdown("---")
 
@@ -826,40 +836,40 @@ with tab2:
     sprava_akci()
 
 with tab3:
-    st.subheader("📤 Export projektu")
-    
-    st.info("Exportuje všechny scénáře projektu do Excelu a automaticky nahraje na GitHub.")
-    
-    if st.button("💾 Exportovat a nahrát na GitHub", use_container_width=True, type="primary"):
-        try:
-            with st.spinner("Exportuji a nahrávám na GitHub..."):
-                out = export_to_excel(selected_project, projects)
-                rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
-                st.success(f"✅ Export hotový: `{rel}`")
-                
-                st.download_button(
-                    "⬇️ Stáhnout Excel soubor", 
-                    data=Path(out).read_bytes(),
-                    file_name=Path(out).name,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True
-                )
-        except Exception as e:
-            st.error(f"Export selhal: {e}")
-    
-    st.markdown("---")
-    
-    st.subheader("ℹ️ Informace o exportu")
-    st.write("""
-    **Co export obsahuje:**
-    - Všechny scénáře projektu
-    - Kroky jednotlivých scénářů
-    - Metadata (priorita, komplexita, segment, kanál)
-    - Automatické přečíslování
-    
-    **Co se stane po exportu:**
-    1. Vytvoří se Excel soubor v exports složce
-    2. Soubor se přidá do Gitu
-    3. Provede se commit s popisem
-    4. Soubor se nahraje na GitHub
-    """)
+    # V export_to_excel funkci změňte popis na:
+st.subheader("📤 Export projektu")
+
+st.info("Exportuje všechny scénáře projektu do Excelu a automaticky nahraje na GitHub.")
+
+if st.button("💾 Exportovat a nahrát na GitHub", use_container_width=True, type="primary"):
+    try:
+        with st.spinner("Exportuji a nahrávám na GitHub..."):
+            out = export_to_excel(selected_project, projects)
+            rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
+            st.success(f"✅ Export hotový: `{rel}`")
+            
+            st.download_button(
+                "⬇️ Stáhnout Excel soubor", 
+                data=Path(out).read_bytes(),
+                file_name=Path(out).name,
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
+    except Exception as e:
+        st.error(f"Export selhal: {e}")
+
+st.markdown("---")
+
+st.subheader("ℹ️ Informace o exportu")
+st.write("""
+**Co export obsahuje:**
+- Všechny scénáře projektu
+- Kroky jednotlivých scénářů
+- Metadata (priorita, komplexita, segment, kanál)
+
+**Co se stane po exportu:**
+1. Vytvoří se Excel soubor v exports složce
+2. Soubor se přidá do Gitu
+3. Provede se commit s popisem
+4. Soubor se nahraje na GitHub
+""")
