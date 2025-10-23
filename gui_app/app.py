@@ -837,39 +837,39 @@ with tab2:
 
 with tab3:
     # V export_to_excel funkci změňte popis na:
-st.subheader("📤 Export projektu")
+    st.subheader("📤 Export projektu")
 
-st.info("Exportuje všechny scénáře projektu do Excelu a automaticky nahraje na GitHub.")
+    st.info("Exportuje všechny scénáře projektu do Excelu a automaticky nahraje na GitHub.")
 
-if st.button("💾 Exportovat a nahrát na GitHub", use_container_width=True, type="primary"):
-    try:
-        with st.spinner("Exportuji a nahrávám na GitHub..."):
-            out = export_to_excel(selected_project, projects)
-            rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
-            st.success(f"✅ Export hotový: `{rel}`")
-            
-            st.download_button(
-                "⬇️ Stáhnout Excel soubor", 
-                data=Path(out).read_bytes(),
-                file_name=Path(out).name,
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
-    except Exception as e:
-        st.error(f"Export selhal: {e}")
+    if st.button("💾 Exportovat a nahrát na GitHub", use_container_width=True, type="primary"):
+        try:
+            with st.spinner("Exportuji a nahrávám na GitHub..."):
+                out = export_to_excel(selected_project, projects)
+                rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
+                st.success(f"✅ Export hotový: `{rel}`")
+                
+                st.download_button(
+                    "⬇️ Stáhnout Excel soubor", 
+                    data=Path(out).read_bytes(),
+                    file_name=Path(out).name,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+        except Exception as e:
+            st.error(f"Export selhal: {e}")
 
-st.markdown("---")
+    st.markdown("---")
 
-st.subheader("ℹ️ Informace o exportu")
-st.write("""
-**Co export obsahuje:**
-- Všechny scénáře projektu
-- Kroky jednotlivých scénářů
-- Metadata (priorita, komplexita, segment, kanál)
+    st.subheader("ℹ️ Informace o exportu")
+    st.write("""
+    **Co export obsahuje:**
+    - Všechny scénáře projektu
+    - Kroky jednotlivých scénářů
+    - Metadata (priorita, komplexita, segment, kanál)
 
-**Co se stane po exportu:**
-1. Vytvoří se Excel soubor v exports složce
-2. Soubor se přidá do Gitu
-3. Provede se commit s popisem
-4. Soubor se nahraje na GitHub
-""")
+    **Co se stane po exportu:**
+    1. Vytvoří se Excel soubor v exports složce
+    2. Soubor se přidá do Gitu
+    3. Provede se commit s popisem
+    4. Soubor se nahraje na GitHub
+    """)
