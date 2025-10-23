@@ -9,6 +9,7 @@ from core import (
     PRIORITY_MAP, COMPLEXITY_MAP,
     get_steps_from_action
 )
+from datetime import datetime
 
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
@@ -398,87 +399,26 @@ def sprava_akci():
     st.subheader("🔄 Synchronizace změn s GitHub")
     
     st.write(f"**Stav:** {check_github_status()}")
+
+    # DEBUG: Zobrazit informace o kroky.json
+    with st.expander("🔍 Informace o souboru kroky.json"):
+        kroky_cesta = BASE_DIR / "kroky.json"
+        st.write(f"**Cesta:** `{kroky_cesta}`")
+        st.write(f"**Existuje:** `{kroky_cesta.exists()}`")
+        if kroky_cesta.exists():
+            import os
+            st.write(f"**Velikost:** `{os.path.getsize(kroky_cesta)} bytes`")
+            st.write(f"**Poslední změna:** `{datetime.fromtimestamp(os.path.getmtime(kroky_cesta))}`")
     
-    if st.button("🔄 Synchronizovat změny akcí s GitHub", use_container_width=True):
-        try:
-            import subprocess
-            with st.spinner("Synchronizuji změny akcí s GitHub..."):
-                # Nastavení uživatele pokud není nastaven
-                try:
-                    subprocess.run(["git", "config", "user.email", "testcase-builder@example.com"], 
-                                 check=True, cwd=BASE_DIR)
-                    subprocess.run(["git", "config", "user.name", "TestCase Builder"], 
-                                 check=True, cwd=BASE_DIR)
-                except:
-                    st.warning("Nelze nastavit Git uživatele, pokračuji...")
-                
-                # ZJISTÍME ZMĚNY - jednodušší kontrola
-                result_status = subprocess.run(["git", "diff", "--name-only", "kroky.json"], 
-                                             capture_output=True, text=True, cwd=BASE_DIR)
-                has_changes = bool(result_status.stdout.strip())
-                
-                if not has_changes:
-                    # Zkusíme jinou metodu - git status
-                    result_status2 = subprocess.run(["git", "status", "-s", "kroky.json"], 
-                                                  capture_output=True, text=True, cwd=BASE_DIR)
-                    has_changes = bool(result_status2.stdout.strip())
-                
-                if not has_changes:
-                    st.info("Žádné změny v akcích k synchronizaci")
-                    st.stop()
-                
-                # Přidání změn v kroky.json
-                result_add = subprocess.run(["git", "add", "kroky.json"], 
-                                          capture_output=True, text=True, cwd=BASE_DIR)
-                if result_add.returncode != 0:
-                    st.error(f"Git add selhal: {result_add.stderr}")
-                    st.stop()
-                
-                # Commit
-                result_commit = subprocess.run(
-                    ["git", "commit", "-m", "Manuální synchronizace: změny v akcích"], 
-                    capture_output=True, text=True, cwd=BASE_DIR
-                )
-                if result_commit.returncode != 0:
-                    # Zkusíme pull před commitem
-                    try:
-                        subprocess.run(["git", "pull", "--rebase", "--autostash"], 
-                                     capture_output=True, text=True, cwd=BASE_DIR)
-                        # Znovu commit
-                        result_commit = subprocess.run(
-                            ["git", "commit", "-m", "Manuální synchronizace: změny v akcích"], 
-                            capture_output=True, text=True, cwd=BASE_DIR
-                        )
-                        if result_commit.returncode != 0:
-                            st.error(f"Git commit selhal i po pull: {result_commit.stderr}")
-                            st.stop()
-                    except:
-                        st.error("Nelze provést synchronizaci")
-                        st.stop()
-                
-                # Pull s rebase
-                try:
-                    result_pull = subprocess.run(["git", "pull", "--rebase", "--autostash"], 
-                                               capture_output=True, text=True, cwd=BASE_DIR)
-                    if result_pull.returncode != 0:
-                        st.warning(f"Git pull selhal: {result_pull.stderr}")
-                except Exception as pull_error:
-                    st.warning(f"Git pull selhal: {pull_error}")
-                
-                # Push
-                result_push = subprocess.run(["git", "push"], 
-                                           capture_output=True, text=True, cwd=BASE_DIR)
-                if result_push.returncode != 0:
-                    st.warning(f"Git push selhal: {result_push.stderr}")
-                    st.info("Změny byly uloženy lokálně, ale nelze je nahrát na GitHub. Zkontrolujte připojení k internetu a přístupová práva.")
-                else:
-                    st.success("✅ Všechny změny akcí byly synchronizovány s GitHub!")
-                
-                refresh_all_data()
-                
-        except Exception as e:
-            st.error(f"❌ Synchronizace selhala: {e}")
-            st.info("Změny byly uloženy lokálně v kroky.json")
+    # DEBUG: Zobrazit informace o kroky.json
+    with st.expander("🔍 Informace o souboru kroky.json"):
+        kroky_cesta = BASE_DIR / "kroky.json"
+        st.write(f"**Cesta:** `{kroky_cesta}`")
+        st.write(f"**Existuje:** `{kroky_cesta.exists()}`")
+        if kroky_cesta.exists():
+            import os
+            st.write(f"**Velikost:** `{os.path.getsize(kroky_cesta)} bytes`")
+            st.write(f"**Poslední změna:** `{datetime.fromtimestamp(os.path.getmtime(kroky_cesta))}`")
 
 
 
@@ -886,3 +826,5 @@ with tab3:
     3. Provede se commit s popisem
     4. Soubor se nahraje na GitHub
     """)
+
+
