@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 import copy
+import json
+from datetime import datetime
 from core import (
     load_json, save_json,
     PROJECTS_PATH, KROKY_PATH,
@@ -9,7 +11,6 @@ from core import (
     PRIORITY_MAP, COMPLEXITY_MAP,
     get_steps_from_action
 )
-from datetime import datetime
 
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
@@ -104,13 +105,9 @@ def check_github_status():
         if "not a git repository" in check_git.stderr:
             return "❌ Není Git repozitář"
         
-        # Zkontrolujeme změny - více metod pro jistotu
-        result1 = subprocess.run(["git", "status", "-s"], capture_output=True, text=True, cwd=BASE_DIR)
-        result2 = subprocess.run(["git", "diff", "--name-only"], capture_output=True, text=True, cwd=BASE_DIR)
-        
-        has_changes = bool(result1.stdout.strip()) or bool(result2.stdout.strip())
-        
-        if has_changes:
+        # Zkontrolujeme změny
+        result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, cwd=BASE_DIR)
+        if result.stdout.strip():
             return "⚠️ Čeká na synchronizaci s GitHub"
         else:
             return "✅ Synchronizováno s GitHub"
@@ -399,28 +396,66 @@ def sprava_akci():
     st.subheader("🔄 Synchronizace změn s GitHub")
     
     st.write(f"**Stav:** {check_github_status()}")
-
-    # DEBUG: Zobrazit informace o kroky.json
-    with st.expander("🔍 Informace o souboru kroky.json"):
-        kroky_cesta = BASE_DIR / "kroky.json"
-        st.write(f"**Cesta:** `{kroky_cesta}`")
-        st.write(f"**Existuje:** `{kroky_cesta.exists()}`")
-        if kroky_cesta.exists():
-            import os
-            st.write(f"**Velikost:** `{os.path.getsize(kroky_cesta)} bytes`")
-            st.write(f"**Poslední změna:** `{datetime.fromtimestamp(os.path.getmtime(kroky_cesta))}`")
     
-    # DEBUG: Zobrazit informace o kroky.json
-    with st.expander("🔍 Informace o souboru kroky.json"):
-        kroky_cesta = BASE_DIR / "kroky.json"
-        st.write(f"**Cesta:** `{kroky_cesta}`")
-        st.write(f"**Existuje:** `{kroky_cesta.exists()}`")
-        if kroky_cesta.exists():
-            import os
-            st.write(f"**Velikost:** `{os.path.getsize(kroky_cesta)} bytes`")
-            st.write(f"**Poslední změna:** `{datetime.fromtimestamp(os.path.getmtime(kroky_cesta))}`")
-
-
+    if st.button("🔄 Synchronizovat změny akcí s GitHub", use_container_width=True):
+        try:
+            import subprocess
+            with st.spinner("Synchronizuji změny akcí s GitHub..."):
+                # Nastavení uživatele pokud není nastaven
+                try:
+                    subprocess.run(["git", "config", "user.email", "testcase-builder@example.com"], 
+                                 check=True, cwd=BASE_DIR)
+                    subprocess.run(["git", "config", "user.name", "TestCase Builder"], 
+                                 check=True, cwd=BASE_DIR)
+                except:
+                    st.warning("Nelze nastavit Git uživatele, pokračuji...")
+                
+                # Přidání změn v kroky.json
+                result_add = subprocess.run(["git", "add", "kroky.json"], 
+                                          capture_output=True, text=True, cwd=BASE_DIR)
+                if result_add.returncode != 0:
+                    st.error(f"Git add selhal: {result_add.stderr}")
+                    st.stop()
+                
+                # Kontrola zda jsou nějaké změny k commitování
+                result_status = subprocess.run(["git", "status", "--porcelain", "kroky.json"], 
+                                             capture_output=True, text=True, cwd=BASE_DIR)
+                if not result_status.stdout.strip():
+                    st.info("Žádné změny v akcích k synchronizaci")
+                    st.stop()
+                
+                # Commit
+                result_commit = subprocess.run(
+                    ["git", "commit", "-m", "Manuální synchronizace: změny v akcích"], 
+                    capture_output=True, text=True, cwd=BASE_DIR
+                )
+                if result_commit.returncode != 0:
+                    st.error(f"Git commit selhal: {result_commit.stderr}")
+                    st.stop()
+                
+                # Pull s rebase
+                try:
+                    result_pull = subprocess.run(["git", "pull", "--rebase", "--autostash"], 
+                                               capture_output=True, text=True, cwd=BASE_DIR)
+                    if result_pull.returncode != 0:
+                        st.warning(f"Git pull selhal: {result_pull.stderr}")
+                except Exception as pull_error:
+                    st.warning(f"Git pull selhal: {pull_error}")
+                
+                # Push
+                result_push = subprocess.run(["git", "push"], 
+                                           capture_output=True, text=True, cwd=BASE_DIR)
+                if result_push.returncode != 0:
+                    st.warning(f"Git push selhal: {result_push.stderr}")
+                    st.info("Změny byly uloženy lokálně, ale nelze je nahrát na GitHub.")
+                else:
+                    st.success("✅ Všechny změny akcí byly synchronizovány s GitHub!")
+                
+                refresh_all_data()
+                
+        except Exception as e:
+            st.error(f"❌ Synchronizace selhala: {e}")
+            st.info("Změny byly uloženy lokálně v kroky.json")
 
 # ---------- Sidebar ----------
 st.sidebar.title("📁 Projekt")
@@ -492,6 +527,7 @@ st.subheader("📊 Přehled projektu")
 st.write(f"**Aktivní projekt:** {selected_project}")
 st.write(f"**Subject:** {projects[selected_project].get('subject', 'UAT2\\\\Antosova\\\\')}")
 st.write(f"**Počet scénářů:** {len(projects[selected_project].get('scenarios', []))}")
+st.write(f"**GitHub stav:** {check_github_status()}")
 
 st.markdown("---")
 
@@ -675,7 +711,7 @@ with st.expander("📋 Přehled kroků podle akcí", expanded=False):
 st.markdown("---")
 
 # VYTVOŘÍME ZÁLOŽKY PRO SPRÁVU SCÉNÁŘŮ A AKCÍ
-tab1, tab2, tab3 = st.tabs(["➕ Přidat scénáře", "🔧 Správa akcí", "📤 Export"])
+tab1, tab2, tab3, tab4 = st.tabs(["➕ Přidat scénáře", "🔧 Správa akcí", "📤 Export", "🔍 Diagnostika"])
 
 with tab1:
     # ---------- Přidání scénáře ----------
@@ -789,11 +825,10 @@ with tab2:
     sprava_akci()
 
 with tab3:
-    # V export_to_excel funkci změňte popis na:
     st.subheader("📤 Export projektu")
-
+    
     st.info("Exportuje všechny scénáře projektu do Excelu a automaticky nahraje na GitHub.")
-
+    
     if st.button("💾 Exportovat a nahrát na GitHub", use_container_width=True, type="primary"):
         try:
             with st.spinner("Exportuji a nahrávám na GitHub..."):
@@ -810,16 +845,16 @@ with tab3:
                 )
         except Exception as e:
             st.error(f"Export selhal: {e}")
-
+    
     st.markdown("---")
-
+    
     st.subheader("ℹ️ Informace o exportu")
     st.write("""
     **Co export obsahuje:**
     - Všechny scénáře projektu
     - Kroky jednotlivých scénářů
     - Metadata (priorita, komplexita, segment, kanál)
-
+    
     **Co se stane po exportu:**
     1. Vytvoří se Excel soubor v exports složce
     2. Soubor se přidá do Gitu
@@ -827,4 +862,118 @@ with tab3:
     4. Soubor se nahraje na GitHub
     """)
 
-
+with tab4:
+    st.subheader("🔍 Diagnostika systému")
+    st.info("Tato záložka slouží pro diagnostiku problémů se synchronizací a ukládáním dat.")
+    
+    if st.button("🔄 Spustit diagnostiku", use_container_width=True):
+        import subprocess
+        import os
+        
+        st.markdown("---")
+        st.subheader("📊 Výsledky diagnostiky")
+        
+        # 1. Informace o kroky.json
+        st.write("### 📁 Informace o kroky.json")
+        kroky_cesta = BASE_DIR / "kroky.json"
+        st.write(f"**Cesta:** `{kroky_cesta}`")
+        st.write(f"**Existuje:** `{kroky_cesta.exists()}`")
+        
+        if kroky_cesta.exists():
+            st.write(f"**Velikost:** `{os.path.getsize(kroky_cesta)} bytes`")
+            st.write(f"**Poslední změna:** `{datetime.fromtimestamp(os.path.getmtime(kroky_cesta))}`")
+            
+            # Načteme a zobrazíme počet akcí
+            try:
+                with open(kroky_cesta, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                st.write(f"**Počet akcí v souboru:** `{len(data)}`")
+                st.write("**Názvy akcí:**")
+                for akce in list(data.keys())[:10]:  # Prvních 10 akcí
+                    st.write(f"  - {akce}")
+                if len(data) > 10:
+                    st.write(f"  - ... a dalších {len(data) - 10} akcí")
+            except Exception as e:
+                st.error(f"Chyba při čtení kroky.json: {e}")
+        
+        # 2. Git stav
+        st.markdown("---")
+        st.write("### 🔧 Git stav")
+        
+        # Git status kroky.json
+        result_status = subprocess.run(["git", "status", "-s", "kroky.json"], 
+                                     capture_output=True, text=True, cwd=BASE_DIR)
+        status_output = result_status.stdout.strip()
+        st.write(f"**Status kroky.json:** `{status_output or 'Žádné změny'}`")
+        
+        # Git diff kroky.json
+        result_diff = subprocess.run(["git", "diff", "kroky.json"], 
+                                   capture_output=True, text=True, cwd=BASE_DIR)
+        diff_output = result_diff.stdout.strip()
+        if diff_output:
+            st.write("**Změny v kroky.json:**")
+            st.code(diff_output)
+        else:
+            st.write("**Žádné změny v kroky.json podle Gitu**")
+        
+        # Celkový Git status
+        result_all = subprocess.run(["git", "status", "-s"], 
+                                  capture_output=True, text=True, cwd=BASE_DIR)
+        all_changes = result_all.stdout.strip()
+        if all_changes:
+            st.write("**Všechny změny v repozitáři:**")
+            st.code(all_changes)
+        else:
+            st.write("**Žádné změny v celém repozitáři**")
+        
+        # 3. Test synchronizace
+        st.markdown("---")
+        st.write("### 🧪 Test synchronizace")
+        
+        # Vytvoříme testovací změnu
+        test_content = "Testovací změna pro diagnostiku"
+        try:
+            # Přidáme komentář do kroky.json
+            with open(kroky_cesta, 'r+', encoding='utf-8') as f:
+                data = json.load(f)
+                data['_diagnostika_test'] = test_content
+                f.seek(0)
+                json.dump(data, f, ensure_ascii=False, indent=2)
+                f.truncate()
+            
+            st.success("✅ Testovací změna přidána do kroky.json")
+            
+            # Zkontrolujeme Git status
+            result_test = subprocess.run(["git", "status", "-s", "kroky.json"], 
+                                       capture_output=True, text=True, cwd=BASE_DIR)
+            if result_test.stdout.strip():
+                st.success("✅ Git detekuje změny v kroky.json")
+                st.code(result_test.stdout.strip())
+                
+                # Ukážeme jak synchronizovat
+                st.write("**Návod na synchronizaci:**")
+                st.code("""
+git add kroky.json
+git commit -m "Testovací změna"
+git push
+                """)
+            else:
+                st.error("❌ Git NEDETEKUJE změny v kroky.json!")
+                st.info("""
+**Možné příčiny:**
+1. Soubor kroky.json není v Git repozitáři
+2. Gitignore blokuje soubor
+3. Problém s oprávněními
+                """)
+            
+            # Uklidíme - odstraníme testovací změnu
+            with open(kroky_cesta, 'r+', encoding='utf-8') as f:
+                data = json.load(f)
+                if '_diagnostika_test' in data:
+                    del data['_diagnostika_test']
+                    f.seek(0)
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+                    f.truncate()
+            
+        except Exception as e:
+            st.error(f"❌ Test selhal: {e}")
