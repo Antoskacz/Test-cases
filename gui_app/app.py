@@ -413,17 +413,17 @@ else:
 
 # ---------- Informace o krocích ----------
 
-# Funkce pro načtení kroků bez uživatele
+# Funkce pro načtení kroků - POUŽÍVÁME JEDNOTNÉ FUNKCE
 def get_global_steps():
-    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
-    return load_json(kroky_path)
+    """Načte kroky z kroky.json - jednotná funkce pro celou aplikaci"""
+    return get_steps()  # Použijeme funkci z core.py
 
 def save_global_steps(data):
+    """Uloží kroky do kroky.json - jednotná funkce pro celou aplikaci"""
     kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
     kroky_path.parent.mkdir(exist_ok=True)
     save_json(kroky_path, data)
 
-# Funkce pro aktualizaci všech dat v aplikaci
 def refresh_all_data():
     """Obnoví všechna data v aplikaci po změně kroků"""
     st.rerun()
@@ -622,7 +622,6 @@ def zobraz_editaci_akce():
                 
                 # Aktualizace celé aplikace
                 refresh_all_data()
-                st.rerun()
         
         with col2:
             if st.button("❌ Zrušit", key="zrusit_editaci", use_container_width=True):
@@ -663,7 +662,6 @@ def zobraz_editaci_akce():
                                 del st.session_state[key]
                         
                         refresh_all_data()
-                        st.rerun()
             with col_ne:
                 if st.button("NE, zachovat", key="zachovat_akci", use_container_width=True):
                     st.session_state["potvrdit_smazani"] = False
@@ -762,7 +760,6 @@ def zobraz_novou_akci():
                     
                     # AKTUALIZACE CELÉ APLIKACE
                     refresh_all_data()
-                    st.rerun()
         
         with col2:
             if st.button("❌ Zrušit", key="zrusit_novou_akci", use_container_width=True):
@@ -784,7 +781,8 @@ with st.expander("📊 Přehled kroků podle akcí", expanded=False):
     zobraz_novou_akci()
     zobraz_editaci_akce()
     
-    steps_data = get_steps()
+    # NAČTENÍ DAT PŘÍMO Z KROKY.JSON - vždy čerstvá data
+    steps_data = get_global_steps()
     
     if not steps_data:
         st.info("Žádné akce nebyly nalezeny. Přidejte první akci!")
@@ -794,7 +792,6 @@ with st.expander("📊 Přehled kroků podle akcí", expanded=False):
         
         for akce in sorted(steps_data.keys()):
             zobraz_akci_nahled(akce, steps_data[akce])
-
                 
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")
