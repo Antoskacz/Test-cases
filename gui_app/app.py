@@ -7,7 +7,6 @@ from core import (
     PROJECTS_PATH, KROKY_PATH,
     generate_testcase, export_to_excel,
     PRIORITY_MAP, COMPLEXITY_MAP,
-    add_new_action, update_action, delete_action,
     get_steps_from_action
 )
 
@@ -94,6 +93,8 @@ def refresh_all_data():
 
 def sprava_akci():
     """Jednoduchá a efektivní správa akcí s ukládáním do kroky.json"""
+    from core import add_new_action, update_action, delete_action
+    
     steps_data = get_steps()
     
     # Tlačítko pro novou akci
