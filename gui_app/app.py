@@ -782,13 +782,27 @@ with tab1:
                     akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0)
                     priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]))
                     complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]))
+                    
                     if st.form_submit_button("💾 Uložit změny"):
                         scenario["veta"] = veta.strip()
                         scenario["akce"] = akce
                         scenario["priority"] = priority
                         scenario["complexity"] = complexity
                         scenario["kroky"] = get_steps_from_action(akce, steps_data)
-                        scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip()
+                        
+                        # OPRAVA: Zachováme strukturu názvu, pouze aktualizujeme větu
+                        current_name_parts = scenario["test_name"].split("_")
+                        if len(current_name_parts) >= 5:
+                            # Formát: 001_SHOP_B2C_DSL_věta
+                            # Zachováme číslo, kanál, segment, technologii a aktualizujeme větu
+                            new_test_name = f"{current_name_parts[0]}_{current_name_parts[1]}_{current_name_parts[2]}_{current_name_parts[3]}_{veta.strip()}"
+                        else:
+                            # Pokud formát není standardní, vytvoříme nový název
+                            segment, kanal, technologie = parse_veta(veta.strip())
+                            new_test_name = f"{current_name_parts[0]}_{kanal}_{segment}_{technologie}_{veta.strip()}"
+                        
+                        scenario["test_name"] = new_test_name
+                        
                         projects[selected_project]["scenarios"][scenario_index] = scenario
                         save_json(PROJECTS_PATH, projects)
                         st.success("✅ Změny uloženy a propsány do projektu.")

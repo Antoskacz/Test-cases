@@ -212,6 +212,8 @@ def parse_veta(veta: str):
             
     return segment, kanal, technologie
 
+
+
 # ---------- Generování test casu ----------
 def generate_testcase(project, veta, akce, priority, complexity, kroky_data, projects_data):
     """Vytvoří nový test case a uloží ho do projektu"""
