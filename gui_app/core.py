@@ -293,26 +293,42 @@ def export_to_excel(project_name, projects_data):
     # Git operace s lepším error handling
     try:
         # Kontrola git repozitáře
-        check_result = subprocess.run(["git", "status"], capture_output=True, text=True)
+        check_result = subprocess.run(["git", "status"], capture_output=True, text=True, cwd=BASE_DIR)
         if "not a git repository" in check_result.stderr:
             print("⚠️ Není Git repozitář - export pouze lokální")
             return output_path
 
-        # Přidání souboru
-        subprocess.run(["git", "add", str(output_path)], check=True)
-        
-        # Commit
-        subprocess.run(["git", "commit", "-m", f"Auto export {project_name}"], check=True)
-        
-        # Pull s autostash
+        # Nastavení uživatele
         try:
-            subprocess.run(["git", "pull", "--rebase", "--autostash"], check=True)
-        except subprocess.CalledProcessError:
-            print("⚠️ Git pull selhal, pokračujeme bez něj")
+            subprocess.run(["git", "config", "user.email", "testcase-builder@example.com"], 
+                         check=True, cwd=BASE_DIR)
+            subprocess.run(["git", "config", "user.name", "TestCase Builder"], 
+                         check=True, cwd=BASE_DIR)
+        except:
+            print("⚠️ Nelze nastavit Git uživatele")
+
+        # Přidání souboru
+        subprocess.run(["git", "add", str(output_path)], check=True, cwd=BASE_DIR)
+        
+        # Commit pouze pokud jsou změny
+        status_result = subprocess.run(["git", "status", "--porcelain"], 
+                                     capture_output=True, text=True, cwd=BASE_DIR)
+        if status_result.stdout.strip():
+            subprocess.run(["git", "commit", "-m", f"Auto export {project_name}"], 
+                         check=True, cwd=BASE_DIR)
             
-        # Push
-        subprocess.run(["git", "push"], check=True)
-        print("✅ Export a git push úspěšný")
+            # Pull s autostash
+            try:
+                subprocess.run(["git", "pull", "--rebase", "--autostash"], 
+                             check=True, cwd=BASE_DIR)
+            except subprocess.CalledProcessError:
+                print("⚠️ Git pull selhal, pokračujeme bez něj")
+                
+            # Push
+            subprocess.run(["git", "push"], check=True, cwd=BASE_DIR)
+            print("✅ Export a git push úspěšný")
+        else:
+            print("ℹ️ Žádné změny k commitování")
         
     except subprocess.CalledProcessError as e:
         print(f"⚠️ Git operace selhala: {e}")
@@ -322,6 +338,8 @@ def export_to_excel(project_name, projects_data):
 
     print(f"✅ Exportováno do: {output_path}")
     return output_path
+
+
 
 # ---------- Funkce pro opravu duplicitních kroků ----------
 def oprav_duplicitni_kroky():

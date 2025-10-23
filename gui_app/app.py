@@ -9,6 +9,10 @@ from core import (
     PRIORITY_MAP, COMPLEXITY_MAP,
     get_steps_from_action
 )
+from pathlib import Path
+
+# ---------- Cesty ----------
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ---------- Konfigurace vzhledu ----------
 st.set_page_config(page_title="TestCase Builder", layout="wide", page_icon="🧪")
@@ -95,13 +99,19 @@ def check_github_status():
     """Zkontroluje stav GitHub synchronizace"""
     try:
         import subprocess
-        result = subprocess.run(["git", "status"], capture_output=True, text=True)
-        if "nothing to commit" in result.stdout:
-            return "✅ Synchronizováno s GitHub"
-        else:
+        # Nejprve zkontrolujeme jestli jsme v git repozitáři
+        check_git = subprocess.run(["git", "status"], capture_output=True, text=True, cwd=BASE_DIR)
+        if "not a git repository" in check_git.stderr:
+            return "❌ Není Git repozitář"
+        
+        # Zkontrolujeme změny
+        result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, cwd=BASE_DIR)
+        if result.stdout.strip():
             return "⚠️ Čeká na synchronizaci s GitHub"
-    except:
-        return "❴ Nelze zkontrolovat stav GitHub ❵"
+        else:
+            return "✅ Synchronizováno s GitHub"
+    except Exception as e:
+        return f"❌ Nelze zkontrolovat: {str(e)}"
 
 def sprava_akci():
     """Jednoduchá a efektivní správa akcí s ukládáním do kroky.json"""
@@ -380,25 +390,73 @@ def sprava_akci():
                         del st.session_state[f"edit_kroky_{akce}"]
                     st.rerun()
     
-    # Synchronizace s GitHub
-    st.markdown("---")
-    st.subheader("🔄 Synchronizace s GitHub")
-    
-    st.write(f"**Stav:** {check_github_status()}")
-    
-    if st.button("🔄 Synchronizovat změny s GitHub", use_container_width=True):
-        try:
-            import subprocess
-            with st.spinner("Synchronizuji s GitHub..."):
-                # Commit všech změn
-                subprocess.run(["git", "add", "."], check=True)
-                subprocess.run(["git", "commit", "-m", "Manuální synchronizace: změny v akcích a projektech"], check=True)
-                subprocess.run(["git", "pull", "--rebase"], check=True)
-                subprocess.run(["git", "push"], check=True)
+
+# Synchronizace s GitHub
+st.markdown("---")
+st.subheader("🔄 Synchronizace s GitHub")
+
+st.write(f"**Stav:** {check_github_status()}")
+
+if st.button("🔄 Synchronizovat změny s GitHub", use_container_width=True):
+    try:
+        import subprocess
+        with st.spinner("Synchronizuji s GitHub..."):
+            # Nastavení uživatele pokud není nastaven
+            try:
+                subprocess.run(["git", "config", "user.email", "testcase-builder@example.com"], 
+                             check=True, cwd=BASE_DIR)
+                subprocess.run(["git", "config", "user.name", "TestCase Builder"], 
+                             check=True, cwd=BASE_DIR)
+            except:
+                st.warning("Nelze nastavit Git uživatele, pokračuji...")
+            
+            # Přidání všech změn
+            result_add = subprocess.run(["git", "add", "."], 
+                                      capture_output=True, text=True, cwd=BASE_DIR)
+            if result_add.returncode != 0:
+                st.error(f"Git add selhal: {result_add.stderr}")
+                st.stop()
+            
+            # Kontrola zda jsou nějaké změny k commitování
+            result_status = subprocess.run(["git", "status", "--porcelain"], 
+                                         capture_output=True, text=True, cwd=BASE_DIR)
+            if not result_status.stdout.strip():
+                st.info("Žádné změny k synchronizaci")
+                st.stop()
+            
+            # Commit
+            result_commit = subprocess.run(
+                ["git", "commit", "-m", "Manuální synchronizace: změny v akcích a projektech"], 
+                capture_output=True, text=True, cwd=BASE_DIR
+            )
+            if result_commit.returncode != 0:
+                st.error(f"Git commit selhal: {result_commit.stderr}")
+                st.stop()
+            
+            # Pull s rebase (s lepším error handling)
+            try:
+                result_pull = subprocess.run(["git", "pull", "--rebase", "--autostash"], 
+                                           capture_output=True, text=True, cwd=BASE_DIR)
+                if result_pull.returncode != 0:
+                    st.warning(f"Git pull selhal: {result_pull.stderr}")
+            except Exception as pull_error:
+                st.warning(f"Git pull selhal: {pull_error}")
+            
+            # Push
+            result_push = subprocess.run(["git", "push"], 
+                                       capture_output=True, text=True, cwd=BASE_DIR)
+            if result_push.returncode != 0:
+                st.error(f"Git push selhal: {result_push.stderr}")
+                st.stop()
+            
             st.success("✅ Všechny změny synchronizovány s GitHub!")
             refresh_all_data()
-        except Exception as e:
-            st.error(f"❌ Synchronizace selhala: {e}")
+            
+    except Exception as e:
+        st.error(f"❌ Synchronizace selhala: {e}")
+        st.info("Zkontrolujte, zda je složka inicializována jako Git repozitář a máte nastavené přihlašovací údaje.")
+
+
 
 # ---------- Sidebar ----------
 st.sidebar.title("📁 Projekt")
