@@ -492,6 +492,7 @@ if st.sidebar.button("Zkontrolovat kroky.json"):
             st.sidebar.write(f"{akce}: NEZNÁMÝ FORMÁT")
 
 # ---------- Přidání scénáře ----------
+# ---------- Přidání scénáře ----------
 st.subheader("➕ Přidat nový scénář")
 steps_data = get_steps()
 akce_list = list(steps_data.keys())
@@ -501,15 +502,9 @@ with st.form("add_scenario"):
     akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
     
     # Automatická komplexita - OPRAVENÉ NAČÍTÁNÍ POČTU KROKŮ
-    if akce in steps_data:
-        if isinstance(steps_data[akce], dict) and "steps" in steps_data[akce]:
-            # Nový formát
-            pocet_kroku = len(steps_data[akce]["steps"])
-        else:
-            # Starý formát
-            pocet_kroku = len(steps_data[akce])
-    else:
-        pocet_kroku = 0
+    from core import get_steps_from_action
+    kroky_pro_akci = get_steps_from_action(akce, steps_data)
+    pocet_kroku = len(kroky_pro_akci)
     
     auto_complexity = get_automatic_complexity(pocet_kroku)
     
@@ -546,9 +541,10 @@ with st.form("add_scenario"):
 st.markdown("---")
 
 
+
 # ---------- Úprava scénáře ----------
 st.subheader("✏️ Úprava scénáře")
-if not scenarios:  # Místo df.empty použijeme scenarios
+if not scenarios:
     st.info("Zatím žádné scénáře pro úpravu.")
 else:
     selected_row = st.selectbox(
@@ -575,8 +571,8 @@ else:
                     scenario["akce"] = akce
                     scenario["priority"] = priority
                     scenario["complexity"] = complexity
-                    # DŮLEŽITÉ: Použij deepcopy při přiřazování kroků
-                    scenario["kroky"] = copy.deepcopy(steps_data.get(akce, []))
+                    # DŮLEŽITÉ: Použij správné načtení kroků
+                    scenario["kroky"] = get_steps_from_action(akce, steps_data)
                     # přegenerování test name
                     scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip().replace(" ", "_")
                     # uložení změn

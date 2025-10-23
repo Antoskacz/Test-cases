@@ -39,26 +39,27 @@ def save_json(path: Path, data):
 
 # ---------- Nová funkce načítání kroků ----------
 def get_steps():
-    """Vrací novou kopii dat z kroky.json (každé volání načte čerstvá data)"""
+    """Vrací novou kopii dat z kroky.json - zachovává nový formát"""
     if not KROKY_PATH.exists():
         return {}
     with open(KROKY_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        return copy.deepcopy(json.load(f))
+
+# ---------- Pomocná funkce pro získání kroků z akce ----------
+def get_steps_from_action(akce, kroky_data):
+    """Získá kroky z akce bez ohledu na formát"""
+    if akce not in kroky_data:
+        return []
     
-    # PŘEVOD NA STARÝ FORMÁT PRO KOMPATIBILITU
-    converted_data = {}
-    for akce, obsah in data.items():
-        if isinstance(obsah, dict) and "steps" in obsah:
-            # Nový formát: {"description": "...", "steps": [...]}
-            converted_data[akce] = obsah["steps"]
-        elif isinstance(obsah, list):
-            # Starý formát: [...]
-            converted_data[akce] = obsah
-        else:
-            # Neznámý formát
-            converted_data[akce] = []
-    
-    return converted_data
+    obsah = kroky_data[akce]
+    if isinstance(obsah, dict) and "steps" in obsah:
+        # Nový formát: {"description": "...", "steps": [...]}
+        return obsah["steps"]
+    elif isinstance(obsah, list):
+        # Starý formát: [...]
+        return obsah
+    else:
+        return []
 
 # ---------- Generování názvu test casu ----------
 def parse_veta(veta: str):
@@ -121,11 +122,8 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     segment, kanal, technologie = parse_veta(veta)
     test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
 
-    # Načtení kroků podle akce - POUŽÍVÁME PŘEVEDENÁ DATA
-    if akce in kroky_data:
-        kroky = copy.deepcopy(kroky_data[akce])
-    else:
-        kroky = []
+    # Načtení kroků podle akce - POUŽÍVÁME POMOCNOU FUNKCI
+    kroky = get_steps_from_action(akce, kroky_data)
 
     tc = {
         "order_no": order_no,
@@ -136,7 +134,7 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
         "priority": priority,
         "complexity": complexity,
         "veta": veta,
-        "kroky": kroky
+        "kroky": copy.deepcopy(kroky)  # Hluboká kopie kroků
     }
 
     project_data["scenarios"].append(tc)
