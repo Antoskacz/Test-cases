@@ -91,6 +91,18 @@ def refresh_all_data():
     """Obnoví všechna data v aplikaci po změně kroků"""
     st.rerun()
 
+def check_github_status():
+    """Zkontroluje stav GitHub synchronizace"""
+    try:
+        import subprocess
+        result = subprocess.run(["git", "status"], capture_output=True, text=True)
+        if "nothing to commit" in result.stdout:
+            return "✅ Synchronizováno s GitHub"
+        else:
+            return "⚠️ Čeká na synchronizaci s GitHub"
+    except:
+        return "❴ Nelze zkontrolovat stav GitHub ❵"
+
 def sprava_akci():
     """Jednoduchá a efektivní správa akcí s ukládáním do kroky.json"""
     from core import add_new_action, update_action, delete_action
@@ -367,6 +379,26 @@ def sprava_akci():
                     if f"edit_kroky_{akce}" in st.session_state:
                         del st.session_state[f"edit_kroky_{akce}"]
                     st.rerun()
+    
+    # Synchronizace s GitHub
+    st.markdown("---")
+    st.subheader("🔄 Synchronizace s GitHub")
+    
+    st.write(f"**Stav:** {check_github_status()}")
+    
+    if st.button("🔄 Synchronizovat změny s GitHub", use_container_width=True):
+        try:
+            import subprocess
+            with st.spinner("Synchronizuji s GitHub..."):
+                # Commit všech změn
+                subprocess.run(["git", "add", "."], check=True)
+                subprocess.run(["git", "commit", "-m", "Manuální synchronizace: změny v akcích a projektech"], check=True)
+                subprocess.run(["git", "pull", "--rebase"], check=True)
+                subprocess.run(["git", "push"], check=True)
+            st.success("✅ Všechny změny synchronizovány s GitHub!")
+            refresh_all_data()
+        except Exception as e:
+            st.error(f"❌ Synchronizace selhala: {e}")
 
 # ---------- Sidebar ----------
 st.sidebar.title("📁 Projekt")
@@ -438,13 +470,60 @@ st.subheader("📊 Přehled projektu")
 st.write(f"**Aktivní projekt:** {selected_project}")
 st.write(f"**Subject:** {projects[selected_project].get('subject', 'UAT2\\\\Antosova\\\\')}")
 st.write(f"**Počet scénářů:** {len(projects[selected_project].get('scenarios', []))}")
+st.write(f"**GitHub stav:** {check_github_status()}")
+
+st.markdown("---")
+
+# ---------- SEZNAM SCÉNÁŘŮ ----------
+st.subheader("📋 Seznam scénářů")
+
+scenarios = projects[selected_project].get("scenarios", [])
+
+if scenarios:
+    df = make_df(projects, selected_project)
+    if not df.empty:
+        st.dataframe(
+            df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Order": st.column_config.NumberColumn("Číslo", width="small"),
+                "Test Name": st.column_config.TextColumn("Název testu", width="large"),
+                "Action": st.column_config.TextColumn("Akce", width="medium"),
+                "Segment": st.column_config.TextColumn("Segment", width="small"),
+                "Channel": st.column_config.TextColumn("Kanál", width="small"),
+                "Priority": st.column_config.TextColumn("Priorita", width="small"),
+                "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
+                "Kroky": st.column_config.NumberColumn("Kroků", width="small")
+            }
+        )
+        
+        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
+            scen = projects[selected_project]["scenarios"]
+            for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
+                nove_cislo = f"{i:03d}"
+                t["order_no"] = i
+                
+                if "_" in t["test_name"]:
+                    parts = t["test_name"].split("_", 1)
+                    if parts[0].isdigit() and len(parts[0]) <= 3:
+                        t["test_name"] = f"{nove_cislo}_{parts[1]}"
+                    else:
+                        t["test_name"] = f"{nove_cislo}_{t['test_name']}"
+                else:
+                    t["test_name"] = f"{nove_cislo}_{t['test_name']}"
+            
+            projects[selected_project]["scenarios"] = scen
+            save_json(PROJECTS_PATH, projects)
+            st.success("✅ Scénáře a názvy byly přečíslovány.")
+            st.rerun()
+else:
+    st.info("Zatím žádné scénáře. Přidejte první scénář v záložce '➕ Přidat scénáře'.")
 
 st.markdown("---")
 
 # ---------- ANALÝZA SCÉNÁŘŮ ----------
 st.subheader("📊 Analýza scénářů")
-
-scenarios = projects[selected_project].get("scenarios", [])
 
 # Shromáždění dat pro stromovou strukturu
 segment_data = {"B2C": {}, "B2B": {}}
@@ -574,54 +653,10 @@ with st.expander("📋 Přehled kroků podle akcí", expanded=False):
 
 st.markdown("---")
 
-# VYTVOŘÍME ZÁLOŽKY PRO ZBÝVAJÍCÍ FUNKCE
-tab1, tab2, tab3 = st.tabs(["📝 Scénáře", "🔧 Správa akcí", "📤 Export"])
+# VYTVOŘÍME ZÁLOŽKY PRO SPRÁVU SCÉNÁŘŮ A AKCÍ
+tab1, tab2, tab3 = st.tabs(["➕ Přidat scénáře", "🔧 Správa akcí", "📤 Export"])
 
 with tab1:
-    # ---------- SEZNAM SCÉNÁŘŮ A PŘEČÍSLOVÁNÍ ----------
-    if scenarios:
-        st.subheader("📋 Seznam scénářů")
-        
-        df = make_df(projects, selected_project)
-        if not df.empty:
-            st.dataframe(
-                df,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Order": st.column_config.NumberColumn("Číslo", width="small"),
-                    "Test Name": st.column_config.TextColumn("Název testu", width="large"),
-                    "Action": st.column_config.TextColumn("Akce", width="medium"),
-                    "Segment": st.column_config.TextColumn("Segment", width="small"),
-                    "Channel": st.column_config.TextColumn("Kanál", width="small"),
-                    "Priority": st.column_config.TextColumn("Priorita", width="small"),
-                    "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
-                    "Kroky": st.column_config.NumberColumn("Kroků", width="small")
-                }
-            )
-            
-            if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
-                scen = projects[selected_project]["scenarios"]
-                for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
-                    nove_cislo = f"{i:03d}"
-                    t["order_no"] = i
-                    
-                    if "_" in t["test_name"]:
-                        parts = t["test_name"].split("_", 1)
-                        if parts[0].isdigit() and len(parts[0]) <= 3:
-                            t["test_name"] = f"{nove_cislo}_{parts[1]}"
-                        else:
-                            t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-                    else:
-                        t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-                
-                projects[selected_project]["scenarios"] = scen
-                save_json(PROJECTS_PATH, projects)
-                st.success("✅ Scénáře a názvy byly přečíslovány.")
-                st.rerun()
-
-    st.markdown("---")
-
     # ---------- Přidání scénáře ----------
     st.subheader("➕ Přidat nový scénář")
     steps_data = get_steps()

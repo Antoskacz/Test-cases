@@ -43,23 +43,42 @@ def save_kroky_data(data):
     try:
         # Uložení do souboru
         save_json(KROKY_PATH, data)
+        print(f"✅ Kroky.json uložen lokálně ({len(data)} akcí)")
         
-        # Git operace
-        subprocess.run(["git", "add", str(KROKY_PATH)], check=True)
-        subprocess.run(["git", "commit", "-m", "Auto update kroky.json"], check=True)
-        
-        # Nejprve pull s rebase
+        # Git operace - s lepší chybovou handling
         try:
-            subprocess.run(["git", "pull", "--rebase"], check=True)
-        except subprocess.CalledProcessError:
-            print("⚠️ Git pull --rebase selhal, pokračujeme bez něj")
+            # Přidání souboru
+            result_add = subprocess.run(["git", "add", str(KROKY_PATH)], 
+                                      capture_output=True, text=True, check=True)
+            print("✅ Git add úspěšný")
             
-        subprocess.run(["git", "push"], check=True)
-        print("✅ Kroky.json uložen a změny nahrány na GitHub")
-        
+            # Commit
+            result_commit = subprocess.run(["git", "commit", "-m", "Auto update: změny v akcích a krocích"], 
+                                         capture_output=True, text=True, check=True)
+            print("✅ Git commit úspěšný")
+            
+            # Nejprve pull s rebase
+            try:
+                result_pull = subprocess.run(["git", "pull", "--rebase"], 
+                                           capture_output=True, text=True, check=True)
+                print("✅ Git pull --rebase úspěšný")
+            except subprocess.CalledProcessError as pull_error:
+                print(f"⚠️ Git pull --rebase selhal: {pull_error.stderr}")
+                # Pokračujeme dál i když pull selhal
+                
+            # Push
+            result_push = subprocess.run(["git", "push"], 
+                                       capture_output=True, text=True, check=True)
+            print("✅ Git push úspěšný")
+            print("✅ Kroky.json uložen a změny nahrány na GitHub")
+            
+        except subprocess.CalledProcessError as git_error:
+            print(f"⚠️ Git operace selhala: {git_error.stderr}")
+            print("ℹ️ Data byla uložena lokálně, ale GitHub synchronizace selhala")
+            
     except Exception as e:
-        print(f"⚠️ Git operace selhala: {e}")
-        # I když git selže, soubor se uloží lokálně
+        print(f"❌ Chyba při ukládání: {e}")
+        # I když vše selže, soubor se uloží lokálně
         save_json(KROKY_PATH, data)
 
 def add_new_action(akce_nazev, akce_popis, kroky):
