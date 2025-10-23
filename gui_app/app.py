@@ -413,6 +413,21 @@ else:
 
 # ---------- Informace o krocích ----------
 
+# Funkce pro načtení kroků bez uživatele
+def get_global_steps():
+    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
+    return load_json(kroky_path)
+
+def save_global_steps(data):
+    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
+    kroky_path.parent.mkdir(exist_ok=True)
+    save_json(kroky_path, data)
+
+# Funkce pro aktualizaci všech dat v aplikaci
+def refresh_all_data():
+    """Obnoví všechna data v aplikaci po změně kroků"""
+    st.rerun()
+
 # FUNKCE PRO ZOBRAZENÍ AKCE (POUZE NÁHLED)
 def zobraz_akci_nahled(akce, obsah_akce):
     """Zobrazí náhled akce s tlačítkem pro editaci"""
