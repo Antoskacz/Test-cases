@@ -410,7 +410,7 @@ else:
             st.rerun()
 
 
-# ---------- Informace o krocích ----------
+
 # ---------- Informace o krocích ----------
 
 # NEJPRVE DEFINUJEME FUNKCI
@@ -438,7 +438,7 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
             st.caption(f"📝 {popis_akce}")
         
         with col_edit:
-            # Tlačítko pro editaci
+            # Tlačítko pro editaci - MIMO formulář
             if st.button("✏️", key=f"edit_{akce}", help=f"Upravit akci {akce}"):
                 st.session_state[f"edit_akce_{akce}"] = True
         
@@ -507,7 +507,8 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
                             st.session_state[f"kroky_{akce}"][i] = novy_text
                     
                     with col_smazat:
-                        if st.button("🗑️", key=f"del_{akce}_{i}"):
+                        # Tlačítko pro smazání kroku - musí být submit button
+                        if st.form_submit_button("🗑️", key=f"del_{akce}_{i}", use_container_width=True):
                             kroky_k_smazani.append(i)
                 
                 # Odstranění označených kroků
@@ -516,12 +517,13 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
                         st.session_state[f"kroky_{akce}"].pop(index)
                         st.rerun()
                 
-                # Přidání nového kroku
+                # Přidání nového kroku - musí být mimo formulář nebo jako submit button
                 st.write("**Přidat nový krok:**")
                 new_desc = st.text_area("Description", key=f"new_desc_{akce}", height=60)
                 new_expected = st.text_area("Expected", key=f"new_exp_{akce}", height=60)
                 
-                if st.button("➕ Přidat krok", key=f"add_{akce}"):
+                # Tlačítko pro přidání kroku - musí být submit button
+                if st.form_submit_button("➕ Přidat krok", key=f"add_{akce}", use_container_width=True):
                     if new_desc.strip():
                         st.session_state[f"kroky_{akce}"].append({
                             "description": new_desc.strip(),
@@ -532,7 +534,7 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
                 # Tlačítka pro uložení/zrušení
                 col_save, col_cancel = st.columns(2)
                 with col_save:
-                    if st.form_submit_button("💾 Uložit změny"):
+                    if st.form_submit_button("💾 Uložit změny", use_container_width=True):
                         # Uložení změn do kroky.json
                         kroky_data = get_global_steps()
                         kroky_data[akce] = {
@@ -546,7 +548,7 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
                         refresh_all_data()
                 
                 with col_cancel:
-                    if st.form_submit_button("❌ Zrušit"):
+                    if st.form_submit_button("❌ Zrušit", use_container_width=True):
                         st.session_state[f"edit_akce_{akce}"] = False
                         if f"kroky_{akce}" in st.session_state:
                             del st.session_state[f"kroky_{akce}"]
