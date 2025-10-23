@@ -62,6 +62,21 @@ def make_df(projects, project_name):
         })
     return pd.DataFrame(rows).sort_values(by="Order", ascending=True)
 
+
+# Funkce pro načtení kroků
+def get_global_steps():
+    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
+    return load_json(kroky_path)
+
+def save_global_steps(data):
+    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
+    kroky_path.parent.mkdir(exist_ok=True)
+    save_json(kroky_path, data)
+
+def refresh_all_data():
+    st.rerun()
+
+
 # ---------- Automatická komplexita ----------
 def get_automatic_complexity(pocet_kroku):
     """Automaticky určí komplexitu podle počtu kroků"""
@@ -135,6 +150,180 @@ if selected_project != "— vyber —" and selected_project in projects:
             st.success(f"✅ Projekt '{selected_project}' smazán")
             st.rerun()
 
+def sprava_akci():
+    """Jednoduchá a efektivní správa akcí"""
+    steps_data = get_steps()
+    
+    # Tlačítko pro novou akci
+    if st.button("➕ Přidat novou akci", key="nova_akce_hlavni", use_container_width=True):
+        st.session_state["nova_akce"] = True
+    
+    # Formulář pro novou akci
+    if st.session_state.get("nova_akce", False):
+        with st.form("nova_akce_formular", clear_on_submit=True):
+            st.subheader("Nová akce")
+            
+            nova_akce_nazev = st.text_input("Název akce*", placeholder="Např.: Aktivace_DSL")
+            nova_akce_popis = st.text_input("Popis akce*", placeholder="Např.: Aktivace DSL služby")
+            
+            st.write("**Kroky akce:**")
+            st.info("Po uložení akce můžete přidat kroky v editaci.")
+            
+            col_ulozit, col_zrusit = st.columns(2)
+            with col_ulozit:
+                if st.form_submit_button("💾 Vytvořit akci", use_container_width=True):
+                    if nova_akce_nazev.strip() and nova_akce_popis.strip():
+                        # Vytvoříme prázdnou akci
+                        kroky_data = get_steps()
+                        kroky_data[nova_akce_nazev.strip()] = {
+                            "description": nova_akce_popis.strip(),
+                            "steps": []
+                        }
+                        save_global_steps(kroky_data)
+                        st.success(f"✅ Akce '{nova_akce_nazev}' vytvořena!")
+                        st.session_state["nova_akce"] = False
+                        st.session_state["edit_akce"] = nova_akce_nazev.strip()
+                        refresh_all_data()
+                    else:
+                        st.error("Vyplňte název a popis akce")
+            
+            with col_zrusit:
+                if st.form_submit_button("❌ Zrušit", use_container_width=True):
+                    st.session_state["nova_akce"] = False
+                    st.rerun()
+    
+    st.markdown("---")
+    
+    # Seznam existujících akcí
+    if steps_data:
+        st.subheader("Existující akce")
+        
+        for akce in sorted(steps_data.keys()):
+            obsah = steps_data[akce]
+            popis = obsah.get("description", "Bez popisu") if isinstance(obsah, dict) else "Bez popisu"
+            kroky = obsah.get("steps", []) if isinstance(obsah, dict) else obsah
+            pocet_kroku = len(kroky)
+            
+            col_akce, col_edit, col_smazat = st.columns([3, 1, 1])
+            
+            with col_akce:
+                st.write(f"**{akce}**")
+                st.caption(f"{popis} | {pocet_kroku} kroků")
+            
+            with col_edit:
+                if st.button("✏️", key=f"edit_{akce}", help="Upravit akci"):
+                    st.session_state["edit_akce"] = akce
+                    st.rerun()
+            
+            with col_smazat:
+                if st.button("🗑️", key=f"delete_{akce}", help="Smazat akci"):
+                    st.session_state["smazat_akci"] = akce
+                    st.rerun()
+            
+            # Potvrzení smazání
+            if st.session_state.get("smazat_akci") == akce:
+                st.error(f"Opravdu smazat akci '{akce}'?")
+                col_ano, col_ne = st.columns(2)
+                with col_ano:
+                    if st.button("ANO", key=f"ano_{akce}"):
+                        kroky_data = get_steps()
+                        if akce in kroky_data:
+                            del kroky_data[akce]
+                            save_global_steps(kroky_data)
+                            st.success(f"✅ Akce '{akce}' smazána!")
+                            st.session_state["smazat_akci"] = None
+                            refresh_all_data()
+                with col_ne:
+                    if st.button("NE", key=f"ne_{akce}"):
+                        st.session_state["smazat_akci"] = None
+                        st.rerun()
+            
+            st.markdown("---")
+    
+    # Editace akce
+    if st.session_state.get("edit_akce"):
+        akce = st.session_state["edit_akce"]
+        obsah = steps_data.get(akce, {})
+        popis = obsah.get("description", "") if isinstance(obsah, dict) else ""
+        kroky = obsah.get("steps", []) if isinstance(obsah, dict) else obsah
+        
+        st.subheader(f"Editace akce: {akce}")
+        
+        with st.form(f"edit_akce_{akce}"):
+            novy_popis = st.text_input("Popis akce", value=popis)
+            
+            st.write("**Kroky akce:**")
+            
+            # Načtení kroků do session state
+            if f"edit_kroky_{akce}" not in st.session_state:
+                st.session_state[f"edit_kroky_{akce}"] = kroky.copy()
+            
+            # Zobrazení kroků
+            for i, krok in enumerate(st.session_state[f"edit_kroky_{akce}"]):
+                col_krok, col_smazat = st.columns([4, 1])
+                
+                with col_krok:
+                    if isinstance(krok, dict):
+                        desc = st.text_area(f"Krok {i+1} - Description", 
+                                          value=krok.get('description', ''),
+                                          key=f"desc_{akce}_{i}",
+                                          height=60)
+                        exp = st.text_area(f"Krok {i+1} - Expected", 
+                                         value=krok.get('expected', ''),
+                                         key=f"exp_{akce}_{i}",
+                                         height=60)
+                        st.session_state[f"edit_kroky_{akce}"][i] = {"description": desc, "expected": exp}
+                    else:
+                        text = st.text_area(f"Krok {i+1}", 
+                                          value=krok,
+                                          key=f"text_{akce}_{i}",
+                                          height=60)
+                        st.session_state[f"edit_kroky_{akce}"][i] = text
+                
+                with col_smazat:
+                    st.write("")  # Prázdný řádek
+                    if st.form_submit_button("🗑️", key=f"del_{akce}_{i}"):
+                        st.session_state[f"edit_kroky_{akce}"].pop(i)
+                        st.rerun()
+                
+                st.markdown("---")
+            
+            # Přidání nového kroku
+            st.write("**Přidat krok:**")
+            new_desc = st.text_area("Description", key=f"new_desc_{akce}", height=60)
+            new_exp = st.text_area("Expected", key=f"new_exp_{akce}", height=60)
+            
+            if st.form_submit_button("➕ Přidat krok", key=f"add_{akce}"):
+                if new_desc.strip():
+                    st.session_state[f"edit_kroky_{akce}"].append({
+                        "description": new_desc.strip(),
+                        "expected": new_exp.strip()
+                    })
+                    st.rerun()
+            
+            # Uložení změn
+            col_ulozit, col_zrusit = st.columns(2)
+            with col_ulozit:
+                if st.form_submit_button("💾 Uložit změny", use_container_width=True):
+                    kroky_data = get_steps()
+                    kroky_data[akce] = {
+                        "description": novy_popis,
+                        "steps": st.session_state[f"edit_kroky_{akce}"].copy()
+                    }
+                    save_global_steps(kroky_data)
+                    st.success(f"✅ Akce '{akce}' upravena!")
+                    st.session_state["edit_akce"] = None
+                    if f"edit_kroky_{akce}" in st.session_state:
+                        del st.session_state[f"edit_kroky_{akce}"]
+                    refresh_all_data()
+            
+            with col_zrusit:
+                if st.form_submit_button("❌ Zrušit", use_container_width=True):
+                    st.session_state["edit_akce"] = None
+                    if f"edit_kroky_{akce}" in st.session_state:
+                        del st.session_state[f"edit_kroky_{akce}"]
+                    st.rerun()
+
 
 
 # ---------- Hlavní část - hlavní strana aplikace ----------
@@ -159,640 +348,320 @@ st.write(f"**Počet scénářů:** {len(projects[selected_project].get('scenario
 
 st.markdown("---")
 
-# SEZNAM SCÉNÁŘŮ A PŘEČÍSLOVÁNÍ
-scenarios = projects[selected_project].get("scenarios", [])
+st.markdown("---")
 
-if scenarios:
-    st.subheader("📋 Seznam scénářů")
-    
-    # Tabulka scénářů
-    df = make_df(projects, selected_project)
-    if not df.empty:
-        st.dataframe(
-            df,
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "Order": st.column_config.NumberColumn("Číslo", width="small"),
-                "Test Name": st.column_config.TextColumn("Název testu", width="large"),
-                "Action": st.column_config.TextColumn("Akce", width="medium"),
-                "Segment": st.column_config.TextColumn("Segment", width="small"),
-                "Channel": st.column_config.TextColumn("Kanál", width="small"),
-                "Priority": st.column_config.TextColumn("Priorita", width="small"),
-                "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
-                "Kroky": st.column_config.NumberColumn("Kroků", width="small")
-            }
-        )
+# VYTVOŘÍME ZÁLOŽKY PRO HLAVNÍ FUNKCE
+tab1, tab2, tab3 = st.tabs(["📋 Scénáře", "🔧 Správa akcí", "📊 Analýza"])
+
+with tab1:
+    # ---------- SEZNAM SCÉNÁŘŮ A PŘEČÍSLOVÁNÍ ----------
+    scenarios = projects[selected_project].get("scenarios", [])
+
+    if scenarios:
+        st.subheader("📋 Seznam scénářů")
         
-        # Tlačítko pro přečíslování
-        if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
-            scen = projects[selected_project]["scenarios"]
-            for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
-                nove_cislo = f"{i:03d}"
-                t["order_no"] = i
-                
-                # Přegenerování názvu s novým číslem
-                if "_" in t["test_name"]:
-                    parts = t["test_name"].split("_", 1)
-                    if parts[0].isdigit() and len(parts[0]) <= 3:
-                        t["test_name"] = f"{nove_cislo}_{parts[1]}"
+        # Tabulka scénářů
+        df = make_df(projects, selected_project)
+        if not df.empty:
+            st.dataframe(
+                df,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Order": st.column_config.NumberColumn("Číslo", width="small"),
+                    "Test Name": st.column_config.TextColumn("Název testu", width="large"),
+                    "Action": st.column_config.TextColumn("Akce", width="medium"),
+                    "Segment": st.column_config.TextColumn("Segment", width="small"),
+                    "Channel": st.column_config.TextColumn("Kanál", width="small"),
+                    "Priority": st.column_config.TextColumn("Priorita", width="small"),
+                    "Complexity": st.column_config.TextColumn("Komplexita", width="small"),
+                    "Kroky": st.column_config.NumberColumn("Kroků", width="small")
+                }
+            )
+            
+            # Tlačítko pro přečíslování
+            if st.button("🔢 Přečíslovat scénáře od 001", use_container_width=True):
+                scen = projects[selected_project]["scenarios"]
+                for i, t in enumerate(sorted(scen, key=lambda x: x["order_no"]), start=1):
+                    nove_cislo = f"{i:03d}"
+                    t["order_no"] = i
+                    
+                    # Přegenerování názvu s novým číslem
+                    if "_" in t["test_name"]:
+                        parts = t["test_name"].split("_", 1)
+                        if parts[0].isdigit() and len(parts[0]) <= 3:
+                            t["test_name"] = f"{nove_cislo}_{parts[1]}"
+                        else:
+                            t["test_name"] = f"{nove_cislo}_{t['test_name']}"
                     else:
                         t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-                else:
-                    t["test_name"] = f"{nove_cislo}_{t['test_name']}"
-            
-            projects[selected_project]["scenarios"] = scen
-            save_json(PROJECTS_PATH, projects)
-            st.success("✅ Scénáře a názvy byly přečíslovány.")
-            st.rerun()
+                
+                projects[selected_project]["scenarios"] = scen
+                save_json(PROJECTS_PATH, projects)
+                st.success("✅ Scénáře a názvy byly přečíslovány.")
+                st.rerun()
 
     st.markdown("---")
 
-    # ANALÝZA SCÉNÁŘŮ - STROMOVÁ STRUKTURA
-st.subheader("🌳 Analýza scénářů")
+    # ---------- Přidání scénáře ----------
+    st.subheader("➕ Přidat nový scénář")
+    steps_data = get_steps()
+    akce_list = list(steps_data.keys())
 
-# Shromáždění dat pro stromovou strukturu
-segment_data = {"B2C": {}, "B2B": {}}
-
-for scenario in scenarios:
-    segment = scenario.get("segment", "NEZNÁMÝ")
-    kanal = scenario.get("kanal", "NEZNÁMÝ")
-    
-    # SPRÁVNÁ DETEKCE TECHNOLOGIE z názvu test case
-    test_name = scenario.get("test_name", "")
-    technologie = "DSL"  # výchozí hodnota
-    
-    # Detekce technologie z názvu test case
-    if "FIBER" in test_name:
-        technologie = "FIBER"
-    elif "FWA_BISI" in test_name:
-        technologie = "FWA BISI" 
-    elif "FWA_BI" in test_name:
-        technologie = "FWA BI"
-    elif "CABLE" in test_name:
-        technologie = "CABLE"
-    elif "HLAS" in test_name:
-        technologie = "HLAS"
-    elif "DSL" in test_name:
-        technologie = "DSL"
-    
-    akce = scenario.get("akce", "NEZNÁMÁ")
-    
-    if segment not in segment_data:
-        segment_data[segment] = {}
-    
-    if kanal not in segment_data[segment]:
-        segment_data[segment][kanal] = {}
+    with st.form("add_scenario"):
+        veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …")
+        akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
         
-    if technologie not in segment_data[segment][kanal]:
-        segment_data[segment][kanal][technologie] = []
+        # Automatická komplexita
+        from core import get_steps_from_action
+        kroky_pro_akci = get_steps_from_action(akce, steps_data)
+        pocet_kroku = len(kroky_pro_akci)
         
-    if akce not in segment_data[segment][kanal][technologie]:
-        segment_data[segment][kanal][technologie].append(akce)
+        auto_complexity = get_automatic_complexity(pocet_kroku)
+        
+        colp, colc = st.columns(2)
+        with colp:
+            priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1)
+        with colc:
+            # Zobrazíme automatickou komplexitu, ale umožníme změnu
+            complexity = st.selectbox(
+                "Komplexita", 
+                options=list(COMPLEXITY_MAP.values()), 
+                index=list(COMPLEXITY_MAP.values()).index(auto_complexity),
+                help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
+            )
 
-# VYTVOŘENÍ STROMOVÉ STRUKTURY PODLE TVÉHO NÁVRHU
-col_b2c, col_b2b = st.columns(2)
+        if st.form_submit_button("➕ Přidat scénář"):
+            if not veta.strip():
+                st.error("Věta nesmí být prázdná.")
+            elif not akce:
+                st.error("Vyber akci (kroky.json).")
+            else:
+                tc = generate_testcase(
+                    project=selected_project,
+                    veta=veta.strip(),
+                    akce=akce,
+                    priority=priority,
+                    complexity=complexity,
+                    kroky_data=steps_data,
+                    projects_data=projects
+                )
+                st.success(f"✅ Scénář přidán: {tc['test_name']}")
+                st.rerun()
 
-with col_b2c:
-    with st.expander("👥 B2C", expanded=True):
-        if "B2C" in segment_data and segment_data["B2C"]:
-            for kanal in segment_data["B2C"]:
-                # KANÁL - větší a tučně
-                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
-                
-                for technologie in segment_data["B2C"][kanal]:
-                    # TECHNOLOGIE - tučně
-                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
-                    
-                    # Akce odsazené vedle technologie
-                    for akce in segment_data["B2C"][kanal][technologie]:
-                        st.write(f"  • {akce}")
-                
-                # Oddělovač mezi kanály
-                if kanal != list(segment_data["B2C"].keys())[-1]:
-                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
-        else:
-            st.write("Žádné B2C scénáře")
+    st.markdown("---")
 
-with col_b2b:
-    with st.expander("🏢 B2B", expanded=True):
-        if "B2B" in segment_data and segment_data["B2B"]:
-            for kanal in segment_data["B2B"]:
-                # KANÁL - větší a tučně
-                st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
-                
-                for technologie in segment_data["B2B"][kanal]:
-                    # TECHNOLOGIE - tučně
-                    st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
-                    
-                    # Akce odsazené vedle technologie
-                    for akce in segment_data["B2B"][kanal][technologie]:
-                        st.write(f"  • {akce}")
-                
-                # Oddělovač mezi kanály
-                if kanal != list(segment_data["B2B"].keys())[-1]:
-                    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
-        else:
-            st.write("Žádné B2B scénáře")
-
-
-# ---------- Přidání scénáře ----------
-st.subheader("➕ Přidat nový scénář")
-steps_data = get_steps()
-akce_list = list(steps_data.keys())
-
-with st.form("add_scenario"):
-    veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …")
-    akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
-    
-    # Automatická komplexita - OPRAVENÉ NAČÍTÁNÍ POČTU KROKŮ
-    from core import get_steps_from_action
-    kroky_pro_akci = get_steps_from_action(akce, steps_data)
-    pocet_kroku = len(kroky_pro_akci)
-    
-    auto_complexity = get_automatic_complexity(pocet_kroku)
-    
-    colp, colc = st.columns(2)
-    with colp:
-        priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1)
-    with colc:
-        # Zobrazíme automatickou komplexitu, ale umožníme změnu
-        complexity = st.selectbox(
-            "Komplexita", 
-            options=list(COMPLEXITY_MAP.values()), 
-            index=list(COMPLEXITY_MAP.values()).index(auto_complexity),
-            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
+    # ---------- Úprava scénáře ----------
+    st.subheader("✏️ Úprava scénáře")
+    if not scenarios:
+        st.info("Zatím žádné scénáře pro úpravu.")
+    else:
+        selected_row = st.selectbox(
+            "Vyber scénář k úpravě:",
+            options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
+            index=0
         )
 
-    if st.form_submit_button("➕ Přidat scénář"):
-        if not veta.strip():
-            st.error("Věta nesmí být prázdná.")
-        elif not akce:
-            st.error("Vyber akci (kroky.json).")
-        else:
-            tc = generate_testcase(
-                project=selected_project,
-                veta=veta.strip(),
-                akce=akce,
-                priority=priority,
-                complexity=complexity,
-                kroky_data=steps_data,
-                projects_data=projects
-            )
-            st.success(f"✅ Scénář přidán: {tc['test_name']}")
-            st.rerun()
+        if selected_row != "— žádný —":
+            idx = int(selected_row.split(" - ")[0])
+            scenario_list = projects[selected_project]["scenarios"]
+            scenario_index = next((i for i, t in enumerate(scenario_list) if t["order_no"] == idx), None)
+            scenario = scenario_list[scenario_index] if scenario_index is not None else None
 
-st.markdown("---")
+            if scenario:
+                with st.form("edit_scenario"):
+                    veta = st.text_area("Věta", value=scenario["veta"], height=100)
+                    akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0)
+                    priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]))
+                    complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]))
+                    if st.form_submit_button("💾 Uložit změny"):
+                        # přepsání hodnot scénáře
+                        scenario["veta"] = veta.strip()
+                        scenario["akce"] = akce
+                        scenario["priority"] = priority
+                        scenario["complexity"] = complexity
+                        # DŮLEŽITÉ: Použij správné načtení kroků
+                        scenario["kroky"] = get_steps_from_action(akce, steps_data)
+                        # přegenerování test name
+                        scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip()
+                        # uložení změn
+                        projects[selected_project]["scenarios"][scenario_index] = scenario
+                        save_json(PROJECTS_PATH, projects)
+                        st.success("✅ Změny uloženy a propsány do projektu.")
+                        st.rerun()
 
+    st.markdown("---")
 
-
-# ---------- Úprava scénáře ----------
-st.subheader("✏️ Úprava scénáře")
-if not scenarios:
-    st.info("Zatím žádné scénáře pro úpravu.")
-else:
-    selected_row = st.selectbox(
-        "Vyber scénář k úpravě:",
-        options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
-        index=0
-    )
-
-    if selected_row != "— žádný —":
-        idx = int(selected_row.split(" - ")[0])
-        scenario_list = projects[selected_project]["scenarios"]
-        scenario_index = next((i for i, t in enumerate(scenario_list) if t["order_no"] == idx), None)
-        scenario = scenario_list[scenario_index] if scenario_index is not None else None
-
-        if scenario:
-            with st.form("edit_scenario"):
-                veta = st.text_area("Věta", value=scenario["veta"], height=100)
-                akce = st.selectbox("Akce", options=akce_list, index=akce_list.index(scenario["akce"]) if scenario["akce"] in akce_list else 0)
-                priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=list(PRIORITY_MAP.values()).index(scenario["priority"]))
-                complexity = st.selectbox("Komplexita", options=list(COMPLEXITY_MAP.values()), index=list(COMPLEXITY_MAP.values()).index(scenario["complexity"]))
-                if st.form_submit_button("💾 Uložit změny"):
-                    # přepsání hodnot scénáře
-                    scenario["veta"] = veta.strip()
-                    scenario["akce"] = akce
-                    scenario["priority"] = priority
-                    scenario["complexity"] = complexity
-                    # DŮLEŽITÉ: Použij správné načtení kroků
-                    scenario["kroky"] = get_steps_from_action(akce, steps_data)
-                    # přegenerování test name
-                    scenario["test_name"] = scenario["test_name"].split("_")[0] + "_" + veta.strip().replace(" ", "_")
-                    # uložení změn
-                    projects[selected_project]["scenarios"][scenario_index] = scenario
-                    save_json(PROJECTS_PATH, projects)
-                    st.success("✅ Změny uloženy a propsány do projektu.")
-                    st.rerun()
-
-st.markdown("---")
-
-# ---------- Smazání scénáře ----------
-st.subheader("🗑️ Smazání scénáře")
-if not scenarios:  # Místo df.empty použijeme scenarios
-    st.info("Zatím žádné scénáře pro smazání.")
-else:
-    to_delete = st.selectbox(
-        "Vyber scénář ke smazání:",
-        options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
-        index=0,
-        key="delete_selector"  # Přidáme key aby se nepletl s předchozím selectboxem
-    )
-    if to_delete != "— žádný —":
-        idx = int(to_delete.split(" - ")[0])
-        if st.button("🗑️ Potvrdit smazání scénáře"):
-            scen = [t for t in projects[selected_project]["scenarios"] if t.get("order_no") != idx]
-            for i, t in enumerate(scen, start=1):
-                t["order_no"] = i
-            projects[selected_project]["scenarios"] = scen
-            save_json(PROJECTS_PATH, projects)
-            st.success("Scénář smazán a pořadí přepočítáno.")
-            st.rerun()
-
-
-
-# ---------- Informace o krocích ----------
-
-# Funkce pro načtení kroků - POUŽÍVÁME JEDNOTNÉ FUNKCE
-def get_global_steps():
-    """Načte kroky z kroky.json - jednotná funkce pro celou aplikaci"""
-    return get_steps()  # Použijeme funkci z core.py
-
-def save_global_steps(data):
-    """Uloží kroky do kroky.json - jednotná funkce pro celou aplikaci"""
-    kroky_path = Path(__file__).resolve().parent.parent / "data" / "kroky.json"
-    kroky_path.parent.mkdir(exist_ok=True)
-    save_json(kroky_path, data)
-
-def refresh_all_data():
-    """Obnoví všechna data v aplikaci po změně kroků"""
-    st.rerun()
-
-# FUNKCE PRO ZOBRAZENÍ AKCE (POUZE NÁHLED)
-def zobraz_akci_nahled(akce, obsah_akce):
-    """Zobrazí náhled akce s tlačítkem pro editaci"""
-    
-    # Získání kroků a popisu
-    if isinstance(obsah_akce, dict) and "steps" in obsah_akce:
-        kroky = obsah_akce.get("steps", [])
-        popis_akce = obsah_akce.get("description", "Bez popisu")
+    # ---------- Smazání scénáře ----------
+    st.subheader("🗑️ Smazání scénáře")
+    if not scenarios:
+        st.info("Zatím žádné scénáře pro smazání.")
     else:
-        kroky = obsah_akce if isinstance(obsah_akce, list) else []
-        popis_akce = "Bez popisu"
-    
-    pocet_kroku = len(kroky)
-    
-    # Kontejner pro akci
-    with st.container():
-        col_nazev, col_edit = st.columns([4, 1])
-        
-        with col_nazev:
-            st.markdown(f"**{akce}**")
-            st.caption(f"📝 {popis_akce} | {pocet_kroku} kroků")
-        
-        with col_edit:
-            # Malé tlačítko pro editaci
-            if st.button("✏️", key=f"edit_{akce}", help=f"Upravit akci {akce}"):
-                st.session_state["editovana_akce"] = akce
-                st.session_state["editovany_popis"] = popis_akce
-                st.session_state["editovane_kroky"] = kroky.copy()
+        to_delete = st.selectbox(
+            "Vyber scénář ke smazání:",
+            options=["— žádný —"] + [f"{row['Order']} - {row['Test Name']}" for _, row in df.iterrows()],
+            index=0,
+            key="delete_selector"
+        )
+        if to_delete != "— žádný —":
+            idx = int(to_delete.split(" - ")[0])
+            if st.button("🗑️ Potvrdit smazání scénáře"):
+                scen = [t for t in projects[selected_project]["scenarios"] if t.get("order_no") != idx]
+                for i, t in enumerate(scen, start=1):
+                    t["order_no"] = i
+                projects[selected_project]["scenarios"] = scen
+                save_json(PROJECTS_PATH, projects)
+                st.success("Scénář smazán a pořadí přepočítáno.")
                 st.rerun()
-        
-        # Náhled kroků v expanderu
-        with st.expander(f"👀 Náhled kroků ({pocet_kroku})", expanded=False):
-            if pocet_kroku > 0:
-                for i, krok in enumerate(kroky, 1):
-                    if isinstance(krok, dict):
-                        desc = krok.get('description', '')
-                        exp = krok.get('expected', '')
-                        st.write(f"**{i}. {desc}**")
-                        if exp:
-                            st.write(f"   *Očekávání: {exp}*")
-                    else:
-                        st.write(f"{i}. {krok}")
-                    if i < len(kroky):
-                        st.divider()
-            else:
-                st.write("Žádné kroky")
-        
-        st.markdown("---")
 
-# MODÁLNÍ OKNO PRO EDITACI AKCE
-def zobraz_editaci_akce():
-    """Zobrazí modální okno pro editaci akce"""
-    if "editovana_akce" not in st.session_state:
-        return
+with tab2:
+    st.subheader("🔧 Správa akcí a kroků")
+    st.info("Zde můžete spravovat všechny akce a jejich kroky. Změny se projeví okamžitě v celé aplikaci.")
     
-    akce = st.session_state["editovana_akce"]
-    puvodni_popis = st.session_state["editovany_popis"]
-    puvodni_kroky = st.session_state["editovane_kroky"]
-    
-    # Vytvoříme modální okno pomocí container s borderem
-    with st.container():
-        st.markdown("---")
-        st.subheader(f"✏️ Editace akce: {akce}")
-        
-        # Popis akce
-        novy_popis = st.text_input("**Popis akce**", value=puvodni_popis, key="edit_popis")
-        
-        st.markdown("### 📋 Kroky akce")
-        
-        # Inicializace session state pro editované kroky
-        if "edit_kroky" not in st.session_state:
-            st.session_state["edit_kroky"] = puvodni_kroky.copy()
-        
-        # Zobrazení a editace kroků
-        if st.session_state["edit_kroky"]:
-            kroky_k_smazani = []
-            
-            for i, krok in enumerate(st.session_state["edit_kroky"]):
-                col_krok, col_smazat = st.columns([5, 1])
-                
-                with col_krok:
-                    st.markdown(f"**Krok {i+1}**")
-                    if isinstance(krok, dict):
-                        # Pro každý krok vytvoříme unikátní klíče
-                        desc_key = f"krok_{i}_desc"
-                        exp_key = f"krok_{i}_exp"
-                        
-                        # Inicializace hodnot
-                        if desc_key not in st.session_state:
-                            st.session_state[desc_key] = krok.get('description', '')
-                        if exp_key not in st.session_state:
-                            st.session_state[exp_key] = krok.get('expected', '')
-                        
-                        # Text areas pro editaci
-                        new_desc = st.text_area(
-                            "Description", 
-                            value=st.session_state[desc_key],
-                            key=desc_key,
-                            height=60,
-                            label_visibility="collapsed"
-                        )
-                        new_exp = st.text_area(
-                            "Expected", 
-                            value=st.session_state[exp_key],
-                            key=exp_key,
-                            height=60,
-                            label_visibility="collapsed"
-                        )
-                        
-                        # Aktualizace kroku
-                        st.session_state["edit_kroky"][i] = {
-                            "description": new_desc,
-                            "expected": new_exp
-                        }
-                    else:
-                        text_key = f"krok_{i}_text"
-                        if text_key not in st.session_state:
-                            st.session_state[text_key] = krok
-                        
-                        new_text = st.text_area(
-                            f"Krok {i+1}", 
-                            value=st.session_state[text_key],
-                            key=text_key,
-                            height=60,
-                            label_visibility="collapsed"
-                        )
-                        st.session_state["edit_kroky"][i] = new_text
-                
-                with col_smazat:
-                    st.markdown(" ")  # Prázdný řádek pro zarovnání
-                    if st.button("🗑️", key=f"smazat_{i}", help="Smazat krok"):
-                        kroky_k_smazani.append(i)
-                
-                st.markdown("---")
-            
-            # Smazání označených kroků
-            for index in sorted(kroky_k_smazani, reverse=True):
-                if index < len(st.session_state["edit_kroky"]):
-                    # Smazání také session state pro tento krok
-                    for key in [f"krok_{index}_desc", f"krok_{index}_exp", f"krok_{index}_text"]:
-                        if key in st.session_state:
-                            del st.session_state[key]
-                    st.session_state["edit_kroky"].pop(index)
-                    st.rerun()
-        else:
-            st.info("Žádné kroky")
-        
-        # PŘIDÁNÍ NOVÉHO KROKU
-        st.markdown("### ➕ Přidat nový krok")
-        col_desc, col_exp = st.columns(2)
-        
-        with col_desc:
-            new_desc = st.text_area("Description", key="new_krok_desc", height=80, placeholder="Popis kroku...")
-        with col_exp:
-            new_exp = st.text_area("Expected", key="new_krok_exp", height=80, placeholder="Očekávaný výsledek...")
-        
-        if st.button("➕ Přidat krok", key="pridat_krok", use_container_width=True):
-            if new_desc.strip():
-                st.session_state["edit_kroky"].append({
-                    "description": new_desc.strip(),
-                    "expected": new_exp.strip()
-                })
-                # Vyčištění polí
-                st.session_state["new_krok_desc"] = ""
-                st.session_state["new_krok_exp"] = ""
-                st.rerun()
-        
-        st.markdown("---")
-        
-        # TLAČÍTKA PRO AKCE
-        col1, col2, col3 = st.columns([2, 2, 1])
-        
-        with col1:
-            if st.button("💾 Uložit změny", key="ulozit_zmeny", type="primary", use_container_width=True):
-                # Uložení změn do kroky.json
-                kroky_data = get_global_steps()
-                kroky_data[akce] = {
-                    "description": novy_popis,
-                    "steps": st.session_state["edit_kroky"].copy()
-                }
-                save_global_steps(kroky_data)
-                st.success(f"✅ Akce '{akce}' byla úspěšně upravena!")
-                
-                # Vyčištění session state
-                for key in ["editovana_akce", "editovany_popis", "editovane_kroky", "edit_kroky"]:
-                    if key in st.session_state:
-                        del st.session_state[key]
-                # Vyčištění edit keys
-                for key in list(st.session_state.keys()):
-                    if key.startswith("krok_") or key.startswith("new_krok_"):
-                        del st.session_state[key]
-                
-                # Aktualizace celé aplikace
-                refresh_all_data()
-        
-        with col2:
-            if st.button("❌ Zrušit", key="zrusit_editaci", use_container_width=True):
-                # Vyčištění session state
-                for key in ["editovana_akce", "editovany_popis", "editovane_kroky", "edit_kroky"]:
-                    if key in st.session_state:
-                        del st.session_state[key]
-                # Vyčištění edit keys
-                for key in list(st.session_state.keys()):
-                    if key.startswith("krok_") or key.startswith("new_krok_"):
-                        del st.session_state[key]
-                st.rerun()
-        
-        with col3:
-            if st.button("🗑️ Smazat", key="smazat_akci", use_container_width=True):
-                st.session_state["potvrdit_smazani"] = True
-                st.rerun()
-        
-        # POTVRZENÍ SMAZÁNÍ AKCE
-        if st.session_state.get("potvrdit_smazani", False):
-            st.error(f"🚨 Opravdu chceš smazat akci '{akce}'? Tato akce je nevratná!")
-            col_ano, col_ne = st.columns(2)
-            with col_ano:
-                if st.button("ANO, smazat", key="potvrdit_smazani", type="primary", use_container_width=True):
-                    kroky_data = get_global_steps()
-                    if akce in kroky_data:
-                        del kroky_data[akce]
-                        save_global_steps(kroky_data)
-                        st.success(f"✅ Akce '{akce}' byla smazána!")
-                        
-                        # Vyčištění session state
-                        for key in ["editovana_akce", "editovany_popis", "editovane_kroky", "edit_kroky", "potvrdit_smazani"]:
-                            if key in st.session_state:
-                                del st.session_state[key]
-                        # Vyčištění edit keys
-                        for key in list(st.session_state.keys()):
-                            if key.startswith("krok_") or key.startswith("new_krok_"):
-                                del st.session_state[key]
-                        
-                        refresh_all_data()
-            with col_ne:
-                if st.button("NE, zachovat", key="zachovat_akci", use_container_width=True):
-                    st.session_state["potvrdit_smazani"] = False
-                    st.rerun()
+    # Jednoduchá a efektivní správa akcí
+    sprava_akci()
 
-# MODÁLNÍ OKNO PRO NOVOU AKCI
-def zobraz_novou_akci():
-    """Zobrazí modální okno pro přidání nové akce"""
-    if "nova_akce" not in st.session_state:
-        return
+with tab3:
+    st.subheader("📊 Analýza scénářů")
     
-    with st.container():
-        st.markdown("---")
-        st.subheader("➕ Přidat novou akci")
+    # Shromáždění dat pro stromovou strukturu
+    segment_data = {"B2C": {}, "B2B": {}}
+
+    for scenario in scenarios:
+        segment = scenario.get("segment", "NEZNÁMÝ")
+        kanal = scenario.get("kanal", "NEZNÁMÝ")
         
-        nova_akce_nazev = st.text_input("**Název akce***", placeholder="Např.: Aktivace_DSL", key="nova_akce_nazev")
-        nova_akce_popis = st.text_input("**Popis akce***", placeholder="Např.: Aktivace DSL služby", key="nova_akce_popis")
+        # SPRÁVNÁ DETEKCE TECHNOLOGIE z názvu test case
+        test_name = scenario.get("test_name", "")
+        technologie = "DSL"  # výchozí hodnota
         
-        st.markdown("### 📋 Kroky akce")
+        # Detekce technologie z názvu test case
+        if "FIBER" in test_name:
+            technologie = "FIBER"
+        elif "FWA_BISI" in test_name:
+            technologie = "FWA BISI" 
+        elif "FWA_BI" in test_name:
+            technologie = "FWA BI"
+        elif "CABLE" in test_name:
+            technologie = "CABLE"
+        elif "HLAS" in test_name:
+            technologie = "HLAS"
+        elif "DSL" in test_name:
+            technologie = "DSL"
         
-        # Inicializace session state pro nové kroky
-        if "nove_kroky" not in st.session_state:
-            st.session_state["nove_kroky"] = []
+        akce = scenario.get("akce", "NEZNÁMÁ")
         
-        # Zobrazení existujících kroků
-        if st.session_state["nove_kroky"]:
-            kroky_k_smazani = []
+        if segment not in segment_data:
+            segment_data[segment] = {}
+        
+        if kanal not in segment_data[segment]:
+            segment_data[segment][kanal] = {}
             
-            for i, krok in enumerate(st.session_state["nove_kroky"]):
-                col_krok, col_smazat = st.columns([5, 1])
-                
-                with col_krok:
-                    st.markdown(f"**Krok {i+1}**")
-                    st.text_input("Description", value=krok['description'], key=f"view_desc_{i}", disabled=True)
-                    st.text_input("Expected", value=krok['expected'], key=f"view_exp_{i}", disabled=True)
-                
-                with col_smazat:
-                    st.markdown(" ")  # Prázdný řádek pro zarovnání
-                    if st.button("🗑️", key=f"smazat_novy_{i}", help="Smazat krok"):
-                        kroky_k_smazani.append(i)
-                
-                st.markdown("---")
+        if technologie not in segment_data[segment][kanal]:
+            segment_data[segment][kanal][technologie] = []
             
-            # Smazání označených kroků
-            for index in sorted(kroky_k_smazani, reverse=True):
-                if index < len(st.session_state["nove_kroky"]):
-                    st.session_state["nove_kroky"].pop(index)
-                    st.rerun()
-        else:
-            st.info("Zatím žádné kroky")
-        
-        # PŘIDÁNÍ NOVÉHO KROKU
-        st.markdown("### ➕ Přidat nový krok")
-        col_desc, col_exp = st.columns(2)
-        
-        with col_desc:
-            new_desc = st.text_area("Description*", key="new_krok_desc_novy", height=80, placeholder="Popis kroku...")
-        with col_exp:
-            new_exp = st.text_area("Expected*", key="new_krok_exp_novy", height=80, placeholder="Očekávaný výsledek...")
-        
-        if st.button("➕ Přidat krok", key="pridat_novy_krok", use_container_width=True):
-            if new_desc.strip() and new_exp.strip():
-                st.session_state["nove_kroky"].append({
-                    "description": new_desc.strip(),
-                    "expected": new_exp.strip()
-                })
-                # Vyčištění polí
-                st.session_state["new_krok_desc_novy"] = ""
-                st.session_state["new_krok_exp_novy"] = ""
-                st.rerun()
+        if akce not in segment_data[segment][kanal][technologie]:
+            segment_data[segment][kanal][technologie].append(akce)
+
+    # VYTVOŘENÍ STROMOVÉ STRUKTURY
+    col_b2c, col_b2b = st.columns(2)
+
+    with col_b2c:
+        with st.expander("👥 B2C", expanded=True):
+            if "B2C" in segment_data and segment_data["B2C"]:
+                for kanal in segment_data["B2C"]:
+                    # KANÁL - větší a tučně
+                    st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                    
+                    for technologie in segment_data["B2C"][kanal]:
+                        # TECHNOLOGIE - tučně
+                        st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
+                        
+                        # Akce odsazené vedle technologie
+                        for akce in segment_data["B2C"][kanal][technologie]:
+                            st.write(f"  • {akce}")
+                    
+                    # Oddělovač mezi kanály
+                    if kanal != list(segment_data["B2C"].keys())[-1]:
+                        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
             else:
-                st.warning("Vyplňte obě pole pro krok")
+                st.write("Žádné B2C scénáře")
+
+    with col_b2b:
+        with st.expander("🏢 B2B", expanded=True):
+            if "B2B" in segment_data and segment_data["B2B"]:
+                for kanal in segment_data["B2B"]:
+                    # KANÁL - větší a tučně
+                    st.markdown(f"<h4 style='margin-bottom: 5px;'>{kanal}</h4>", unsafe_allow_html=True)
+                    
+                    for technologie in segment_data["B2B"][kanal]:
+                        # TECHNOLOGIE - tučně
+                        st.markdown(f"<strong>{technologie}</strong>", unsafe_allow_html=True)
+                        
+                        # Akce odsazené vedle technologie
+                        for akce in segment_data["B2B"][kanal][technologie]:
+                            st.write(f"  • {akce}")
+                    
+                    # Oddělovač mezi kanály
+                    if kanal != list(segment_data["B2B"].keys())[-1]:
+                        st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+            else:
+                st.write("Žádné B2B scénáře")
+
+    st.markdown("---")
+    
+    # PŘEHLED KROKŮ PODLE AKCÍ (SBALENÝ)
+    with st.expander("📊 Přehled kroků podle akcí", expanded=False):
+        st.subheader("Kroky dostupné v systému")
         
-        st.markdown("---")
+        steps_data = get_steps()
         
-        # TLAČÍTKA PRO AKCE
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.button("💾 Uložit novou akci", key="ulozit_novou_akci", type="primary", use_container_width=True):
-                if not nova_akce_nazev.strip() or not nova_akce_popis.strip() or not st.session_state["nove_kroky"]:
-                    st.error("Vyplňte všechny povinné pole (*) a přidejte alespoň jeden krok")
+        if not steps_data:
+            st.info("Žádné akce nebyly nalezeny.")
+        else:
+            # Jeden sloupec s abecedním řazením
+            for akce in sorted(steps_data.keys()):
+                obsah_akce = steps_data[akce]
+                
+                # Získání kroků a popisu
+                if isinstance(obsah_akce, dict) and "steps" in obsah_akce:
+                    kroky = obsah_akce.get("steps", [])
+                    popis_akce = obsah_akce.get("description", "Bez popisu")
                 else:
-                    kroky_data = get_global_steps()
-                    kroky_data[nova_akce_nazev.strip()] = {
-                        "description": nova_akce_popis.strip(),
-                        "steps": st.session_state["nove_kroky"].copy()
-                    }
-                    save_global_steps(kroky_data)
-                    st.success(f"✅ Akce '{nova_akce_nazev}' byla přidána!")
-                    
-                    # Vyčištění session state
-                    for key in ["nova_akce", "nove_kroky"]:
-                        if key in st.session_state:
-                            del st.session_state[key]
-                    
-                    # AKTUALIZACE CELÉ APLIKACE
-                    refresh_all_data()
-        
-        with col2:
-            if st.button("❌ Zrušit", key="zrusit_novou_akci", use_container_width=True):
-                # Vyčištění session state
-                for key in ["nova_akce", "nove_kroky"]:
-                    if key in st.session_state:
-                        del st.session_state[key]
-                st.rerun()
-
-# HLAVNÍ ČÁST - PŘEHLED KROKŮ
-with st.expander("📊 Přehled kroků podle akcí", expanded=False):
-    st.subheader("Kroky dostupné v systému")
-    
-    # Tlačítko pro přidání nové akce
-    if st.button("➕ Přidat novou akci", key="add_new_action_main", use_container_width=True):
-        st.session_state["nova_akce"] = True
-    
-    # Zobrazení modálních oken
-    zobraz_novou_akci()
-    zobraz_editaci_akce()
-    
-    # NAČTENÍ DAT PŘÍMO Z KROKY.JSON - vždy čerstvá data
-    steps_data = get_global_steps()
-    
-    if not steps_data:
-        st.info("Žádné akce nebyly nalezeny. Přidejte první akci!")
-    else:
-        # Jeden sloupec s abecedním řazením
-        st.markdown("### 📝 Seznam akcí (abecedně)")
-        
-        for akce in sorted(steps_data.keys()):
-            zobraz_akci_nahled(akce, steps_data[akce])
+                    kroky = obsah_akce if isinstance(obsah_akce, list) else []
+                    popis_akce = "Bez popisu"
                 
+                pocet_kroku = len(kroky)
+                
+                with st.container():
+                    col_nazev, col_info = st.columns([3, 1])
+                    
+                    with col_nazev:
+                        st.markdown(f"**{akce}**")
+                        st.caption(f"📝 {popis_akce}")
+                    
+                    with col_info:
+                        st.caption(f"{pocet_kroku} kroků")
+                    
+                    # Náhled kroků v expanderu
+                    with st.expander(f"👀 Zobrazit kroky ({pocet_kroku})", expanded=False):
+                        if pocet_kroku > 0:
+                            for i, krok in enumerate(kroky, 1):
+                                if isinstance(krok, dict):
+                                    desc = krok.get('description', '')
+                                    exp = krok.get('expected', '')
+                                    st.write(f"**{i}. {desc}**")
+                                    if exp:
+                                        st.write(f"   *Očekávání: {exp}*")
+                                else:
+                                    st.write(f"{i}. {krok}")
+                                if i < len(kroky):
+                                    st.divider()
+                        else:
+                            st.write("Žádné kroky")
+                    
+                    st.markdown("---")
+
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")
 if st.button("💾 Exportovat a nahrát na GitHub"):
@@ -805,3 +674,4 @@ if st.button("💾 Exportovat a nahrát na GitHub"):
                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     except Exception as e:
         st.error(f"Export selhal: {e}")
+                
