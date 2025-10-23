@@ -527,7 +527,19 @@
     },
     {
       "description": "Objednávku odešli a zkontroluj správný rozpad tasků v COM.",
-      "expected": "Správný průběh objednávky, pokračování dle tasků - u DSL odeslat mail na cetin a vyskladnit HW v SAP."
+      "expected": "Správný průběh objednávky, pokračování dle tasků."
+    },
+    {
+      "description": "Vytvoří se portační SR ke zpracování, otevři ho se silnou rolí a změň status na v řešení a krok na realizace přenosu.",
+      "expected": "Portační SR zpracováno."
+    },
+        {
+      "description": "Při zastavení objednávky u tasku MMODSL_provisioning odešli email na CETIN k dokončení objednávky, kde jim přilož systémové číslo objednávky (najdeš v COM/SBL).",
+      "expected": "Email odeslán a CETIN dokončil objednávku."
+    },
+    {
+      "description": "U DSL se další task zastaví na vyskladnění zboží v SAP, dokonči v SAP.",
+      "expected": "SAP dokončenoa  zboží vyskladněno."
     },
     {
       "description": "Při zastavení objednávky u tasku OSS_provisioning odešli OT na OSS přes HPQC ke kontrole a posunutí objednávky.",
@@ -544,360 +556,31 @@
   ]
 },
 "Zmena tarifu - FIX" : {
-    "description": "",
+    "description": "Změna tarifu fixní služby.",
     "steps": [
     {
-      "description": "",
-      "expected": ""
+      "description": "Jdi na konkrétního zákazníka na detail služeb a přes roletky fix vyber změna tarifu.",
+      "expected": "Prokliknutí do košíku."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Zvol možnost změny tarifu a vyber novou rychlost pevného internetu.",
+      "expected": "Nový tarif vybrán."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Vyplň povinná a požadovaná pole a proklikej se až k odeslání objednávky.",
+      "expected": "Proklikání úspěšné až k odeslání objednávky."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Objednávku odešli do COM a zkontroluj správný rozpad tasků bez chyby.",
+      "expected": "Objednávka správně běží a sama se dokončí."
     },
     {
-      "description": "",
-      "expected": ""
+      "description": "Zkontroluj nastavené změny v Siebel včetně dokončené objednávky.",
+      "expected": "V Siebel jsou změny propsané a objednávka dokončená."
     },
     {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Takeover - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Relokace - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Zamena technologie - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Prolongace - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Dokup HW - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Odebrat HW - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Dokup BYOD HW - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Vymena HW - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    }
-    ]
-},
-"Vymena HW v ramci poruchy - FIX": {
-    "description": "",
-    "steps": [
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
-    },
-    {
-      "description": "",
-      "expected": ""
+      "description": "Zkontroluj notifikace o provedené změně podle COM notifikací v service orders.",
+      "expected": "Notifikace jsou v pořádku, přišly všechny a ve správném znění."
     }
     ]
 }
