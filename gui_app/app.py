@@ -500,7 +500,7 @@ with st.form("add_scenario"):
     veta = st.text_area("Věta (požadavek)", height=100, placeholder="Např.: Aktivuj DSL na B2C přes kanál SHOP …")
     akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
     
-    # Automatická komplexita
+    # Automatická komplexita - OPRAVENÉ NAČÍTÁNÍ POČTU KROKŮ
     if akce in steps_data:
         if isinstance(steps_data[akce], dict) and "steps" in steps_data[akce]:
             # Nový formát
@@ -510,9 +510,20 @@ with st.form("add_scenario"):
             pocet_kroku = len(steps_data[akce])
     else:
         pocet_kroku = 0
-
+    
     auto_complexity = get_automatic_complexity(pocet_kroku)
-        
+    
+    colp, colc = st.columns(2)
+    with colp:
+        priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1)
+    with colc:
+        # Zobrazíme automatickou komplexitu, ale umožníme změnu
+        complexity = st.selectbox(
+            "Komplexita", 
+            options=list(COMPLEXITY_MAP.values()), 
+            index=list(COMPLEXITY_MAP.values()).index(auto_complexity),
+            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
+        )
 
     if st.form_submit_button("➕ Přidat scénář"):
         if not veta.strip():
