@@ -120,7 +120,7 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     nove_cislo = f"{order_no:03d}"
 
     segment, kanal, technologie = parse_veta(veta)
-    test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
+    test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip()}"
 
     # Načtení kroků podle akce - POUŽÍVÁME POMOCNOU FUNKCI
     kroky = get_steps_from_action(akce, kroky_data)
