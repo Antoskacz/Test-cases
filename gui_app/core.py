@@ -44,7 +44,21 @@ def get_steps():
         return {}
     with open(KROKY_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
-    return copy.deepcopy(data)  # hluboká kopie celé struktury
+    
+    # PŘEVOD NA STARÝ FORMÁT PRO KOMPATIBILITU
+    converted_data = {}
+    for akce, obsah in data.items():
+        if isinstance(obsah, dict) and "steps" in obsah:
+            # Nový formát: {"description": "...", "steps": [...]}
+            converted_data[akce] = obsah["steps"]
+        elif isinstance(obsah, list):
+            # Starý formát: [...]
+            converted_data[akce] = obsah
+        else:
+            # Neznámý formát
+            converted_data[akce] = []
+    
+    return converted_data
 
 # ---------- Generování názvu test casu ----------
 def parse_veta(veta: str):
@@ -110,7 +124,7 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     nove_cislo = f"{order_no:03d}"
 
     segment, kanal, technologie = parse_veta(veta)
-    test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
+    test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip()}"
 
     # Načtení kroků podle akce
     if akce in kroky_data:

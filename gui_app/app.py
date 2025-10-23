@@ -476,6 +476,21 @@ with col_b2b:
             st.write("Žádné B2B scénáře")
 
 
+#Diagnostika:
+st.sidebar.markdown("---")
+st.sidebar.subheader("🔍 Diagnostika kroků")
+
+if st.sidebar.button("Zkontrolovat kroky.json"):
+    steps_data = get_steps()
+    st.sidebar.write(f"Počet akcí: {len(steps_data)}")
+    for akce, obsah in steps_data.items():
+        if isinstance(obsah, dict):
+            st.sidebar.write(f"{akce}: FORMÁT DICT (steps: {len(obsah.get('steps', []))})")
+        elif isinstance(obsah, list):
+            st.sidebar.write(f"{akce}: FORMÁT LIST ({len(obsah)} kroků)")
+        else:
+            st.sidebar.write(f"{akce}: NEZNÁMÝ FORMÁT")
+
 # ---------- Přidání scénáře ----------
 st.subheader("➕ Přidat nový scénář")
 steps_data = get_steps()
@@ -486,21 +501,18 @@ with st.form("add_scenario"):
     akce = st.selectbox("Akce (z kroky.json)", options=akce_list)
     
     # Automatická komplexita
-    pocet_kroku = len(steps_data.get(akce, []))
+    if akce in steps_data:
+        if isinstance(steps_data[akce], dict) and "steps" in steps_data[akce]:
+            # Nový formát
+            pocet_kroku = len(steps_data[akce]["steps"])
+        else:
+            # Starý formát
+            pocet_kroku = len(steps_data[akce])
+    else:
+        pocet_kroku = 0
+
     auto_complexity = get_automatic_complexity(pocet_kroku)
-    
-    colp, colc = st.columns(2)
-    with colp:
-        priority = st.selectbox("Priorita", options=list(PRIORITY_MAP.values()), index=1)
-    with colc:
-        # Zobrazíme automatickou komplexitu, ale umožníme změnu
-        complexity = st.selectbox(
-            "Komplexita", 
-            options=list(COMPLEXITY_MAP.values()), 
-            index=list(COMPLEXITY_MAP.values()).index(auto_complexity),
-            help=f"Automaticky nastaveno na {auto_complexity} podle {pocet_kroku} kroků"
-        )
-    
+        
 
     if st.form_submit_button("➕ Přidat scénář"):
         if not veta.strip():
