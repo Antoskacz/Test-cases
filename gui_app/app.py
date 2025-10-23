@@ -411,41 +411,9 @@ else:
 
 
 # ---------- Informace o krocích ----------
-with st.expander("📊 Přehled kroků podle akcí"):
-    st.button("➕ Přidat novou akci", key="add_new_action_main")
-    st.subheader("Kroky dostupné v systému")
-    steps_data = get_steps()
-    
-    # Rozdělení akcí na FIX a ostatní
-    fix_akce = []
-    ostatni_akce = []
-    
-    for akce in sorted(steps_data.keys()):
-        if "FIX" in akce.upper():
-            fix_akce.append(akce)
-        else:
-            ostatni_akce.append(akce)
-    
-    # Vytvoříme dva sloupce
-    col_fix, col_ostatni = st.columns(2)
-    
-    with col_fix:
-        st.markdown("### 🔧 FIX Akce")
-        if fix_akce:
-            for akce in fix_akce:
-                zobraz_akci_s_upravou(akce, steps_data[akce])
-        else:
-            st.write("Žádné FIX akce")
-    
-    with col_ostatni:
-        st.markdown("### 📞 Ostatní akce")
-        if ostatni_akce:
-            for akce in ostatni_akce:
-                zobraz_akci_s_upravou(akce, steps_data[akce])
-        else:
-            st.write("Žádné ostatní akce")
+# ---------- Informace o krocích ----------
 
-# Funkce pro zobrazení akce s možností editace
+# NEJPRVE DEFINUJEME FUNKCI
 def zobraz_akci_s_upravou(akce, obsah_akce):
     """Zobrazí akci s možností rychlé editace"""
     
@@ -585,6 +553,113 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
                         st.rerun()
         
         st.markdown("---")
+
+# TEĎ POKRAČUJEME S HLAVNÍ ČÁSTÍ
+with st.expander("📊 Přehled kroků podle akcí"):
+    st.subheader("Kroky dostupné v systému")
+    steps_data = get_steps()
+    
+    # Tlačítko pro přidání nové akce
+    if st.button("➕ Přidat novou akci", key="add_new_action_main"):
+        st.session_state["add_new_action"] = True
+    
+    # Formulář pro novou akci
+    if st.session_state.get("add_new_action", False):
+        with st.form("nova_akce_form"):
+            st.subheader("➕ Přidat novou akci")
+            nova_akce_nazev = st.text_input("Název akce*", placeholder="Např.: Aktivace_DSL")
+            nova_akce_popis = st.text_input("Popis akce*", placeholder="Např.: Aktivace DSL služby")
+            
+            st.write("**Kroky akce:**")
+            
+            # Inicializace session state pro kroky
+            if 'new_steps' not in st.session_state:
+                st.session_state.new_steps = []
+            
+            # Zobrazení existujících kroků
+            for i, krok in enumerate(st.session_state.new_steps):
+                st.write(f"**Krok {i+1}:**")
+                st.text_input("Description*", value=krok['description'], key=f"new_step_{i}_desc", disabled=True)
+                st.text_input("Expected*", value=krok['expected'], key=f"new_step_{i}_exp", disabled=True)
+                st.markdown("---")
+            
+            # Přidání nového kroku
+            st.write("**Přidat nový krok:**")
+            new_step_desc = st.text_area("Description*", placeholder="Popis kroku - co se má udělat", key="new_step_desc", height=60)
+            new_step_expected = st.text_area("Expected*", placeholder="Očekávaný výsledek - co se má stát", key="new_step_expected", height=60)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("➕ Přidat krok", key="add_step_btn", use_container_width=True):
+                    if new_step_desc and new_step_expected:
+                        st.session_state.new_steps.append({
+                            "description": new_step_desc,
+                            "expected": new_step_expected
+                        })
+                        st.rerun()
+                    else:
+                        st.warning("Vyplňte obě pole pro krok")
+            with col2:
+                if st.button("🗑️ Smazat vše", key="clear_all_btn", use_container_width=True):
+                    st.session_state.new_steps = []
+                    st.rerun()
+            
+            # Tlačítka pro uložení/zrušení
+            col_save, col_cancel = st.columns(2)
+            with col_save:
+                if st.form_submit_button("💾 Uložit novou akci", use_container_width=True):
+                    if not nova_akce_nazev or not nova_akce_popis or not st.session_state.new_steps:
+                        st.error("Vyplňte všechny povinné pole (*) a přidejte alespoň jeden krok")
+                    else:
+                        kroky_data = get_global_steps()
+                        kroky_data[nova_akce_nazev] = {
+                            "description": nova_akce_popis,
+                            "steps": st.session_state.new_steps.copy()
+                        }
+                        save_global_steps(kroky_data)
+                        st.success(f"✅ Akce '{nova_akce_nazev}' byla přidána!")
+                        # Reset session state
+                        st.session_state.new_steps = []
+                        st.session_state["add_new_action"] = False
+                        # AKTUALIZACE CELÉ APLIKACE
+                        refresh_all_data()
+            
+            with col_cancel:
+                if st.form_submit_button("❌ Zrušit", use_container_width=True):
+                    st.session_state["add_new_action"] = False
+                    st.session_state.new_steps = []
+                    st.rerun()
+    
+    st.markdown("---")
+    
+    # Rozdělení akcí na FIX a ostatní
+    fix_akce = []
+    ostatni_akce = []
+    
+    for akce in sorted(steps_data.keys()):
+        if "FIX" in akce.upper():
+            fix_akce.append(akce)
+        else:
+            ostatni_akce.append(akce)
+    
+    # Vytvoříme dva sloupce
+    col_fix, col_ostatni = st.columns(2)
+    
+    with col_fix:
+        st.markdown("### 🔧 FIX Akce")
+        if fix_akce:
+            for akce in fix_akce:
+                zobraz_akci_s_upravou(akce, steps_data[akce])
+        else:
+            st.write("Žádné FIX akce")
+    
+    with col_ostatni:
+        st.markdown("### 📞 Ostatní akce")
+        if ostatni_akce:
+            for akce in ostatni_akce:
+                zobraz_akci_s_upravou(akce, steps_data[akce])
+        else:
+            st.write("Žádné ostatní akce")
 
                 
 
