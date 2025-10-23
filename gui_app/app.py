@@ -412,8 +412,9 @@ else:
 
 
 # ---------- Informace o krocích ----------
+# ---------- Informace o krocích ----------
 
-# NEJPRVE DEFINUJEME FUNKCI
+# FUNKCE PRO ZOBRAZENÍ AKCE
 def zobraz_akci_s_upravou(akce, obsah_akce):
     """Zobrazí akci s možností rychlé editace"""
     
@@ -438,8 +439,8 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
             st.caption(f"📝 {popis_akce}")
         
         with col_edit:
-            # Tlačítko pro editaci - MIMO formulář
-            if st.button("✏️", key=f"edit_{akce}", help=f"Upravit akci {akce}"):
+            # Tlačítko pro editaci
+            if st.button("✏️ Upravit", key=f"edit_{akce}", use_container_width=True):
                 st.session_state[f"edit_akce_{akce}"] = True
         
         # Náhled kroků
@@ -459,178 +460,229 @@ def zobraz_akci_s_upravou(akce, obsah_akce):
             else:
                 st.write("Žádné kroky")
         
-        # Formulář pro editaci (pokud je aktivní)
+        # VYSKAKOVACÍ OKNO PRO EDITACI
         if st.session_state.get(f"edit_akce_{akce}", False):
-            with st.form(f"edit_form_{akce}"):
-                st.write(f"**Editace akce: {akce}**")
+            # Použijeme st.dialog pro moderní vyskakovací okno
+            with st.dialog(f"Editace akce: {akce}"):
+                st.subheader(f"✏️ Editace akce: {akce}")
                 
                 # Popis akce
                 novy_popis = st.text_input("Popis akce", value=popis_akce, key=f"desc_{akce}")
                 
-                st.write("**Kroky:**")
+                st.markdown("---")
+                st.write("**Správa kroků:**")
                 
                 # Načtení aktuálních kroků do session state
                 if f"kroky_{akce}" not in st.session_state:
                     st.session_state[f"kroky_{akce}"] = kroky.copy()
                 
                 # Zobrazení a editace kroků
-                kroky_k_smazani = []
-                for i, krok in enumerate(st.session_state[f"kroky_{akce}"]):
-                    col_krok, col_smazat = st.columns([4, 1])
+                if st.session_state[f"kroky_{akce}"]:
+                    st.write("**Aktuální kroky:**")
+                    for i, krok in enumerate(st.session_state[f"kroky_{akce}"]):
+                        col1, col2 = st.columns([4, 1])
+                        
+                        with col1:
+                            if isinstance(krok, dict):
+                                st.text_area(
+                                    f"Krok {i+1} - Description", 
+                                    value=krok.get('description', ''),
+                                    key=f"krok_{akce}_{i}_desc",
+                                    height=80
+                                )
+                                st.text_area(
+                                    f"Krok {i+1} - Expected", 
+                                    value=krok.get('expected', ''),
+                                    key=f"krok_{akce}_{i}_exp", 
+                                    height=80
+                                )
+                            else:
+                                st.text_area(
+                                    f"Krok {i+1}", 
+                                    value=krok,
+                                    key=f"krok_{akce}_{i}",
+                                    height=80
+                                )
+                        
+                        with col2:
+                            # Tlačítko pro smazání kroku
+                            if st.button("🗑️", key=f"del_{akce}_{i}", use_container_width=True):
+                                if i < len(st.session_state[f"kroky_{akce}"]):
+                                    st.session_state[f"kroky_{akce}"].pop(i)
+                                    st.rerun()
+                        
+                        st.markdown("---")
+                else:
+                    st.info("Žádné kroky")
+                
+                # FORMULÁŘ PRO PŘIDÁNÍ NOVÉHO KROKU
+                with st.form(f"add_step_form_{akce}"):
+                    st.write("**Přidat nový krok:**")
+                    new_desc = st.text_area("Description*", placeholder="Popis kroku - co se má udělat", key=f"new_desc_{akce}", height=80)
+                    new_expected = st.text_area("Expected*", placeholder="Očekávaný výsledek - co se má stát", key=f"new_exp_{akce}", height=80)
                     
-                    with col_krok:
-                        if isinstance(krok, dict):
-                            novy_desc = st.text_area(
-                                f"Krok {i+1} - Description", 
-                                value=krok.get('description', ''),
-                                key=f"krok_{akce}_{i}_desc",
-                                height=60
-                            )
-                            novy_expected = st.text_area(
-                                f"Krok {i+1} - Expected", 
-                                value=krok.get('expected', ''),
-                                key=f"krok_{akce}_{i}_exp", 
-                                height=60
-                            )
-                            # Aktualizace kroku
-                            st.session_state[f"kroky_{akce}"][i] = {
-                                "description": novy_desc,
-                                "expected": novy_expected
-                            }
-                        else:
-                            novy_text = st.text_area(
-                                f"Krok {i+1}", 
-                                value=krok,
-                                key=f"krok_{akce}_{i}",
-                                height=60
-                            )
-                            st.session_state[f"kroky_{akce}"][i] = novy_text
-                    
-                    with col_smazat:
-                        # Tlačítko pro smazání kroku - musí být submit button
-                        if st.form_submit_button("🗑️", key=f"del_{akce}_{i}", use_container_width=True):
-                            kroky_k_smazani.append(i)
-                
-                # Odstranění označených kroků
-                for index in sorted(kroky_k_smazani, reverse=True):
-                    if index < len(st.session_state[f"kroky_{akce}"]):
-                        st.session_state[f"kroky_{akce}"].pop(index)
-                        st.rerun()
-                
-                # Přidání nového kroku - musí být mimo formulář nebo jako submit button
-                st.write("**Přidat nový krok:**")
-                new_desc = st.text_area("Description", key=f"new_desc_{akce}", height=60)
-                new_expected = st.text_area("Expected", key=f"new_exp_{akce}", height=60)
-                
-                # Tlačítko pro přidání kroku - musí být submit button
-                if st.form_submit_button("➕ Přidat krok", key=f"add_{akce}", use_container_width=True):
-                    if new_desc.strip():
-                        st.session_state[f"kroky_{akce}"].append({
-                            "description": new_desc.strip(),
-                            "expected": new_expected.strip()
-                        })
-                        st.rerun()
+                    if st.form_submit_button("➕ Přidat krok", use_container_width=True):
+                        if new_desc.strip():
+                            st.session_state[f"kroky_{akce}"].append({
+                                "description": new_desc.strip(),
+                                "expected": new_expected.strip()
+                            })
+                            st.rerun()
                 
                 # Tlačítka pro uložení/zrušení
-                col_save, col_cancel = st.columns(2)
+                col_save, col_cancel, col_delete = st.columns([2, 2, 1])
+                
                 with col_save:
-                    if st.form_submit_button("💾 Uložit změny", use_container_width=True):
+                    if st.button("💾 Uložit změny", key=f"save_{akce}", use_container_width=True):
                         # Uložení změn do kroky.json
                         kroky_data = get_global_steps()
+                        
+                        # Aktualizace hodnot kroků z text areas
+                        updated_kroky = []
+                        for i in range(len(st.session_state[f"kroky_{akce}"])):
+                            desc_key = f"krok_{akce}_{i}_desc"
+                            exp_key = f"krok_{akce}_{i}_exp"
+                            
+                            if desc_key in st.session_state:
+                                desc = st.session_state[desc_key]
+                                exp = st.session_state[exp_key] if exp_key in st.session_state else ""
+                                updated_kroky.append({
+                                    "description": desc,
+                                    "expected": exp
+                                })
+                        
                         kroky_data[akce] = {
                             "description": novy_popis,
-                            "steps": st.session_state[f"kroky_{akce}"].copy()
+                            "steps": updated_kroky
                         }
                         save_global_steps(kroky_data)
                         st.success(f"✅ Akce '{akce}' byla upravena!")
                         st.session_state[f"edit_akce_{akce}"] = False
                         # Aktualizace celé aplikace
                         refresh_all_data()
+                        st.rerun()
                 
                 with col_cancel:
-                    if st.form_submit_button("❌ Zrušit", use_container_width=True):
+                    if st.button("❌ Zrušit", key=f"cancel_{akce}", use_container_width=True):
                         st.session_state[f"edit_akce_{akce}"] = False
                         if f"kroky_{akce}" in st.session_state:
                             del st.session_state[f"kroky_{akce}"]
                         st.rerun()
+                
+                with col_delete:
+                    if st.button("🗑️ Smazat", key=f"delete_{akce}", use_container_width=True):
+                        # Potvrzení smazání
+                        st.session_state[f"confirm_delete_{akce}"] = True
+                        st.rerun()
+                
+                # Potvrzení smazání akce
+                if st.session_state.get(f"confirm_delete_{akce}", False):
+                    st.error(f"Opravdu chceš smazat akci '{akce}'?")
+                    col_yes, col_no = st.columns(2)
+                    with col_yes:
+                        if st.button("ANO, smazat", key=f"yes_delete_{akce}", use_container_width=True):
+                            kroky_data = get_global_steps()
+                            if akce in kroky_data:
+                                del kroky_data[akce]
+                                save_global_steps(kroky_data)
+                                st.success(f"✅ Akce '{akce}' byla smazána!")
+                                st.session_state[f"edit_akce_{akce}"] = False
+                                st.session_state[f"confirm_delete_{akce}"] = False
+                                refresh_all_data()
+                                st.rerun()
+                    with col_no:
+                        if st.button("NE, zachovat", key=f"no_delete_{akce}", use_container_width=True):
+                            st.session_state[f"confirm_delete_{akce}"] = False
+                            st.rerun()
         
         st.markdown("---")
 
-# TEĎ POKRAČUJEME S HLAVNÍ ČÁSTÍ
+# HLAVNÍ ČÁST - PŘEHLED KROKŮ
 with st.expander("📊 Přehled kroků podle akcí"):
     st.subheader("Kroky dostupné v systému")
     steps_data = get_steps()
     
     # Tlačítko pro přidání nové akce
-    if st.button("➕ Přidat novou akci", key="add_new_action_main"):
+    if st.button("➕ Přidat novou akci", key="add_new_action_main", use_container_width=True):
         st.session_state["add_new_action"] = True
     
-    # Formulář pro novou akci
+    # VYSKAKOVACÍ OKNO PRO NOVOU AKCI
     if st.session_state.get("add_new_action", False):
-        with st.form("nova_akce_form"):
+        with st.dialog("Nová akce"):
             st.subheader("➕ Přidat novou akci")
-            nova_akce_nazev = st.text_input("Název akce*", placeholder="Např.: Aktivace_DSL")
-            nova_akce_popis = st.text_input("Popis akce*", placeholder="Např.: Aktivace DSL služby")
             
-            st.write("**Kroky akce:**")
-            
-            # Inicializace session state pro kroky
-            if 'new_steps' not in st.session_state:
-                st.session_state.new_steps = []
-            
-            # Zobrazení existujících kroků
-            for i, krok in enumerate(st.session_state.new_steps):
-                st.write(f"**Krok {i+1}:**")
-                st.text_input("Description*", value=krok['description'], key=f"new_step_{i}_desc", disabled=True)
-                st.text_input("Expected*", value=krok['expected'], key=f"new_step_{i}_exp", disabled=True)
-                st.markdown("---")
-            
-            # Přidání nového kroku
-            st.write("**Přidat nový krok:**")
-            new_step_desc = st.text_area("Description*", placeholder="Popis kroku - co se má udělat", key="new_step_desc", height=60)
-            new_step_expected = st.text_area("Expected*", placeholder="Očekávaný výsledek - co se má stát", key="new_step_expected", height=60)
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("➕ Přidat krok", key="add_step_btn", use_container_width=True):
-                    if new_step_desc and new_step_expected:
-                        st.session_state.new_steps.append({
-                            "description": new_step_desc,
-                            "expected": new_step_expected
-                        })
-                        st.rerun()
-                    else:
-                        st.warning("Vyplňte obě pole pro krok")
-            with col2:
-                if st.button("🗑️ Smazat vše", key="clear_all_btn", use_container_width=True):
+            with st.form("nova_akce_form"):
+                nova_akce_nazev = st.text_input("Název akce*", placeholder="Např.: Aktivace_DSL")
+                nova_akce_popis = st.text_input("Popis akce*", placeholder="Např.: Aktivace DSL služby")
+                
+                st.write("**Kroky akce:**")
+                
+                # Inicializace session state pro kroky
+                if 'new_steps' not in st.session_state:
                     st.session_state.new_steps = []
-                    st.rerun()
-            
-            # Tlačítka pro uložení/zrušení
-            col_save, col_cancel = st.columns(2)
-            with col_save:
-                if st.form_submit_button("💾 Uložit novou akci", use_container_width=True):
-                    if not nova_akce_nazev or not nova_akce_popis or not st.session_state.new_steps:
-                        st.error("Vyplňte všechny povinné pole (*) a přidejte alespoň jeden krok")
-                    else:
-                        kroky_data = get_global_steps()
-                        kroky_data[nova_akce_nazev] = {
-                            "description": nova_akce_popis,
-                            "steps": st.session_state.new_steps.copy()
-                        }
-                        save_global_steps(kroky_data)
-                        st.success(f"✅ Akce '{nova_akce_nazev}' byla přidána!")
-                        # Reset session state
+                
+                # Zobrazení existujících kroků
+                if st.session_state.new_steps:
+                    st.write("**Přidané kroky:**")
+                    for i, krok in enumerate(st.session_state.new_steps):
+                        col_step, col_del = st.columns([4, 1])
+                        with col_step:
+                            st.text_input("Description*", value=krok['description'], key=f"new_step_{i}_desc", disabled=True)
+                            st.text_input("Expected*", value=krok['expected'], key=f"new_step_{i}_exp", disabled=True)
+                        with col_del:
+                            if st.form_submit_button("🗑️", key=f"del_new_step_{i}", disabled=False):
+                                if i < len(st.session_state.new_steps):
+                                    st.session_state.new_steps.pop(i)
+                                    st.rerun()
+                        st.markdown("---")
+                
+                # Přidání nového kroku
+                st.write("**Přidat nový krok:**")
+                new_step_desc = st.text_area("Description*", placeholder="Popis kroku - co se má udělat", key="new_step_desc", height=60)
+                new_step_expected = st.text_area("Expected*", placeholder="Očekávaný výsledek - co se má stát", key="new_step_expected", height=60)
+                
+                col_add, col_clear = st.columns(2)
+                with col_add:
+                    if st.form_submit_button("➕ Přidat krok", use_container_width=True):
+                        if new_step_desc.strip() and new_step_expected.strip():
+                            st.session_state.new_steps.append({
+                                "description": new_step_desc.strip(),
+                                "expected": new_step_expected.strip()
+                            })
+                            st.rerun()
+                        else:
+                            st.warning("Vyplňte obě pole pro krok")
+                with col_clear:
+                    if st.form_submit_button("🗑️ Smazat vše", use_container_width=True):
                         st.session_state.new_steps = []
+                        st.rerun()
+                
+                # Tlačítka pro uložení/zrušení
+                col_save, col_cancel = st.columns(2)
+                with col_save:
+                    if st.form_submit_button("💾 Uložit novou akci", use_container_width=True):
+                        if not nova_akce_nazev.strip() or not nova_akce_popis.strip() or not st.session_state.new_steps:
+                            st.error("Vyplňte všechny povinné pole (*) a přidejte alespoň jeden krok")
+                        else:
+                            kroky_data = get_global_steps()
+                            kroky_data[nova_akce_nazev.strip()] = {
+                                "description": nova_akce_popis.strip(),
+                                "steps": st.session_state.new_steps.copy()
+                            }
+                            save_global_steps(kroky_data)
+                            st.success(f"✅ Akce '{nova_akce_nazev}' byla přidána!")
+                            # Reset session state
+                            st.session_state.new_steps = []
+                            st.session_state["add_new_action"] = False
+                            # AKTUALIZACE CELÉ APLIKACE
+                            refresh_all_data()
+                            st.rerun()
+                
+                with col_cancel:
+                    if st.form_submit_button("❌ Zrušit", use_container_width=True):
                         st.session_state["add_new_action"] = False
-                        # AKTUALIZACE CELÉ APLIKACE
-                        refresh_all_data()
-            
-            with col_cancel:
-                if st.form_submit_button("❌ Zrušit", use_container_width=True):
-                    st.session_state["add_new_action"] = False
-                    st.session_state.new_steps = []
-                    st.rerun()
+                        st.session_state.new_steps = []
+                        st.rerun()
     
     st.markdown("---")
     
@@ -664,7 +716,6 @@ with st.expander("📊 Přehled kroků podle akcí"):
             st.write("Žádné ostatní akce")
 
                 
-
 # ---------- Export ----------
 st.subheader("📤 Export do Excelu + Git push (jedním kliknutím)")
 if st.button("💾 Exportovat a nahrát na GitHub"):
