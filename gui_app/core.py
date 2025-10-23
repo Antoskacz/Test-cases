@@ -14,7 +14,7 @@ EXPORT_DIR.mkdir(exist_ok=True)
 # ---------- Statické mapy ----------
 PRIORITY_MAP = {
     "1": "1-High",
-    "2": "2-Medium",
+    "2": "2-Medium", 
     "3": "3-Low"
 }
 
@@ -70,11 +70,11 @@ def parse_veta(veta: str):
     # ROZŠÍŘENÉ A OPRAVENÉ MAPOVÁNÍ TECHNOLOGIÍ
     technologie_map = {
         "dsl": "DSL",
-        "vdsl": "DSL",
+        "vdsl": "DSL", 
         "adsl": "DSL",
         "fwa bi": "FWA_BI",
-        "fwa indoor": "FWA_BI", 
-        "fwa bisi": "FWA_BISI",  # DŮLEŽITÉ: FWA BISI je jiná technologie!
+        "fwa indoor": "FWA_BI",
+        "fwa bisi": "FWA_BISI",
         "fwa outdoor": "FWA_BISI",
         "fiber": "FIBER",
         "optin": "FIBER",
@@ -84,7 +84,7 @@ def parse_veta(veta: str):
         "cable": "CABLE",
         "hlas": "HLAS",
         "hlasovy": "HLAS",
-        "mobil": "HLAS", 
+        "mobil": "HLAS",
         "next tarif": "HLAS",
         "tarif": "HLAS",
         "voice": "HLAS"
@@ -93,7 +93,6 @@ def parse_veta(veta: str):
     technologie = "X"
     
     # DŮLEŽITÉ: Nejprve kontrolujeme delší řetězce, pak kratší
-    # Aby se "fwa bisi" nenašlo jako "fwa bi"
     for k, v in sorted(technologie_map.items(), key=lambda x: len(x[0]), reverse=True):
         if k in veta_low:
             technologie = v
@@ -111,22 +110,18 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     
     # AUTOMATICKÉ ČÍSLOVÁNÍ - najdeme nejvyšší existující order_no
     if project_data["scenarios"]:
-        # Najdeme maximum z existujících scénářů
         max_order = max([scenario["order_no"] for scenario in project_data["scenarios"]])
         order_no = max_order + 1
     else:
-        # První scénář v projektu
         order_no = 1
     
-    # Aktualizujeme next_id pro případnou budoucí kompatibilitu
     project_data["next_id"] = order_no + 1
-    
     nove_cislo = f"{order_no:03d}"
 
     segment, kanal, technologie = parse_veta(veta)
-    test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip()}"
+    test_name = f"{nove_cislo}_{kanal}_{segment}_{technologie}_{veta.strip().replace(' ', '_')}"
 
-    # Načtení kroků podle akce
+    # Načtení kroků podle akce - POUŽÍVÁME PŘEVEDENÁ DATA
     if akce in kroky_data:
         kroky = copy.deepcopy(kroky_data[akce])
     else:
@@ -147,44 +142,6 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     project_data["scenarios"].append(tc)
     save_json(PROJECTS_PATH, projects_data)
     return tc
-
-
-def oprav_duplicitni_kroky():
-    """Opraví duplicitní kroky v kroky.json"""
-    kroky_data = get_steps()
-    opraveno = False
-    
-    for akce, kroky in kroky_data.items():
-        puvodni_pocet = len(kroky)
-        
-        # Odstranění duplicitních kroků
-        jedinecne_kroky = []
-        videne_popisy = set()
-        
-        for krok in kroky:
-            popis = krok.get('description', '')
-            # Pokud jsme tento popis ještě neviděli, přidáme krok
-            if popis not in videne_popisy:
-                jedinecne_kroky.append(krok)
-                videne_popisy.add(popis)
-        
-        nove_kroky = jedinecne_kroky
-        novy_pocet = len(nove_kroky)
-        
-        if puvodni_pocet != novy_pocet:
-            kroky_data[akce] = nove_kroky
-            opraveno = True
-            print(f"🔧 Opravena akce '{akce}': {puvodni_pocet} → {novy_pocet} kroků")
-    
-    if opraveno:
-        # Ulož opravená data
-        with open(KROKY_PATH, 'w', encoding='utf-8') as f:
-            json.dump(kroky_data, f, ensure_ascii=False, indent=2)
-        print("✅ Kroky.json byl opraven!")
-    else:
-        print("✅ Žádné duplicity nebyly nalezeny.")
-    
-    return kroky_data
 
 # ---------- Export do Excelu ----------
 def export_to_excel(project_name, projects_data):
