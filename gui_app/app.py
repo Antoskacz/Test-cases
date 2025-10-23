@@ -103,9 +103,13 @@ def check_github_status():
         if "not a git repository" in check_git.stderr:
             return "❌ Není Git repozitář"
         
-        # Zkontrolujeme změny
-        result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, cwd=BASE_DIR)
-        if result.stdout.strip():
+        # Zkontrolujeme změny - více metod pro jistotu
+        result1 = subprocess.run(["git", "status", "-s"], capture_output=True, text=True, cwd=BASE_DIR)
+        result2 = subprocess.run(["git", "diff", "--name-only"], capture_output=True, text=True, cwd=BASE_DIR)
+        
+        has_changes = bool(result1.stdout.strip()) or bool(result2.stdout.strip())
+        
+        if has_changes:
             return "⚠️ Čeká na synchronizaci s GitHub"
         else:
             return "✅ Synchronizováno s GitHub"
@@ -408,18 +412,26 @@ def sprava_akci():
                 except:
                     st.warning("Nelze nastavit Git uživatele, pokračuji...")
                 
+                # ZJISTÍME ZMĚNY - jednodušší kontrola
+                result_status = subprocess.run(["git", "diff", "--name-only", "kroky.json"], 
+                                             capture_output=True, text=True, cwd=BASE_DIR)
+                has_changes = bool(result_status.stdout.strip())
+                
+                if not has_changes:
+                    # Zkusíme jinou metodu - git status
+                    result_status2 = subprocess.run(["git", "status", "-s", "kroky.json"], 
+                                                  capture_output=True, text=True, cwd=BASE_DIR)
+                    has_changes = bool(result_status2.stdout.strip())
+                
+                if not has_changes:
+                    st.info("Žádné změny v akcích k synchronizaci")
+                    st.stop()
+                
                 # Přidání změn v kroky.json
                 result_add = subprocess.run(["git", "add", "kroky.json"], 
                                           capture_output=True, text=True, cwd=BASE_DIR)
                 if result_add.returncode != 0:
                     st.error(f"Git add selhal: {result_add.stderr}")
-                    st.stop()
-                
-                # Kontrola zda jsou nějaké změny k commitování
-                result_status = subprocess.run(["git", "status", "--porcelain", "kroky.json"], 
-                                             capture_output=True, text=True, cwd=BASE_DIR)
-                if not result_status.stdout.strip():
-                    st.info("Žádné změny v akcích k synchronizaci")
                     st.stop()
                 
                 # Commit
@@ -428,7 +440,6 @@ def sprava_akci():
                     capture_output=True, text=True, cwd=BASE_DIR
                 )
                 if result_commit.returncode != 0:
-                    st.error(f"Git commit selhal: {result_commit.stderr}")
                     # Zkusíme pull před commitem
                     try:
                         subprocess.run(["git", "pull", "--rebase", "--autostash"], 
@@ -468,6 +479,8 @@ def sprava_akci():
         except Exception as e:
             st.error(f"❌ Synchronizace selhala: {e}")
             st.info("Změny byly uloženy lokálně v kroky.json")
+
+
 
 # ---------- Sidebar ----------
 st.sidebar.title("📁 Projekt")
