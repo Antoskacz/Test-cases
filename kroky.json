@@ -583,5 +583,100 @@
       "expected": "Notifikace jsou v pořádku, přišly všechny a ve správném znění."
     }
     ]
+},
+"Odebrat HW - FIX" : {
+    "description": "Odebrání HW u fixní služby.",
+    "steps": [
+    {
+      "description": "Jdi na konkrétního zákazníka na detail služeb a vyhledej HW na dané službě. Zapiš si jeho IMEI.",
+      "expected": "IMEI zapsáno, kliknutí do řádku s HW."
+    },
+    {
+      "description": "Klikni na deaktivovat a proklikni se tím do košíku objednávky.",
+      "expected": "Prokliknutí do košíku."
+    },
+    {
+      "description": "Vyber odpovídající informace a zadej IMEI zařízení.",
+      "expected": "IMEI zadáno, prokliknutí do košíku, položky ok."
+    },
+    {
+      "description": "Objednávku odešli do COM a zkontroluj její dokončení a kladný rozpad tasků.",
+      "expected": "Objednávka je odeslaná, průběh v COM kladný, objednávka dokončená."
+    },
+    {
+      "description": "Odešli OT na OSS ke kontrole.",
+      "expected": "OSS ok."
+    },
+    {
+      "description": "Zkontroluj v Sibel odebrání HW a dokončení objednávky.",
+      "expected": "Odebrání HW propsáno a objednávka dokončená."
+    },
+    {
+      "description": "Zkontroluj notifikace.",
+      "expected": "Notifikace ok."
+    },
+  ]
+},
+"Vymena HW - FIX" : {
+    "description": "Výměna HW u fixní služby přes objednávku.",
+    "steps": [
+        {
+      "description": "Jdi na konkrétního zákazníka na detail služeb a vyhledej HW na dané službě. Zapiš si jeho IMEI.",
+      "expected": "IMEI zapsáno, kliknutí do řádku s HW."
+    },
+    {
+      "description": "Klikni na vymenit pronajate zarizeni a proklikni se tím do košíku objednávky.",
+      "expected": "Prokliknutí do košíku."
+    },
+    {
+      "description": "Vyber pozadovany HW a zadej IMEI noveho zařízení.",
+      "expected": "IMEI zadáno."
+    },
+        {
+      "description": "Vyber zarizeni k vraceni a zadej IMEI stareho zařízení.",
+      "expected": "IMEI zadáno, prokliknuti do kosiku, polozky ok."
+    },
+    {
+      "description": "Objednávku odešli do COM a zkontroluj její dokončení a kladný rozpad tasků.",
+      "expected": "Objednávka je odeslaná, průběh v COM kladný, objednávka dokončená."
+    },
+    {
+      "description": "Odešli OT na OSS ke kontrole.",
+      "expected": "OSS ok."
+    },
+    {
+      "description": "Zkontroluj v Sibel vymenu zarizeni a propsani noveho IMEI a dokončení objednávky.",
+      "expected": "Nove IMEI HW propsáno a objednávka dokončená."
+    },
+    {
+      "description": "Zkontroluj notifikace.",
+      "expected": "Notifikace ok."
+    }
+  ]
+},
+"Vymena HW v ramci poruchy - FIX" : {
+    "description": "Výměna HW v rámci poruchy přes SR a technika (nelze měnit typ HW RDK za nonRDK a naopak).",
+    "steps": [
+    {
+      "description": "NA konkretnim zakaznikovi jdi na pozadovanou sluzbu s HW a zaloz nove SR s parametry: poruchy_technologie_pronajaty hw.",
+      "expected": "SR zalozeno."
+    },
+     {
+      "description": "Otevri si SR a dopln pozadovane informace: komunikacni kanal - interne, popis - vlozit text s IMEI aktualniho zarizeni a nazvem HW, textova pole - vyplnit adresu a kontakt presne, jak je (hacky, carky, velka pismena, do service point id se pise instalacni adresa).",
+      "expected": "Vyplnene detailni informace vcetne adresy."
+    },
+     {
+      "description": "Klikni v SR na JIRA a vybrat technik TMCZ, po odeslani se objevi CIN - ten se posila na OSS v OT pro kontrolu a vymenu HW.",
+      "expected": "CIN vygenerovany."
+    },
+    {
+      "description": "Odešli OT na OSS ke kontrole a pridej i vygenerovany CIN.",
+      "expected": "OSS ok."
+    },
+    {
+      "description": "Zkontroluj v Siebel vymenene zarizeni a zmenu IMEI a SR muzes uzavrit.",
+      "expected": "HW je vymenen a nove IMEI propsano u sluzby."
+    }
+  ]
 }
 }

@@ -320,5 +320,10 @@
         ]
       }
     ]
+  },
+  "CCTR-1214 - Restart session na DSL": {
+    "next_id": 1,
+    "subject": "UAT2\\Antosova\\",
+    "scenarios": []
   }
 }
