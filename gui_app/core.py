@@ -212,8 +212,6 @@ def parse_veta(veta: str):
             
     return segment, kanal, technologie
 
-
-
 # ---------- Generování test casu ----------
 def generate_testcase(project, veta, akce, priority, complexity, kroky_data, projects_data):
     """Vytvoří nový test case a uloží ho do projektu"""
@@ -222,10 +220,10 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     
     project_data = projects_data[project]
     
-    # AUTOMATICKÉ ČÍSLOVÁNÍ - najdeme nejvyšší existující order_no
-    if project_data["scenarios"]:
-        max_order = max([scenario["order_no"] for scenario in project_data["scenarios"]])
-        order_no = max_order + 1
+    # ✅ BEZPEČNÉ ČÍSLOVÁNÍ - kontrola duplicit
+    existing_orders = [scenario["order_no"] for scenario in project_data["scenarios"]]
+    if existing_orders:
+        order_no = max(existing_orders) + 1
     else:
         order_no = 1
     
@@ -256,7 +254,7 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
 
 # ---------- Export do Excelu ----------
 def export_to_excel(project_name, projects_data):
-    """Exportuje test casy daného projektu do Excelu a provede git push"""
+    """Exportuje test casy daného projektu do Excelu - BEZ Git push"""
     project_data = projects_data[project_name]
     rows = []
 
@@ -289,38 +287,12 @@ def export_to_excel(project_name, projects_data):
             })
 
     df = pd.DataFrame(rows)
+    
+    # ✅ VYTVOŘÍME SLOŽKU exports pokud neexistuje
+    EXPORT_DIR.mkdir(exist_ok=True)
+    
     output_path = EXPORT_DIR / f"testcases_{project_name.replace(' ', '_')}.xlsx"
     df.to_excel(output_path, index=False)
-
-    # Git operace s lepším error handling
-    try:
-        # Kontrola git repozitáře
-        check_result = subprocess.run(["git", "status"], capture_output=True, text=True)
-        if "not a git repository" in check_result.stderr:
-            print("⚠️ Není Git repozitář - export pouze lokální")
-            return output_path
-
-        # Přidání souboru
-        subprocess.run(["git", "add", str(output_path)], check=True)
-        
-        # Commit
-        subprocess.run(["git", "commit", "-m", f"Auto export {project_name}"], check=True)
-        
-        # Pull s autostash
-        try:
-            subprocess.run(["git", "pull", "--rebase", "--autostash"], check=True)
-        except subprocess.CalledProcessError:
-            print("⚠️ Git pull selhal, pokračujeme bez něj")
-            
-        # Push
-        subprocess.run(["git", "push"], check=True)
-        print("✅ Export a git push úspěšný")
-        
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️ Git operace selhala: {e}")
-        print("ℹ️ Export byl uložen lokálně")
-    except Exception as e:
-        print(f"⚠️ Neočekávaná chyba: {e}")
 
     print(f"✅ Exportováno do: {output_path}")
     return output_path

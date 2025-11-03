@@ -37,17 +37,36 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 # ---------- Cesty ----------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ---------- Pomocné funkce ----------
+# ---------- Bezpečné načítání projektů ----------
 def get_projects():
-    return load_json(PROJECTS_PATH)
+    """Bezpečně načte projekty - chrání před ztrátou dat"""
+    try:
+        projects = load_json(PROJECTS_PATH)
+        # Pokud soubor neexistuje nebo je prázdný, vrátíme základní strukturu
+        if not projects:
+            return {}
+        return projects
+    except Exception as e:
+        st.error(f"Chyba při načítání projektů: {e}")
+        return {}
 
+def save_projects_safely(projects_data):
+    """Bezpečně uloží projekty s kontrolou"""
+    try:
+        save_json(PROJECTS_PATH, projects_data)
+        return True
+    except Exception as e:
+        st.error(f"Chyba při ukládání projektů: {e}")
+        return False
+
+# ---------- Pomocné funkce ----------
 def get_steps():
     return load_json(KROKY_PATH)
 
 def ensure_project(projects, name, subject=None):
     if name not in projects:
         projects[name] = {"next_id": 1, "subject": subject or "UAT2\\Antosova\\", "scenarios": []}
-        save_json(PROJECTS_PATH, projects)
+        save_projects_safely(projects)
     return projects
 
 def make_df(projects, project_name):
@@ -487,7 +506,7 @@ if selected_project != "— vyber —" and selected_project in projects:
             if new_name.strip() and new_name != selected_project:
                 projects[new_name] = projects.pop(selected_project)
                 selected_project = new_name
-                save_json(PROJECTS_PATH, projects)
+                save_projects_safely(projects)
                 st.success("✅ Název projektu změněn")
                 st.rerun()
     
@@ -497,7 +516,7 @@ if selected_project != "— vyber —" and selected_project in projects:
         if st.button("Uložit Subject"):
             if new_subject.strip():
                 projects[selected_project]["subject"] = new_subject.strip()
-                save_json(PROJECTS_PATH, projects)
+                save_projects_safely(projects)
                 st.success("✅ Subject změněn")
                 st.rerun()
     
@@ -505,7 +524,7 @@ if selected_project != "— vyber —" and selected_project in projects:
         st.warning(f"Chceš smazat projekt '{selected_project}'?")
         if st.button("ANO, smazat projekt"):
             projects.pop(selected_project)
-            save_json(PROJECTS_PATH, projects)
+            save_projects_safely(projects)
             st.success(f"✅ Projekt '{selected_project}' smazán")
             st.rerun()
 
@@ -571,7 +590,7 @@ if scenarios:
                     t["test_name"] = f"{nove_cislo}_{t['test_name']}"
             
             projects[selected_project]["scenarios"] = scen
-            save_json(PROJECTS_PATH, projects)
+            save_projects_safely(projects)
             st.success("✅ Scénáře a názvy byly přečíslovány.")
             st.rerun()
 else:
@@ -804,7 +823,7 @@ with tab1:
                         scenario["test_name"] = new_test_name
                         
                         projects[selected_project]["scenarios"][scenario_index] = scenario
-                        save_json(PROJECTS_PATH, projects)
+                        save_projects_safely(projects)
                         st.success("✅ Změny uloženy a propsány do projektu.")
                         st.rerun()
 
@@ -828,7 +847,7 @@ with tab1:
                 for i, t in enumerate(scen, start=1):
                     t["order_no"] = i
                 projects[selected_project]["scenarios"] = scen
-                save_json(PROJECTS_PATH, projects)
+                save_projects_safely(projects)
                 st.success("Scénář smazán a pořadí přepočítáno.")
                 st.rerun()
 
@@ -838,36 +857,27 @@ with tab2:
     
     sprava_akci()
 
-
-import os
-
-# Před zápisem vždy vytvoř složku
-export_dir = 'exports'
-os.makedirs(export_dir, exist_ok=True)  # exist_ok=True předejde chybě pokud složka existuje
-
-file_path = os.path.join(export_dir, 'testcases_CCCTR-948_-_WFM')
-
-
-
 with tab3:
     st.subheader("📤 Export projektu")
     
-    st.info("Exportuje všechny scénáře projektu do Excelu a automaticky nahraje na GitHub.")
+    st.info("Exportuje všechny scénáře projektu do Excelu pro stažení do PC.")
     
-    if st.button("💾 Exportovat a nahrát na GitHub", use_container_width=True, type="primary"):
+    if st.button("💾 Exportovat do Excelu", use_container_width=True, type="primary"):
         try:
-            with st.spinner("Exportuji a nahrávám na GitHub..."):
+            with st.spinner("Exportuji do Excelu..."):
                 out = export_to_excel(selected_project, projects)
                 rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
                 st.success(f"✅ Export hotový: `{rel}`")
                 
-                st.download_button(
-                    "⬇️ Stáhnout Excel soubor", 
-                    data=Path(out).read_bytes(),
-                    file_name=Path(out).name,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True
-                )
+                # Zobrazíme download button
+                with open(out, "rb") as file:
+                    st.download_button(
+                        "⬇️ Stáhnout Excel soubor", 
+                        data=file.read(),
+                        file_name=Path(out).name,
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
         except Exception as e:
             st.error(f"Export selhal: {e}")
     
@@ -882,9 +892,8 @@ with tab3:
     
     **Co se stane po exportu:**
     1. Vytvoří se Excel soubor v exports složce
-    2. Soubor se přidá do Gitu
-    3. Provede se commit s popisem
-    4. Soubor se nahraje na GitHub
+    2. Soubor je připraven ke stažení
+    3. **Žádné nahrávání na GitHub** - pouze lokální soubor
     """)
 
 with tab4:
