@@ -678,5 +678,34 @@
       "expected": "HW je vymenen a nove IMEI propsano u sluzby."
     }
   ]
+},
+"Dokup HW - FIX" : {
+    "description": "Dokup HW k fixní službě.",
+    "steps": [
+    {
+      "description": "NA konkretnim zakaznikovi jdi na pozadovanou sluzbu a klikni an objednat.",
+      "expected": "Prokliknutí do košíku."
+    },
+     {
+      "description": "V košíku vyhledej požadovaný HW, vlož IMEI a vlož zařízení do košíku.",
+      "expected": "Požadovaný HW vložen do košíku, IMEI propsáno."
+    },
+     {
+      "description": "Objednávku dokonči a odešli do COM, kde zkontroluj průběh objednávky.",
+      "expected": "Objednávka odeslána a má kladný průběh."
+    },
+    {
+      "description": "Odešli OT na OSS ke kontrole.",
+      "expected": "OSS ok."
+    },
+    {
+      "description": "Zkontroluj v Siebel propsání nového zařízení ke službě včetně IMEI.",
+      "expected": "HW i s IMEI propsáno ke službě, objednávka dokončena."
+    },
+    {
+      "description": "Zkontroluj notifikace.",
+      "expected": "Notifikace ok."
+    }
+  ]
 }
 }
