@@ -252,6 +252,7 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
     save_json(PROJECTS_PATH, projects_data)
     return tc
 
+
 # ---------- Export do Excelu ----------
 def export_to_excel(project_name, projects_data):
     """Exportuje test casy daného projektu do Excelu - POUŽÍVÁ DOČASNÝ SOUBOR"""
@@ -288,10 +289,14 @@ def export_to_excel(project_name, projects_data):
 
     df = pd.DataFrame(rows)
     
-    # ✅ POUŽITÍ DOČASNÉHO SOUBORU - funguje v Streamlit cloudu
+    # ✅ BEZPEČNÉ JMÉNO SOUBORU - odstranění nepovolených znaků
+    safe_project_name = "".join(c for c in project_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+    safe_project_name = safe_project_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
+    
+    # ✅ POUŽITÍ DOČASNÉHO SOUBORU S BEZPEČNÝM JMÉNEM
     try:
-        # Vytvoříme dočasný soubor
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx', prefix=f'testcases_{project_name}_') as tmp_file:
+        # Vytvoříme dočasný soubor s bezpečným jménem
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx', prefix=f'testcases_{safe_project_name}_') as tmp_file:
             temp_path = tmp_file.name
         
         # Uložíme data do dočasného souboru
@@ -302,7 +307,22 @@ def export_to_excel(project_name, projects_data):
         
     except Exception as e:
         print(f"❌ Chyba při exportu: {e}")
-        raise e
+        
+        # ✅ ALTERNATIVNÍ ŘEŠENÍ - použijeme BytesIO pro přímý export do paměti
+        try:
+            import io
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False, sheet_name='Test Cases')
+            
+            output.seek(0)
+            print("✅ Exportováno do paměti pomocí BytesIO")
+            return output
+            
+        except Exception as io_error:
+            print(f"❌ BytesIO export také selhal: {io_error}")
+            raise e
+        
 
 # ---------- Funkce pro opravu duplicitních kroků ----------
 def oprav_duplicitni_kroky():

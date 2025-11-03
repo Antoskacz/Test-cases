@@ -865,42 +865,116 @@ with tab3:
     if st.button("💾 Exportovat do Excelu", use_container_width=True, type="primary"):
         try:
             with st.spinner("Exportuji do Excelu..."):
-                # Získání cesty k dočasnému souboru
-                temp_file_path = export_to_excel(selected_project, projects)
+                # Získání dat z exportu
+                export_result = export_to_excel(selected_project, projects)
                 
-                # Načtení souboru a vytvoření download buttonu
-                with open(temp_file_path, "rb") as file:
-                    file_data = file.read()
+                # Vytvoření bezpečného názvu souboru
+                safe_project_name = "".join(c for c in selected_project if c.isalnum() or c in (' ', '-', '_')).rstrip()
+                safe_project_name = safe_project_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
+                file_name = f"testcases_{safe_project_name}.xlsx"
+                
+                # Zpracování výsledku exportu
+                if isinstance(export_result, str):
+                    # ✅ Export do dočasného souboru
+                    with open(export_result, "rb") as file:
+                        file_data = file.read()
                     
-                # Vytvoření názvu souboru
-                file_name = f"testcases_{selected_project.replace(' ', '_')}.xlsx"
+                    st.success("✅ Export hotový! Soubor je připraven ke stažení.")
+                    
+                    # Download button
+                    st.download_button(
+                        label="⬇️ Stáhnout Excel soubor",
+                        data=file_data,
+                        file_name=file_name,
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
+                    
+                    # Úklid - smazání dočasného souboru
+                    try:
+                        import os
+                        os.unlink(export_result)
+                    except:
+                        pass
+                        
+                else:
+                    # ✅ Export do BytesIO (paměť)
+                    st.success("✅ Export hotový! Soubor je připraven ke stažení.")
+                    
+                    # Download button
+                    st.download_button(
+                        label="⬇️ Stáhnout Excel soubor",
+                        data=export_result.getvalue(),
+                        file_name=file_name,
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
+                    
+        except Exception as e:
+            st.error(f"Export selhal: {e}")
+            
+            # ✅ JEDNODUŠŠÍ ALTERNATIVA - přímý export bez souboru
+            try:
+                st.info("🔄 Zkouším alternativní export...")
                 
-                st.success("✅ Export hotový! Soubor je připraven ke stažení.")
+                projects_data = get_projects()
+                project_data = projects_data[selected_project]
+                rows = []
+
+                for tc in project_data["scenarios"]:
+                    for i, krok in enumerate(tc.get("kroky", []), start=1):
+                        desc = ""
+                        exp = ""
+
+                        if isinstance(krok, dict):
+                            desc = krok.get("description", "")
+                            exp = krok.get("expected", "")
+                        elif isinstance(krok, str):
+                            desc = krok
+                            exp = ""
+
+                        rows.append({
+                            "Project": selected_project,
+                            "Subject": project_data.get("subject", "UAT2\\Antosova\\"),
+                            "System/Application": "Siebel_CZ",
+                            "Description": f"Segment: {tc['segment']}\nKanál: {tc['kanal']}\nAkce: {tc['akce']}",
+                            "Type": "Manual",
+                            "Test Phase": "4-User Acceptance",
+                            "Test: Test Phase": "4-User Acceptance",
+                            "Test Priority": tc["priority"],
+                            "Test Complexity": tc["complexity"],
+                            "Test Name": tc["test_name"],
+                            "Step Name (Design Steps)": str(i),
+                            "Description (Design Steps)": desc,
+                            "Expected (Design Steps)": exp
+                        })
+
+                df = pd.DataFrame(rows)
                 
-                # Download button
+                # ✅ PŘÍMÝ EXPORT DO BYTESIO
+                import io
+                output = io.BytesIO()
+                with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                    df.to_excel(writer, index=False, sheet_name='Test Cases')
+                output.seek(0)
+                
+                # Bezpečný název souboru
+                safe_name = "".join(c for c in selected_project if c.isalnum() or c in (' ', '-', '_')).rstrip()
+                safe_name = safe_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
+                file_name = f"testcases_{safe_name}.xlsx"
+                
+                st.success("✅ Alternativní export úspěšný! Soubor je připraven ke stažení.")
+                
                 st.download_button(
-                    label="⬇️ Stáhnout Excel soubor",
-                    data=file_data,
+                    label="⬇️ Stáhnout Excel soubor (alternativní metoda)",
+                    data=output.getvalue(),
                     file_name=file_name,
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     use_container_width=True
                 )
                 
-                # Úklid - smazání dočasného souboru
-                try:
-                    import os
-                    os.unlink(temp_file_path)
-                except:
-                    pass
-                    
-        except Exception as e:
-            st.error(f"Export selhal: {e}")
-            st.info("""
-**Řešení problémů s exportem:**
-1. Zkontrolujte, zda má projekt nějaké scénáře
-2. Zkuste exportovat znovu
-3. Pokud problém přetrvává, kontaktujte správce aplikace
-            """)
+            except Exception as alt_error:
+                st.error(f"Alternativní export také selhal: {alt_error}")
     
     st.markdown("---")
     
@@ -912,7 +986,7 @@ with tab3:
     - Metadata (priorita, komplexita, segment, kanál)
     
     **Co se stane po exportu:**
-    1. Vytvoří se Excel soubor v paměti
+    1. Data se exportují přímo do paměti
     2. Soubor je připraven ke stažení
     3. **Žádné ukládání na disk** - pouze download
     """)
