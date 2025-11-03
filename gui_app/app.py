@@ -838,6 +838,17 @@ with tab2:
     
     sprava_akci()
 
+
+import os
+
+# Před zápisem vždy vytvoř složku
+export_dir = 'exports'
+os.makedirs(export_dir, exist_ok=True)  # exist_ok=True předejde chybě pokud složka existuje
+
+file_path = os.path.join(export_dir, 'testcases_CCCTR-948_-_WFM')
+
+
+
 with tab3:
     st.subheader("📤 Export projektu")
     
