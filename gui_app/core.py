@@ -3,13 +3,13 @@ import pandas as pd
 import copy
 import subprocess
 from pathlib import Path
+import tempfile
+import os
 
 # ---------- Cesty ----------
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECTS_PATH = BASE_DIR / "projects.json"
 KROKY_PATH = BASE_DIR / "kroky.json"
-EXPORT_DIR = Path("exports")  # ✅ RELATIVNÍ CESTA - vždy v aktuálním adresáři
-EXPORT_DIR.mkdir(exist_ok=True)  # ✅ VYTVOŘÍ SLOŽKU POKUD NEEXISTUJE
 
 # ---------- Statické mapy ----------
 PRIORITY_MAP = {
@@ -254,7 +254,7 @@ def generate_testcase(project, veta, akce, priority, complexity, kroky_data, pro
 
 # ---------- Export do Excelu ----------
 def export_to_excel(project_name, projects_data):
-    """Exportuje test casy daného projektu do Excelu - BEZ Git push"""
+    """Exportuje test casy daného projektu do Excelu - POUŽÍVÁ DOČASNÝ SOUBOR"""
     project_data = projects_data[project_name]
     rows = []
 
@@ -288,28 +288,21 @@ def export_to_excel(project_name, projects_data):
 
     df = pd.DataFrame(rows)
     
-    # ✅ VYTVOŘÍME SLOŽKU exports pokud neexistuje - BEZPEČNĚ
-    EXPORT_DIR.mkdir(exist_ok=True)
-    
-    # ✅ BEZPEČNÉ VYTVOŘENÍ CESTY
-    file_name = f"testcases_{project_name.replace(' ', '_')}.xlsx"
-    output_path = EXPORT_DIR / file_name
-    
+    # ✅ POUŽITÍ DOČASNÉHO SOUBORU - funguje v Streamlit cloudu
     try:
-        df.to_excel(output_path, index=False)
-        print(f"✅ Exportováno do: {output_path}")
-        return output_path
+        # Vytvoříme dočasný soubor
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx', prefix=f'testcases_{project_name}_') as tmp_file:
+            temp_path = tmp_file.name
+        
+        # Uložíme data do dočasného souboru
+        df.to_excel(temp_path, index=False)
+        
+        print(f"✅ Exportováno do dočasného souboru: {temp_path}")
+        return temp_path
+        
     except Exception as e:
         print(f"❌ Chyba při exportu: {e}")
-        # Fallback: zkusíme uložit do aktuálního adresáře
-        try:
-            fallback_path = Path(file_name)
-            df.to_excel(fallback_path, index=False)
-            print(f"✅ Exportováno do fallback cesty: {fallback_path}")
-            return fallback_path
-        except Exception as fallback_error:
-            print(f"❌ Fallback export také selhal: {fallback_error}")
-            raise e
+        raise e
 
 # ---------- Funkce pro opravu duplicitních kroků ----------
 def oprav_duplicitni_kroky():

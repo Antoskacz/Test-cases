@@ -865,32 +865,39 @@ with tab3:
     if st.button("💾 Exportovat do Excelu", use_container_width=True, type="primary"):
         try:
             with st.spinner("Exportuji do Excelu..."):
-                out = export_to_excel(selected_project, projects)
+                # Získání cesty k dočasnému souboru
+                temp_file_path = export_to_excel(selected_project, projects)
                 
-                # ✅ ZOBRAZENÍ CESTY PRO DEBUG
-                st.write(f"**Cesta k souboru:** `{out}`")
-                st.write(f"**Soubor existuje:** `{out.exists()}`")
-                
-                if out.exists():
-                    st.success(f"✅ Export hotový: `{out.name}`")
+                # Načtení souboru a vytvoření download buttonu
+                with open(temp_file_path, "rb") as file:
+                    file_data = file.read()
                     
-                    # Zobrazíme download button
-                    with open(out, "rb") as file:
-                        st.download_button(
-                            "⬇️ Stáhnout Excel soubor", 
-                            data=file.read(),
-                            file_name=out.name,
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True
-                        )
-                else:
-                    st.error("❌ Exportovaný soubor nebyl nalezen. Zkuste to prosím znovu.")
+                # Vytvoření názvu souboru
+                file_name = f"testcases_{selected_project.replace(' ', '_')}.xlsx"
+                
+                st.success("✅ Export hotový! Soubor je připraven ke stažení.")
+                
+                # Download button
+                st.download_button(
+                    label="⬇️ Stáhnout Excel soubor",
+                    data=file_data,
+                    file_name=file_name,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+                
+                # Úklid - smazání dočasného souboru
+                try:
+                    import os
+                    os.unlink(temp_file_path)
+                except:
+                    pass
                     
         except Exception as e:
             st.error(f"Export selhal: {e}")
             st.info("""
 **Řešení problémů s exportem:**
-1. Zkuste vytvořit složku 'exports' manuálně v kořenovém adresáři aplikace
+1. Zkontrolujte, zda má projekt nějaké scénáře
 2. Zkuste exportovat znovu
 3. Pokud problém přetrvává, kontaktujte správce aplikace
             """)
@@ -905,11 +912,11 @@ with tab3:
     - Metadata (priorita, komplexita, segment, kanál)
     
     **Co se stane po exportu:**
-    1. Vytvoří se Excel soubor v exports složce
+    1. Vytvoří se Excel soubor v paměti
     2. Soubor je připraven ke stažení
-    3. **Žádné nahrávání na GitHub** - pouze lokální soubor
+    3. **Žádné ukládání na disk** - pouze download
     """)
-    
+
 
 with tab4:
     st.subheader("🔍 Diagnostika systému")
