@@ -866,20 +866,34 @@ with tab3:
         try:
             with st.spinner("Exportuji do Excelu..."):
                 out = export_to_excel(selected_project, projects)
-                rel = Path(out).relative_to(Path(__file__).resolve().parent.parent)
-                st.success(f"✅ Export hotový: `{rel}`")
                 
-                # Zobrazíme download button
-                with open(out, "rb") as file:
-                    st.download_button(
-                        "⬇️ Stáhnout Excel soubor", 
-                        data=file.read(),
-                        file_name=Path(out).name,
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        use_container_width=True
-                    )
+                # ✅ ZOBRAZENÍ CESTY PRO DEBUG
+                st.write(f"**Cesta k souboru:** `{out}`")
+                st.write(f"**Soubor existuje:** `{out.exists()}`")
+                
+                if out.exists():
+                    st.success(f"✅ Export hotový: `{out.name}`")
+                    
+                    # Zobrazíme download button
+                    with open(out, "rb") as file:
+                        st.download_button(
+                            "⬇️ Stáhnout Excel soubor", 
+                            data=file.read(),
+                            file_name=out.name,
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
+                else:
+                    st.error("❌ Exportovaný soubor nebyl nalezen. Zkuste to prosím znovu.")
+                    
         except Exception as e:
             st.error(f"Export selhal: {e}")
+            st.info("""
+**Řešení problémů s exportem:**
+1. Zkuste vytvořit složku 'exports' manuálně v kořenovém adresáři aplikace
+2. Zkuste exportovat znovu
+3. Pokud problém přetrvává, kontaktujte správce aplikace
+            """)
     
     st.markdown("---")
     
@@ -895,6 +909,7 @@ with tab3:
     2. Soubor je připraven ke stažení
     3. **Žádné nahrávání na GitHub** - pouze lokální soubor
     """)
+    
 
 with tab4:
     st.subheader("🔍 Diagnostika systému")

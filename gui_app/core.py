@@ -8,8 +8,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECTS_PATH = BASE_DIR / "projects.json"
 KROKY_PATH = BASE_DIR / "kroky.json"
-EXPORT_DIR = BASE_DIR / "exports"
-EXPORT_DIR.mkdir(exist_ok=True)
+EXPORT_DIR = Path("exports")  # ✅ RELATIVNÍ CESTA - vždy v aktuálním adresáři
+EXPORT_DIR.mkdir(exist_ok=True)  # ✅ VYTVOŘÍ SLOŽKU POKUD NEEXISTUJE
 
 # ---------- Statické mapy ----------
 PRIORITY_MAP = {
@@ -288,14 +288,28 @@ def export_to_excel(project_name, projects_data):
 
     df = pd.DataFrame(rows)
     
-    # ✅ VYTVOŘÍME SLOŽKU exports pokud neexistuje
+    # ✅ VYTVOŘÍME SLOŽKU exports pokud neexistuje - BEZPEČNĚ
     EXPORT_DIR.mkdir(exist_ok=True)
     
-    output_path = EXPORT_DIR / f"testcases_{project_name.replace(' ', '_')}.xlsx"
-    df.to_excel(output_path, index=False)
-
-    print(f"✅ Exportováno do: {output_path}")
-    return output_path
+    # ✅ BEZPEČNÉ VYTVOŘENÍ CESTY
+    file_name = f"testcases_{project_name.replace(' ', '_')}.xlsx"
+    output_path = EXPORT_DIR / file_name
+    
+    try:
+        df.to_excel(output_path, index=False)
+        print(f"✅ Exportováno do: {output_path}")
+        return output_path
+    except Exception as e:
+        print(f"❌ Chyba při exportu: {e}")
+        # Fallback: zkusíme uložit do aktuálního adresáře
+        try:
+            fallback_path = Path(file_name)
+            df.to_excel(fallback_path, index=False)
+            print(f"✅ Exportováno do fallback cesty: {fallback_path}")
+            return fallback_path
+        except Exception as fallback_error:
+            print(f"❌ Fallback export také selhal: {fallback_error}")
+            raise e
 
 # ---------- Funkce pro opravu duplicitních kroků ----------
 def oprav_duplicitni_kroky():
